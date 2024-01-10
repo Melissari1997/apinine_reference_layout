@@ -1,0 +1,10 @@
+version: '3'
+
+tasks:
+  wildfire:
+    cmds:
+      #- cp -r ./common wildfire/
+      - docker build -t test -f wildfire/Dockerfile .
+      - docker run test
+      #- rm -r wildfire/common
+    silent: false
