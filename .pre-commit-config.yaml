@@ -7,11 +7,18 @@ repos:
   rev: v4.4.0
   hooks:
   - id: check-added-large-files
+    description: prevent giant files from being committed
   - id: check-toml
+    description: check toml files for parseable syntax
   - id: check-yaml
+    description: check yaml files for parseable syntax
   - id: end-of-file-fixer
+    description: ensure that a file is either empty, or ends with one newline
   - id: requirements-txt-fixer
+    description: sort entries in requirements.txt
   - id: trailing-whitespace
+    description: trim trailing whitespace
+    entry: trailing-whitespace-fixer
 
 - repo: https://github.com/charliermarsh/ruff-pre-commit
   rev: v0.1.11
@@ -19,13 +26,16 @@ repos:
   - id: ruff
     args:
     - --fix
+    description: run 'ruff' for extremely fast Python linting
   - id: ruff-format
+    description: run 'ruff format' for extremely fast Python formatting
 
 - repo: https://github.com/psf/black-pre-commit-mirror
   rev: 23.12.1
   hooks:
   - id: black
     language_version: python3.10
+    description: run Black, the uncompromising Python code formatter
 
 ci:
   autofix_commit_msg: 🎨 [pre-commit.ci] Auto format from pre-commit.com hooks

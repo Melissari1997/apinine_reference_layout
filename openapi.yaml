@@ -1,0 +1,43 @@
+# TODO: REPLACE WITH A REAL SPECIFICATION, REFLECTING CURRENT API STATE
+openapi: 3.0.1
+info:
+  title: Eoliann API v1
+  description: API description in Markdown.
+  version: 1.0.0
+servers:
+- url: https://api.eoliann.solutions/
+paths:
+  /drought:
+    get:
+      summary: Returns a drought assessment for an address.
+      description: Optional extended description in Markdown.
+      responses:
+        "200":
+          description: OK
+          content: {}
+  /flood:
+    get:
+      summary: Returns a flood assessment for an address.
+      description: Optional extended description in Markdown.
+      responses:
+        "200":
+          description: OK
+          content: {}
+  /flood/rcp85:
+    get:
+      summary: Returns a flood RCP 8.5 assessment for an address.
+      description: Optional extended description in Markdown.
+      responses:
+        "200":
+          description: OK
+          content: {}
+  /wildfire:
+    get:
+      summary: Returns a wildfire assessment for an address.
+      description: Optional extended description in Markdown.
+      responses:
+        "200":
+          description: OK
+          content: {}
+components: {}
+x-original-swagger-version: "2.0"
