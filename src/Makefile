@@ -1,4 +1,4 @@
-.PHONY: wildfire all
+.PHONY: wildfire all format tests
 
 
 all:
@@ -8,3 +8,13 @@ all:
 wildfire:
 	@$(MAKE) -C wildfire
 
+tests:
+	for risk in "wildfire"; do \
+		$(MAKE) -C $$risk tests; \
+	done
+
+format:
+	@ruff check
+
+fix-format:
+	@ruff check --fix

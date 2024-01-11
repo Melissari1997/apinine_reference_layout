@@ -1,0 +1,30 @@
+# ruff configuration defaults at https://beta.ruff.rs/docs/configuration/
+# specific settings can be set according to https://beta.ruff.rs/docs/settings
+
+[tool.ruff]
+
+# Assume Python 3.10.
+target-version = "py310"
+
+# select this rule sets; see available sets and rules at https://beta.ruff.rs/docs/rules
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+    "N"   # pep8-naming
+]
+
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+]
+
+# Avoid automatically removing unused imports in __init__.py files
+# https://docs.astral.sh/ruff/settings/#ignore-init-module-imports
+ignore-init-module-imports = true
+
+[tool.ruff.pydocstyle]
+convention = "numpy"

@@ -1,5 +1,6 @@
-from common.utils.utils import common_func
 from common.errors.errors import error
+from common.utils.utils import common_func
+
 
 def handler():
     common_func()

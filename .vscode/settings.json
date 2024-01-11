@@ -1,9 +1,14 @@
 {
+    // "python.formatting.provider": "charliermarsh.ruff",
     "terminal.integrated.env.linux": {
         "PYTHONPATH": "${workspaceFolder}/src"
     },
     "[python]": {
         "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit",
+            "source.organizeImports": "explicit"
+        },
         "editor.defaultFormatter": "ms-python.black-formatter"
     }
 }
