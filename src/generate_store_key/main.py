@@ -16,18 +16,23 @@ def cli():
 
 
 @cli.command()
-# @click.option("--hello", default=1, help="number of greetings")
-def generate_key():
+@click.option("--name", help="name of the api key", required=True)
+@click.option("--org", help="name of organization owning the key", required=True)
+def generate_key(name, org):
     apigwkey = ApiGwKeyGenerator()
     dynamodb_repository = DynamoDBKey()
+
+    # "Sanitize input"
+    name = name.lower()
+    org = org.upper()
 
     Key().save_key_and_permission(
         api_key_gen=apigwkey,
         repository=dynamodb_repository,
-        name="test-to-be-deleted",
-        description="Just testing the code",
+        name=name,
+        description=f"API Key {name} for {org}",
         permissions="*",
-        organization="TERNA",
+        organization=org,
     )
 
     click.echo("Done")
