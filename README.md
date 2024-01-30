@@ -61,3 +61,10 @@ In case of fixable erros, pre-commit will fix the appropriate files but is still
 Ruff works alongside Black to format the codebase in a clean fashion.
 
 It runs every time a *.py* file is saved and performs, among other things, linting, import sorting, etc. The list of rules we use is present in the pyproject.toml file, under **[tool.ruff.select]** voice.
+
+
+## Generate Key
+
+It is possible to generate a key from the script in *src/generate_store_key*.
+The script will generate an API Gateway Key, hash it and store it on DynamoDB. Additionally it is possible to specify
+which API the key is allowed to invoke and in which Organization it belongs to. All these pieces of information are persisted on DynamoDB (the table is created in the *infra* folder).
