@@ -27,7 +27,8 @@ def cli():
     default=[permission.value for permission in Permissions],
     type=click.Choice(choices=[permission.value for permission in Permissions]),
 )
-def generate_key(name, org, permission):
+@click.option("--description", "-d", help="Optional description", default="")
+def generate_key(name, org, permission, description):
     apigwkey = ApiGwKeyGenerator()
     dynamodb_repository = DynamoDBKey()
 
@@ -35,11 +36,14 @@ def generate_key(name, org, permission):
     name = name.lower()
     org = org.upper()
 
+    if description is None or description == "":
+        description = f"API Key {name} for {org}"
+
     Key().save_key_and_permission(
         api_key_gen=apigwkey,
         repository=dynamodb_repository,
         name=name,
-        description=f"API Key {name} for {org}",
+        description=description,
         permissions=permission,
         organization=org,
     )
