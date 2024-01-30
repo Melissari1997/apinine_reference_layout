@@ -31,18 +31,66 @@ class DynamoDBKey(KeyRepository):
         expiration_interval = datetime.timedelta(days=1000)
         expiration_date = now + expiration_interval
 
+        pk_hash_key_string = f"KEY#{hashed_key}"
+
         item = {
             "TableName": "apinine_api_key",
             "Item": {
-                "PK": {"S": f"KEY#{hashed_key}"},
-                "SK": {"S": f"KEY#{hashed_key}"},
+                "PK": {"S": pk_hash_key_string},
+                "SK": {"S": pk_hash_key_string},
                 "last_access": {"N": str(int(now.timestamp()))},
                 "created_at": {"N": str(int(now.timestamp()))},
                 "expires_at": {"N": str(int(expiration_date.timestamp()))},
             },
         }
 
-        self.execute_put_item(item)
+        batch_items = {
+            "apinine_api_key": [
+                {"PutRequest": {"Item": item["Item"]}},
+                {
+                    "PutRequest": {
+                        "Item": {
+                            "PK": {"S": pk_hash_key_string},
+                            "SK": {"S": "PERMISSION#GET#/wildfire/"},
+                        }
+                    }
+                },
+                {
+                    "PutRequest": {
+                        "Item": {
+                            "PK": {"S": pk_hash_key_string},
+                            "SK": {"S": f"ORG#{organization}"},
+                        }
+                    }
+                },
+                {
+                    "PutRequest": {
+                        "Item": {
+                            "PK": {"S": pk_hash_key_string},
+                            "SK": {"S": "PERMISSION#GET#/flood/"},
+                        }
+                    }
+                },
+                {
+                    "PutRequest": {
+                        "Item": {
+                            "PK": {"S": pk_hash_key_string},
+                            "SK": {"S": "PERMISSION#GET#/flood/rcp85/"},
+                        }
+                    }
+                },
+                {
+                    "PutRequest": {
+                        "Item": {
+                            "PK": {"S": pk_hash_key_string},
+                            "SK": {"S": "PERMISSION#GET#/drought/"},
+                        }
+                    }
+                },
+            ]
+        }
+
+        self.execute_batch_write_items(batch_items=batch_items)
 
     def execute_put_item(self, item):
         try:
@@ -56,7 +104,7 @@ class DynamoDBKey(KeyRepository):
 
     def execute_batch_write_items(self, batch_items):
         try:
-            self.dynamodb_client.batch_write_item(batch_items)
+            self.dynamodb_client.batch_write_item(RequestItems=batch_items)
             print("Successfully put items.")
             # Handle response
         except ClientError as error:
