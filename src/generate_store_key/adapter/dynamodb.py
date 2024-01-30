@@ -33,7 +33,7 @@ class DynamoDBKey(KeyRepository):
 
         pk_hash_key_string = f"KEY#{hashed_key}"
 
-        item = {
+        key_item = {
             "TableName": "apinine_api_key",
             "Item": {
                 "PK": {"S": pk_hash_key_string},
@@ -44,51 +44,33 @@ class DynamoDBKey(KeyRepository):
             },
         }
 
-        batch_items = {
-            "apinine_api_key": [
-                {"PutRequest": {"Item": item["Item"]}},
+        permissions_items = []
+        for perm in permissions:
+            escaped_perm = f"/{perm}/"
+            permissions_items.append(
                 {
                     "PutRequest": {
                         "Item": {
                             "PK": {"S": pk_hash_key_string},
-                            "SK": {"S": "PERMISSION#GET#/wildfire/"},
+                            "SK": {"S": f"PERMISSION#GET#{escaped_perm}"},
                         }
                     }
-                },
-                {
-                    "PutRequest": {
-                        "Item": {
-                            "PK": {"S": pk_hash_key_string},
-                            "SK": {"S": f"ORG#{organization}"},
-                        }
+                }
+            )
+
+        batch_operations = [
+            {"PutRequest": {"Item": key_item["Item"]}},
+            {
+                "PutRequest": {
+                    "Item": {
+                        "PK": {"S": pk_hash_key_string},
+                        "SK": {"S": f"ORG#{organization}"},
                     }
-                },
-                {
-                    "PutRequest": {
-                        "Item": {
-                            "PK": {"S": pk_hash_key_string},
-                            "SK": {"S": "PERMISSION#GET#/flood/"},
-                        }
-                    }
-                },
-                {
-                    "PutRequest": {
-                        "Item": {
-                            "PK": {"S": pk_hash_key_string},
-                            "SK": {"S": "PERMISSION#GET#/flood/rcp85/"},
-                        }
-                    }
-                },
-                {
-                    "PutRequest": {
-                        "Item": {
-                            "PK": {"S": pk_hash_key_string},
-                            "SK": {"S": "PERMISSION#GET#/drought/"},
-                        }
-                    }
-                },
-            ]
-        }
+                }
+            },
+        ] + permissions_items
+
+        batch_items = {"apinine_api_key": batch_operations}
 
         self.execute_batch_write_items(batch_items=batch_items)
 

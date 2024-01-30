@@ -8,6 +8,7 @@ import click
 from adapter.api_gw_key import ApiGwKeyGenerator
 from adapter.dynamodb import DynamoDBKey
 from domain.key import Key
+from permissions import Permissions
 
 
 @click.group()
@@ -18,7 +19,15 @@ def cli():
 @cli.command()
 @click.option("--name", "-n", help="name of the api key", required=True)
 @click.option("--org", "-o", help="name of organization owning the key", required=True)
-def generate_key(name, org):
+@click.option(
+    "--permission",
+    "-p",
+    help="specify which APIs the key is allowed to invoke. Default is allow all.",
+    multiple=True,
+    default=[permission.value for permission in Permissions],
+    type=click.Choice(choices=[permission.value for permission in Permissions]),
+)
+def generate_key(name, org, permission):
     apigwkey = ApiGwKeyGenerator()
     dynamodb_repository = DynamoDBKey()
 
@@ -31,7 +40,7 @@ def generate_key(name, org):
         repository=dynamodb_repository,
         name=name,
         description=f"API Key {name} for {org}",
-        permissions="*",
+        permissions=permission,
         organization=org,
     )
 
