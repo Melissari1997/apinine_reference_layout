@@ -16,8 +16,8 @@ def cli():
 
 
 @cli.command()
-@click.option("--name", help="name of the api key", required=True)
-@click.option("--org", help="name of organization owning the key", required=True)
+@click.option("--name", "-n", help="name of the api key", required=True)
+@click.option("--org", "-o", help="name of organization owning the key", required=True)
 def generate_key(name, org):
     apigwkey = ApiGwKeyGenerator()
     dynamodb_repository = DynamoDBKey()
