@@ -5,7 +5,7 @@ on:
     paths:
       - 'src/wildfire/**'
       - 'src/common/**'
-
+    branches: [ "main" ]
 
 ## FIXME: Change names, the code below was copied from another workflow
 permissions:
