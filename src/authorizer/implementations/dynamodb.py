@@ -1,0 +1,63 @@
+import boto3
+from authorizer.interfaces import KeyDB
+from botocore.exceptions import ClientError
+
+
+class DynamoKeyDB(KeyDB):
+    def __init__(self) -> None:
+        self.dynamodb_client = boto3.client("dynamodb")
+        self.error_help_strings = {
+            # Operation specific errors
+            "ConditionalCheckFailedException": "Condition check specified in the operation failed, review and update the condition check before retrying",
+            "TransactionConflictException": "Operation was rejected because there is an ongoing transaction for the item, generally safe to retry with exponential back-off",
+            "ItemCollectionSizeLimitExceededException": "An item collection is too large, you're using Local Secondary Index and exceeded size limit of items per partition key."
+            + " Consider using Global Secondary Index instead",
+            # Common Errors
+            "InternalServerError": "Internal Server Error, generally safe to retry with exponential back-off",
+            "ProvisionedThroughputExceededException": "Request rate is too high. If you're using a custom retry strategy make sure to retry with exponential back-off."
+            + "Otherwise consider reducing frequency of requests or increasing provisioned capacity for your table or secondary index",
+            "ResourceNotFoundException": "One of the tables was not found, verify table exists before retrying",
+            "ServiceUnavailable": "Had trouble reaching DynamoDB. generally safe to retry with exponential back-off",
+            "ThrottlingException": "Request denied due to throttling, generally safe to retry with exponential back-off",
+            "UnrecognizedClientException": "The request signature is incorrect most likely due to an invalid AWS access key ID or secret key, fix before retrying",
+            "ValidationException": "The input fails to satisfy the constraints specified by DynamoDB, fix input before retrying",
+            "RequestLimitExceeded": "Throughput exceeds the current throughput limit for your account, increase account level throughput before retrying",
+        }
+
+    def query_by_key(self, hashed_key: str):
+        query = self.create_query_input(hashed_key)
+        result = self.execute_query(query)
+        print(result)
+        return result["Items"]
+
+    def update_last_accessed(self, last_accessed_ts: int):
+        # TODO: Implement
+        pass
+
+    def create_query_input(self, hashed_key: str):
+        return {
+            "TableName": "apinine_api_key",
+            "KeyConditionExpression": "#e14e0 = :e14e0",
+            "ExpressionAttributeNames": {"#e14e0": "PK"},
+            "ExpressionAttributeValues": {":e14e0": {"S": f"KEY#{hashed_key}"}},
+        }
+
+    def execute_query(self, input):
+        try:
+            response = self.dynamodb_client.query(**input)
+            print("Query successful.")
+            # Handle response
+        except ClientError as error:
+            self.handle_error(error)
+        except BaseException as error:
+            print("Unknown error while querying: " + error.response["Error"]["Message"])
+
+        return response
+
+    def handle_error(self, error):
+        error_code = error.response["Error"]["Code"]
+        error_message = error.response["Error"]["Message"]
+
+        error_help_string = self.error_help_strings[error_code]
+
+        print(f"[{error_code}] {error_help_string}. Error message: {error_message}")

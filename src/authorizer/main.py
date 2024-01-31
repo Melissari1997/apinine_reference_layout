@@ -1,38 +1,17 @@
-import logging
+from authorizer.implementations.db_authenticator import DBAuthenticator
+from authorizer.implementations.dynamodb import DynamoKeyDB
+from aws_lambda_powertools import Logger  # , Tracer
+from interfaces import Authenticator, KeyDB
 
-logger = logging.getLogger()
-logger.setLevel("INFO")
-
-
-def handler(event, context):
-    logger.info(f"event: {event}")
-    logger.info(f"context: {context}")
-
-    # Extract api key from the event
-    api_key = event["headers"]["x-api-key"]
-
-    # Perform authentication logic
-    # Replace this with your actual authentication logic
-    user_authenticated = authenticate_api_key(api_key)
-
-    if user_authenticated:
-        # If user is authenticated, generate IAM policy
-        policy = generate_policy("Allow", event["methodArn"])
-    else:
-        # If user is not authenticated, deny access
-        policy = generate_policy("Deny", event["methodArn"])
-
-    return policy
+logger = Logger()
+# tracer = Tracer()
+# import logging
 
 
-def authenticate_api_key(token):
-    # Replace this with your actual authentication logic
-    # Example: Check if the token is valid or exists in a user database
-    # Return True if authenticated, False otherwise
-    return True
+# logger = logging.getLogger()
 
 
-def generate_policy(effect, resource):
+def generate_policy(effect, resources):
     # Generate an IAM policy based on the effect (Allow/Deny) and the resource
     policy = {
         "principalId": "user",
@@ -42,10 +21,52 @@ def generate_policy(effect, resource):
                 {
                     "Action": "execute-api:Invoke",
                     "Effect": effect,
-                    "Resource": resource,
+                    "Resource": resources,
                 }
             ],
         },
     }
 
     return policy
+
+
+def authenticate_api_key(key, method_arn):
+    dynamo_keydb: KeyDB = DynamoKeyDB()
+    authenticator: Authenticator = DBAuthenticator(key_db=dynamo_keydb)
+
+    logger.info("Checking API key")
+    # This checks the key existence and expiration
+    permissions = authenticator.authorize(key)
+    logger.info(f"Found following permissions: {permissions}")
+
+    # TODO: combine permissions with method_arn
+    resources = method_arn
+
+    policy = generate_policy("Allow", resources)
+
+    logger.info(f"Generated policy: {policy}")
+    return policy
+
+
+@logger.inject_lambda_context
+# @tracer.capture_lambda_handler
+def handler(event, context):
+    logger.info(f"event: {event}")
+    logger.info(f"context: {context}")
+
+    api_key = event["headers"]["x-api-key"]
+    method_arn = event["methodArn"]
+
+    return authenticate_api_key(key=api_key, method_arn=method_arn)
+
+
+if __name__ == "__main__":
+    handler(
+        event={
+            "headers": {"x-api-key": "mykey"},
+            "httpMethod": "GET",
+            "methodArn": "myMethodArn",
+            "requestContext": {"path": "/wildfire"},
+        },
+        context={},
+    )
