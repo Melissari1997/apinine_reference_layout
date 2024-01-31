@@ -30,9 +30,26 @@ class DynamoKeyDB(KeyDB):
         print(result)
         return result["Items"]
 
-    def update_last_accessed(self, last_accessed_ts: int):
-        # TODO: Implement
-        pass
+    def update_last_accessed(self, last_accessed_ts: int, hash_key: str):
+        update_item = {
+            "TableName": "apinine_api_key",
+            "Key": {"PK": {"S": hash_key}, "SK": {"S": hash_key}},
+            "UpdateExpression": "SET #75040 = :75040",
+            "ExpressionAttributeNames": {"#75040": "last_access"},
+            "ExpressionAttributeValues": {":75040": {"N": str(last_accessed_ts)}},
+        }
+
+        self.execute_update_item(update_item)
+
+    def execute_update_item(self, update_item):
+        try:
+            self.dynamodb_client.update_item(**update_item)
+            print("Successfully updated item.")
+            # Handle response
+        except ClientError as error:
+            self.handle_error(error)
+        except BaseException as error:
+            print("Unknown error while updating item: " + error)
 
     def create_query_input(self, pk: str):
         return {

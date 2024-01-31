@@ -13,5 +13,5 @@ class KeyDB(metaclass=abc.ABCMeta):
 
 class Authenticator(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def authorize(self, key):
+    def authorize(self, key: str, method: str, resource: str):
         pass

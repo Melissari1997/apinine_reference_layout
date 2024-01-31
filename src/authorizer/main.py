@@ -36,13 +36,12 @@ def authenticate_api_key(key, method_arn):
 
     logger.info("Checking API key")
     # This checks the key existence and expiration
-    permissions = authenticator.authorize(key)
-    logger.info(f"Found following permissions: {permissions}")
+    _, method, resource = method_arn.split("/")
+    is_allowed = authenticator.authorize(key, method, resource)
+    logger.info(f"Found following permissions: {is_allowed}")
 
-    # TODO: combine permissions with method_arn
-    resources = method_arn
-
-    policy = generate_policy("Allow", resources)
+    permitted_resources = [method_arn] if is_allowed else []
+    policy = generate_policy("Allow", permitted_resources)
 
     logger.info(f"Generated policy: {policy}")
     return policy
