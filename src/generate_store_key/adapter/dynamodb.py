@@ -26,18 +26,19 @@ class DynamoDBKey(KeyRepository):
             "RequestLimitExceeded": "Throughput exceeds the current throughput limit for your account, increase account level throughput before retrying",
         }
 
-    def save_key_and_permission(self, hashed_key, permissions, organization):
+    def save_key_and_permission(self, hashed_key, permissions, organization, user):
         now = datetime.datetime.now()
         expiration_interval = datetime.timedelta(days=1000)
         expiration_date = now + expiration_interval
 
-        pk_hash_key_string = f"KEY#{hashed_key}"
+        hash_secret_string = f"KEY#{hashed_key}"
+        user_pk = f"USER#{user}"
 
         key_item = {
             "TableName": "apinine_api_key",
             "Item": {
-                "PK": {"S": pk_hash_key_string},
-                "SK": {"S": pk_hash_key_string},
+                "PK": {"S": user_pk},
+                "SK": {"S": hash_secret_string},
                 "last_access": {"N": str(int(now.timestamp()))},
                 "created_at": {"N": str(int(now.timestamp()))},
                 "expires_at": {"N": str(int(expiration_date.timestamp()))},
@@ -51,7 +52,7 @@ class DynamoDBKey(KeyRepository):
                 {
                     "PutRequest": {
                         "Item": {
-                            "PK": {"S": pk_hash_key_string},
+                            "PK": {"S": user_pk},
                             "SK": {"S": f"PERMISSION#GET#{escaped_perm}"},
                         }
                     }
@@ -63,7 +64,7 @@ class DynamoDBKey(KeyRepository):
             {
                 "PutRequest": {
                     "Item": {
-                        "PK": {"S": pk_hash_key_string},
+                        "PK": {"S": user_pk},
                         "SK": {"S": f"ORG#{organization}"},
                     }
                 }
