@@ -14,7 +14,7 @@ class DBAuthenticator(Authenticator):
     def authorize(self, key: str, method: str, resource: str):
         """
         Inputs:
-            - key: string e.g. KEY#ajjejdjccj
+            - key: string e.g. mykey
             - method: string e.g GET (upper)
             - resource: string e.g. /flood/rcp85
         Return an array of the type ["GET#/wildfire/", "GET#/flood/", ...]
