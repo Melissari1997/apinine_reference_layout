@@ -9,7 +9,7 @@ def handler(event, context):
     logger.info(f"context: {context}")
 
     # Extract api key from the event
-    api_key = event["x-api-key"]
+    api_key = event["headers"]["x-api-key"]
 
     # Perform authentication logic
     # Replace this with your actual authentication logic
