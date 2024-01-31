@@ -24,8 +24,8 @@ class DynamoKeyDB(KeyDB):
             "RequestLimitExceeded": "Throughput exceeds the current throughput limit for your account, increase account level throughput before retrying",
         }
 
-    def query_by_key(self, hashed_key: str):
-        query = self.create_query_input(hashed_key)
+    def query_by_key(self, pk: str):
+        query = self.create_query_input(pk)
         result = self.execute_query(query)
         print(result)
         return result["Items"]
@@ -34,23 +34,23 @@ class DynamoKeyDB(KeyDB):
         # TODO: Implement
         pass
 
-    def create_query_input(self, hashed_key: str):
+    def create_query_input(self, pk: str):
         return {
             "TableName": "apinine_api_key",
             "KeyConditionExpression": "#e14e0 = :e14e0",
             "ExpressionAttributeNames": {"#e14e0": "PK"},
-            "ExpressionAttributeValues": {":e14e0": {"S": f"KEY#{hashed_key}"}},
+            "ExpressionAttributeValues": {":e14e0": {"S": pk}},
         }
 
-    def execute_query(self, input):
+    def execute_query(self, item):
         try:
-            response = self.dynamodb_client.query(**input)
+            response = self.dynamodb_client.query(**item)
             print("Query successful.")
             # Handle response
         except ClientError as error:
             self.handle_error(error)
         except BaseException as error:
-            print("Unknown error while querying: " + error.response["Error"]["Message"])
+            print("Unknown error while querying: " + error)
 
         return response
 
