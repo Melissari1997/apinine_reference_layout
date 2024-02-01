@@ -30,6 +30,19 @@ def generate_policy(effect, resources):
     return policy
 
 
+def exception_handler_decorator(func):
+    def wrapper(*args, **kwargs):
+        try:
+            result = func(*args, **kwargs)
+            return result
+        except ValueError as ve:
+            logger.info(str(ve.value))
+        except Exception as e:
+            logger.info(str(e))
+        raise Exception("Unauthorized")
+
+
+@exception_handler_decorator
 def authenticate_api_key(key, method_arn):
     dynamo_keydb: KeyDB = DynamoKeyDB()
     authenticator: Authenticator = DBAuthenticator(key_db=dynamo_keydb)

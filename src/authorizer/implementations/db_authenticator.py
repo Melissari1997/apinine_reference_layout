@@ -23,17 +23,13 @@ class DBAuthenticator(Authenticator):
         """
 
         # Verify the key is in the correct format user:secret
-        splitted = key.split(":")
-        if len(splitted) != 2:
-            print("INVALIDKEYFORMAT - Invalid key format")
-            raise Exception("Unauthorized")
+        try:
+            user, secret = key.split(":")
+        except ValueError as ve:
+            raise ValueError("INVALIDKEYFORMAT - Invalid key format") from ve
 
-        user, secret = splitted
         pk_key_item = f"USER#{user}"
         result = self.key_db.query_by_key(pk_key_item)  # noqa: F841
-
-        if result["Count"] == 0:
-            raise Exception("Unauthorized")  # Return immediately
 
         now_ts = datetime.now().timestamp()
         # Get the key item (PK and SK === KEY#....)
@@ -49,21 +45,17 @@ class DBAuthenticator(Authenticator):
                     x["SK"]["S"].removeprefix("KEY#"), secret
                 )
             ][0]
-        except argon2.exceptions.InvalidHashError:
-            print(
+        except argon2.exceptions.InvalidHashError as ihe:
+            raise ValueError(
                 f"HASHERROR - the hash or the hasher have been changed. User {pk_key_item}"
-            )
-            # silcence ruff because this exception is force by AWS
-            raise Exception("Unauthorized")  # noqa: B904
-        except IndexError:
-            print(
+            ) from ihe
+        except IndexError as ie:
+            raise ValueError(
                 f"NOKEYSKERROR - no KEY sort key found. data may be inconsistent. User {pk_key_item}"
-            )
-            # silcence ruff because this exception is force by AWS
-            raise Exception("Unauthorized")  # noqa: B904
+            ) from ie
 
         if int(key_item["expires_at"]["N"]) < now_ts:
-            raise Exception("Unauthorized")  # Return immediately
+            raise ValueError(f"EXPIREDKEYERROR - key is expired. User {pk_key_item}")
 
         self.key_db.update_last_accessed(last_accessed_ts=now_ts)
         method_resource = f"{method}#{resource}"  # this is how it is saved on our DB

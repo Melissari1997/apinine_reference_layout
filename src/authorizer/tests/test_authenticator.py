@@ -124,7 +124,7 @@ class TestAuthenticator:
             "created_at": str(int(now)),
             "expires_at": "0",  # force expiration
         }
-        wanted_exception = "Unauthorized"
+        wanted_exception = "EXPIREDKEYERROR - key is expired. User USER#"
         mykeydbmock = KeyDBMock(key_db_input)
 
         with pytest.raises(Exception, match=wanted_exception):
@@ -143,7 +143,9 @@ class TestAuthenticator:
             "count": 0,  # force it
         }
 
-        wanted_exception = "Unauthorized"
+        wanted_exception = (
+            "NOKEYSKERROR - no KEY sort key found. data may be inconsistent. User USER#"
+        )
         mykeydbmock = KeyDBMock(key_db_input)
 
         with pytest.raises(Exception, match=wanted_exception):
@@ -170,7 +172,9 @@ class TestAuthenticator:
         mykeydbmock = KeyDBMock(key_db_input)
 
         # It always throw the same exception, but we write the error in the log
-        wanted_exception = "Unauthorized"
+        wanted_exception = (
+            "HASHERROR - the hash or the hasher have been changed. User USER#"
+        )
 
         with pytest.raises(Exception, match=wanted_exception):
             DBAuthenticator(mykeydbmock).authorize(key, "GET", "/flood")
@@ -198,7 +202,9 @@ class TestAuthenticator:
         mykeydbmock = KeyDBMock(key_db_input)
 
         # It always throw the same exception, but we write the error in the log
-        wanted_exception = "Unauthorized"
+        wanted_exception = (
+            "NOKEYSKERROR - no KEY sort key found. data may be inconsistent. User USER#"
+        )
 
         with pytest.raises(Exception, match=wanted_exception):
             DBAuthenticator(mykeydbmock).authorize(key, "GET", "/flood")
@@ -217,9 +223,9 @@ class TestAuthenticator:
         }
 
         mykeydbmock = KeyDBMock(key_db_input)
-        wanted_exception = "Unauthorized"
+        wanted_exception = "INVALIDKEYFORMAT - Invalid key format"
 
-        with pytest.raises(Exception, match=wanted_exception):
+        with pytest.raises(ValueError, match=wanted_exception):
             DBAuthenticator(mykeydbmock).authorize(key, "GET", "/flood")
 
     def test_missing_permissions(self, dynamo_query_item):
