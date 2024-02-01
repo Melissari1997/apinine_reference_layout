@@ -35,8 +35,6 @@ def exception_handler_decorator(func):
         try:
             result = func(*args, **kwargs)
             return result
-        except ValueError as ve:
-            logger.info(str(ve.value))
         except Exception as e:
             logger.info(str(e))
         raise Exception("Unauthorized")

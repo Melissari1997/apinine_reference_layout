@@ -27,7 +27,6 @@ class DynamoKeyDB(KeyDB):
     def query_by_key(self, pk: str):
         query = self.create_query_input(pk)
         result = self.execute_query(query)
-        print(result)
         return result["Items"]
 
     def update_last_accessed(self, last_accessed_ts: int, hash_key: str):

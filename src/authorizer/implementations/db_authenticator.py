@@ -29,7 +29,7 @@ class DBAuthenticator(Authenticator):
             raise ValueError("INVALIDKEYFORMAT - Invalid key format") from ve
 
         pk_key_item = f"USER#{user}"
-        result = self.key_db.query_by_key(pk_key_item)  # noqa: F841
+        result = self.key_db.query_by_key(pk_key_item)
 
         now_ts = datetime.now().timestamp()
         # Get the key item (PK and SK === KEY#....)
