@@ -14,13 +14,14 @@ class DBAuthenticator(Authenticator):
     def authorize(self, key: str, method: str, resource: str):
         """
         Inputs:
-            - key: string e.g. mykey
+            - key: string e.g. myuser:mysecret
             - method: string e.g GET (upper)
             - resource: string e.g. /flood/rcp85
         Return an array of the type ["GET#/wildfire/", "GET#/flood/", ...]
         """
-        hashed_key = self.password_hasher.hash(key)
-        pk_key_item = f"KEY#{hashed_key}"
+
+        user, secret = key.split(":")
+        pk_key_item = f"USER#{user}"
         result = self.key_db.query_by_key(pk_key_item)  # noqa: F841
 
         if result["Count"] == 0:
@@ -31,14 +32,16 @@ class DBAuthenticator(Authenticator):
         key_item = [
             x
             for x in result["Items"]
-            if x["PK"]["S"] == pk_key_item and x["SK"]["S"] == pk_key_item
+            if x["PK"]["S"] == pk_key_item
+            and x["SK"]["S"].startswith("KEY#")
+            and self.password_hasher.verify(x["SK"]["S"].removeprefix("KEY#"), secret)
         ][0]
         if int(key_item["expires_at"]["N"]) < now_ts:
             raise Exception("Unauthorized")  # Return immediately
 
         self.key_db.update_last_accessed(last_accessed_ts=now_ts)
         method_resource = f"{method}#{resource}"  # this is how it is saved on our DB
-        # We do not support PERMISSION*
+        # We do not support PERMISSION* (wildcard)
         permissions = [
             x["SK"]["S"].removeprefix("PERMISSION#")
             for x in result["Items"]
