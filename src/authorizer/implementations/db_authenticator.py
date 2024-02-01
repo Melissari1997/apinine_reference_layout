@@ -53,11 +53,13 @@ class DBAuthenticator(Authenticator):
             print(
                 f"HASHERROR - the hash or the hasher have been changed. User {pk_key_item}"
             )
+            # silcence ruff because this exception is force by AWS
             raise Exception("Unauthorized")  # noqa: B904
         except IndexError:
             print(
                 f"NOKEYSKERROR - no KEY sort key found. data may be inconsistent. User {pk_key_item}"
             )
+            # silcence ruff because this exception is force by AWS
             raise Exception("Unauthorized")  # noqa: B904
 
         if int(key_item["expires_at"]["N"]) < now_ts:
