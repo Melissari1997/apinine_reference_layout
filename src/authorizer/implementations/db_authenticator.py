@@ -17,10 +17,18 @@ class DBAuthenticator(Authenticator):
             - key: string e.g. myuser:mysecret
             - method: string e.g GET (upper)
             - resource: string e.g. /flood/rcp85
+
         Return an array of the type ["GET#/wildfire/", "GET#/flood/", ...]
+        raise Exception("Unauthorized") is the suggested way to return 401 to the client
         """
 
-        user, secret = key.split(":")
+        # Verify the key is in the correct format user:secret
+        splitted = key.split(":")
+        if len(splitted) != 2:
+            print("INVALIDKEYFORMAT - Invalid key format")
+            raise Exception("Unauthorized")
+
+        user, secret = splitted
         pk_key_item = f"USER#{user}"
         result = self.key_db.query_by_key(pk_key_item)  # noqa: F841
 
@@ -29,13 +37,29 @@ class DBAuthenticator(Authenticator):
 
         now_ts = datetime.now().timestamp()
         # Get the key item (PK and SK === KEY#....)
-        key_item = [
-            x
-            for x in result["Items"]
-            if x["PK"]["S"] == pk_key_item
-            and x["SK"]["S"].startswith("KEY#")
-            and self.password_hasher.verify(x["SK"]["S"].removeprefix("KEY#"), secret)
-        ][0]
+        # Here we have found the items in the DB and
+        # we do not support multiple KEYs per user
+        try:
+            key_item = [
+                x
+                for x in result["Items"]
+                if x["PK"]["S"] == pk_key_item
+                and x["SK"]["S"].startswith("KEY#")
+                and self.password_hasher.verify(
+                    x["SK"]["S"].removeprefix("KEY#"), secret
+                )
+            ][0]
+        except argon2.exceptions.InvalidHashError:
+            print(
+                f"HASHERROR - the hash or the hasher have been changed. User {pk_key_item}"
+            )
+            raise Exception("Unauthorized")  # noqa: B904
+        except IndexError:
+            print(
+                f"NOKEYSKERROR - no KEY sort key found. data may be inconsistent. User {pk_key_item}"
+            )
+            raise Exception("Unauthorized")  # noqa: B904
+
         if int(key_item["expires_at"]["N"]) < now_ts:
             raise Exception("Unauthorized")  # Return immediately
 

@@ -9,12 +9,15 @@ from interfaces import KeyDB
 class KeyDBMock(KeyDB):
     def __init__(self, test_obj) -> None:
         self.key = test_obj["key"]
-        self.user, self.secret = self.key.split(":")
+        splitted = self.key.split(":")
+        # Pad always to length 2
+        self.user, self.secret = splitted + [""] * (2 - len(splitted))
         self.hashed_key = test_obj["hashed_key"]
         self.user_pk = test_obj.get("user_pk", f"USER#{self.user}")
         self.created_at = test_obj["created_at"]
         self.expires_at = test_obj.get("expires_at", str(int(self.created_at) + 10))
         self.count = test_obj.get("count", -1)
+        self.main_sk_prefix = test_obj.get("main_sk_prefix", "KEY#")
 
     def query_by_key(self, key: str):
         items = [
@@ -23,7 +26,7 @@ class KeyDBMock(KeyDB):
                     "S": self.user_pk,
                 },
                 "SK": {
-                    "S": f"KEY#{self.hashed_key}",
+                    "S": f"{self.main_sk_prefix}{self.hashed_key}",
                 },
                 "last_access": {
                     "N": "0",
@@ -147,33 +150,92 @@ class TestAuthenticator:
             DBAuthenticator(mykeydbmock).authorize(key, "GET", "/flood")
 
     def test_fail_hashed_key_verification(self, dynamo_query_item):
+        """
+        It might happen when:
+            - the hasher in the script has different values from the hasher in the authorizer
+            - someone modified the saved hash (KEY#....) in the DB
+        """
+
         key = dynamo_query_item["key"]
 
         user_pk = f'USER#{dynamo_query_item["user"]}'
 
         key_db_input = {
             "key": dynamo_query_item["key"],
-            "hashed_key": "failing_hash",
+            "hashed_key": "failing_hash",  # pass wrong hash
             "user_pk": user_pk,
             "created_at": dynamo_query_item["now"],
         }
 
         mykeydbmock = KeyDBMock(key_db_input)
-        DBAuthenticator(mykeydbmock).authorize(key, "GET", "/flood")
+
+        # It always throw the same exception, but we write the error in the log
+        wanted_exception = "Unauthorized"
+
+        with pytest.raises(Exception, match=wanted_exception):
+            DBAuthenticator(mykeydbmock).authorize(key, "GET", "/flood")
 
     def test_no_key_found_in_user(self, dynamo_query_item):
         # KEY#... missing in the Item
-        want = True
-        got = False
-        assert want == got
+        """
+        It might happen when:
+            - the SORT key in the item USER(PK)-KEY(SK) does not begin with KEY or it is missing
+                e.g. USER#awuw29 KEY#$argon2id.... is missing
+        """
+
+        key = dynamo_query_item["key"]
+
+        user_pk = f'USER#{dynamo_query_item["user"]}'
+
+        key_db_input = {
+            "key": dynamo_query_item["key"],
+            "hashed_key": dynamo_query_item["hashed_secret"],
+            "user_pk": user_pk,
+            "created_at": dynamo_query_item["now"],
+            "main_sk_prefix": "WRONG#",
+        }
+
+        mykeydbmock = KeyDBMock(key_db_input)
+
+        # It always throw the same exception, but we write the error in the log
+        wanted_exception = "Unauthorized"
+
+        with pytest.raises(Exception, match=wanted_exception):
+            DBAuthenticator(mykeydbmock).authorize(key, "GET", "/flood")
 
     def test_wrong_key_format(self, dynamo_query_item):
         # key is not in the format user:secret
-        want = True
-        got = False
-        assert want == got
 
-    def test_permissions(self, dynamo_query_item):
-        want = True
-        got = False
+        user_pk = f'USER#{dynamo_query_item["user"]}'
+        key = "mywrongrandomkey"  # do not take key from default valid values
+
+        key_db_input = {
+            "key": key,
+            "hashed_key": dynamo_query_item["hashed_secret"],
+            "user_pk": user_pk,
+            "created_at": dynamo_query_item["now"],
+        }
+
+        mykeydbmock = KeyDBMock(key_db_input)
+        wanted_exception = "Unauthorized"
+
+        with pytest.raises(Exception, match=wanted_exception):
+            DBAuthenticator(mykeydbmock).authorize(key, "GET", "/flood")
+
+    def test_missing_permissions(self, dynamo_query_item):
+        key = dynamo_query_item["key"]
+
+        user_pk = f'USER#{dynamo_query_item["user"]}'
+
+        key_db_input = {
+            "key": dynamo_query_item["key"],
+            "hashed_key": dynamo_query_item["hashed_secret"],
+            "user_pk": user_pk,
+            "created_at": dynamo_query_item["now"],
+        }
+
+        mykeydbmock = KeyDBMock(key_db_input)
+        want = False
+        got = DBAuthenticator(mykeydbmock).authorize(key, "GET", "/flood/invalid/path")
+
         assert want == got
