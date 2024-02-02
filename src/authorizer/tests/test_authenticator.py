@@ -7,6 +7,13 @@ from interfaces import KeyDB
 
 
 class KeyDBMock(KeyDB):
+    """
+    KeyDBMock returns queries mocked data.
+    Change here to modify the data.
+    Args:
+        KeyDB (_type_): _description_
+    """
+
     def __init__(self, test_obj) -> None:
         self.key = test_obj["key"]
         splitted = self.key.split(":")
@@ -20,6 +27,7 @@ class KeyDBMock(KeyDB):
         self.main_sk_prefix = test_obj.get("main_sk_prefix", "KEY#")
 
     def query_by_key(self, key: str):
+        # FIXME: to move in common and use the same template everywhere
         items = [
             {
                 "PK": {
@@ -43,7 +51,7 @@ class KeyDBMock(KeyDB):
                     "S": self.user_pk,
                 },
                 "SK": {
-                    "S": "PERMISSION#GET#/wildfire",
+                    "S": "PERMISSION#GET#wildfire",
                 },
             },
             {
@@ -51,15 +59,7 @@ class KeyDBMock(KeyDB):
                     "S": self.user_pk,
                 },
                 "SK": {
-                    "S": "PERMISSION#GET#/flood",
-                },
-            },
-            {
-                "PK": {
-                    "S": self.user_pk,
-                },
-                "SK": {
-                    "S": "PERMISSION#GET#/flood/rcp85",
+                    "S": "PERMISSION#GET#flood/rcp85",
                 },
             },
             {
@@ -102,7 +102,7 @@ class TestAuthenticator:
         }
         want = True
         mykeydbmock = KeyDBMock(key_db_input)
-        got = DBAuthenticator(mykeydbmock).authorize(key, "GET", "/flood")
+        got = DBAuthenticator(mykeydbmock).authorize(key, "GET", "flood/rcp85")
 
         assert got == want
 
@@ -128,7 +128,7 @@ class TestAuthenticator:
         mykeydbmock = KeyDBMock(key_db_input)
 
         with pytest.raises(Exception, match=wanted_exception):
-            DBAuthenticator(mykeydbmock).authorize(key, "GET", "/flood")
+            DBAuthenticator(mykeydbmock).authorize(key, "GET", "flood/rcp85")
 
     def test_user_not_found(self, dynamo_query_item):
         key = dynamo_query_item["key"]
@@ -149,7 +149,7 @@ class TestAuthenticator:
         mykeydbmock = KeyDBMock(key_db_input)
 
         with pytest.raises(Exception, match=wanted_exception):
-            DBAuthenticator(mykeydbmock).authorize(key, "GET", "/flood")
+            DBAuthenticator(mykeydbmock).authorize(key, "GET", "flood/rcp85")
 
     def test_fail_hashed_key_verification(self, dynamo_query_item):
         """
@@ -177,7 +177,7 @@ class TestAuthenticator:
         )
 
         with pytest.raises(Exception, match=wanted_exception):
-            DBAuthenticator(mykeydbmock).authorize(key, "GET", "/flood")
+            DBAuthenticator(mykeydbmock).authorize(key, "GET", "flood")
 
     def test_no_key_found_in_user(self, dynamo_query_item):
         # KEY#... missing in the Item
@@ -207,7 +207,7 @@ class TestAuthenticator:
         )
 
         with pytest.raises(Exception, match=wanted_exception):
-            DBAuthenticator(mykeydbmock).authorize(key, "GET", "/flood")
+            DBAuthenticator(mykeydbmock).authorize(key, "GET", "flood/rcp85")
 
     def test_wrong_key_format(self, dynamo_query_item):
         # key is not in the format user:secret
@@ -226,7 +226,7 @@ class TestAuthenticator:
         wanted_exception = "INVALIDKEYFORMAT - Invalid key format"
 
         with pytest.raises(ValueError, match=wanted_exception):
-            DBAuthenticator(mykeydbmock).authorize(key, "GET", "/flood")
+            DBAuthenticator(mykeydbmock).authorize(key, "GET", "flood")
 
     def test_missing_permissions(self, dynamo_query_item):
         key = dynamo_query_item["key"]
@@ -241,7 +241,12 @@ class TestAuthenticator:
         }
 
         mykeydbmock = KeyDBMock(key_db_input)
-        want = False
-        got = DBAuthenticator(mykeydbmock).authorize(key, "GET", "/flood/invalid/path")
+        # flood is not in the mock data, so it shuld return False
+        tests = [
+            {"want": False, "resource": "flood"},
+            {"want": False, "resource": "flood/invalid/path"},
+        ]
+        for t in tests:
+            got = DBAuthenticator(mykeydbmock).authorize(key, "GET", t["resource"])
 
-        assert want == got
+            assert t["want"] == got
