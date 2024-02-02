@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 jobs:
-  build-and-push:
+  build-and-push-authorizer:
     runs-on: ubuntu-22.04
     steps:
     - name: Checkout Repository
@@ -24,8 +24,8 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-central-1
-        role-to-assume: arn:aws:iam::600920596656:role/
-        role-session-name: _session
+        role-to-assume: arn:aws:iam::600920596656:role/gh_authorizer
+        role-session-name: gh_authorizer_session
 
     - name: Run tests
       run: |
