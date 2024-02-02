@@ -1,3 +1,4 @@
+import pytest
 from main import handler
 from moto import mock_aws
 from tests.common import init_populated_dynamodb
@@ -50,7 +51,7 @@ class TestMain:
         with mock_aws():
             init_populated_dynamodb(create_table_query, create_write_batch_query)
             ctx = ContextMock()
-            path = "/random/path"
+            path = "/wildfire/wrong"
             method_arn = f"arn:aws:execute-api:eu-central-1:accountid:apigwid/apigwstage/GET{path}"
             event = {
                 "headers": {"x-api-key": "user:secret"},
@@ -76,5 +77,66 @@ class TestMain:
             got = handler(event=event, context=ctx)
             assert got == want
 
-    def test_handler_wrong_key(self):
-        assert 1 == 3
+    def test_handler_valid_long_path(
+        self, create_table_query, create_write_batch_query
+    ):
+        with mock_aws():
+            init_populated_dynamodb(create_table_query, create_write_batch_query)
+            ctx = ContextMock()
+            path = "/flood/rcp85"
+            method_arn = f"arn:aws:execute-api:eu-central-1:accountid:apigwid/apigwstage/GET{path}"
+            event = {
+                "headers": {"x-api-key": "user:secret"},
+                "httpMethod": "GET",
+                "methodArn": method_arn,
+                "requestContext": {"path": path},
+            }
+
+            want = {
+                "principalId": "user",
+                "policyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Action": "execute-api:Invoke",
+                            "Effect": "Allow",
+                            "Resource": [method_arn],
+                        }
+                    ],
+                },
+            }
+
+            got = handler(event=event, context=ctx)
+            assert got == want
+
+    def test_handler_wrong_secret(self, create_table_query, create_write_batch_query):
+        with mock_aws():
+            init_populated_dynamodb(create_table_query, create_write_batch_query)
+            ctx = ContextMock()
+            path = "/flood/rcp85"
+            method_arn = f"arn:aws:execute-api:eu-central-1:accountid:apigwid/apigwstage/GET{path}"
+            event = {
+                "headers": {"x-api-key": "user:wrongsecret"},
+                "httpMethod": "GET",
+                "methodArn": method_arn,
+                "requestContext": {"path": path},
+            }
+
+            with pytest.raises(Exception, match="Unauthorized"):
+                handler(event=event, context=ctx)
+
+    def test_handler_wrong_key(self, create_table_query, create_write_batch_query):
+        with mock_aws():
+            init_populated_dynamodb(create_table_query, create_write_batch_query)
+            ctx = ContextMock()
+            path = "/flood/rcp85"
+            method_arn = f"arn:aws:execute-api:eu-central-1:accountid:apigwid/apigwstage/GET{path}"
+            event = {
+                "headers": {"x-api-key": "totallywrongkey"},
+                "httpMethod": "GET",
+                "methodArn": method_arn,
+                "requestContext": {"path": path},
+            }
+
+            with pytest.raises(Exception, match="Unauthorized"):
+                handler(event=event, context=ctx)
