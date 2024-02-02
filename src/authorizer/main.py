@@ -55,8 +55,8 @@ def authenticate_api_key(table_name, key, method_arn):
     # I am interested only in the 3rd and 4th elemement of the split
     _, _, method, resource = method_arn.split("/", 3)
     is_allowed = authenticator.authorize(key, method, resource)
-    logger.info(f"Found following permissions: {is_allowed}")
 
+    logger.info(f"Found following permissions: {is_allowed}")
     permitted_resources = [method_arn] if is_allowed else []
     policy = generate_policy("Allow", permitted_resources)
 
