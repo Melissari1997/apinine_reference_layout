@@ -47,13 +47,12 @@ class DynamoDBKey(KeyRepository):
 
         permissions_items = []
         for perm in permissions:
-            escaped_perm = f"/{perm}/"
             permissions_items.append(
                 {
                     "PutRequest": {
                         "Item": {
                             "PK": {"S": user_pk},
-                            "SK": {"S": f"PERMISSION#GET#{escaped_perm}"},
+                            "SK": {"S": f"PERMISSION#GET#{perm}"},
                         }
                     }
                 }
