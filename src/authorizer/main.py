@@ -41,6 +41,8 @@ def exception_handler_decorator(func):
             logger.info(str(e))
         raise Exception("Unauthorized")
 
+    return wrapper
+
 
 @exception_handler_decorator
 def authenticate_api_key(table_name, key, method_arn):
@@ -49,7 +51,9 @@ def authenticate_api_key(table_name, key, method_arn):
 
     logger.info("Checking API key")
     # This checks the key existence and expiration
-    _, method, resource = method_arn.split("/")
+    # Long paths flood/rcp85/another/path may increase the splitted list lenght
+    # I am interested only in the 3rd and 4th elemement of the split
+    _, _, method, resource, *_ = method_arn.split("/")
     is_allowed = authenticator.authorize(key, method, resource)
     logger.info(f"Found following permissions: {is_allowed}")
 
@@ -63,25 +67,13 @@ def authenticate_api_key(table_name, key, method_arn):
 @logger.inject_lambda_context
 # @tracer.capture_lambda_handler
 def handler(event, context):
+    # FIXME: do not print api-key
     logger.info(f"event: {event}")
-    logger.info(f"context: {context}")
 
     api_key = event["headers"]["x-api-key"]
     method_arn = event["methodArn"]
-    table_name = os.env.get("TABLE_NAME", "apinine_api_key")
+    table_name = os.environ.get("TABLE_NAME", "apinine_api_key")
 
     return authenticate_api_key(
         table_name=table_name, key=api_key, method_arn=method_arn
-    )
-
-
-if __name__ == "__main__":
-    handler(
-        event={
-            "headers": {"x-api-key": "mykey"},
-            "httpMethod": "GET",
-            "methodArn": "myMethodArn",
-            "requestContext": {"path": "/wildfire"},
-        },
-        context={},
     )
