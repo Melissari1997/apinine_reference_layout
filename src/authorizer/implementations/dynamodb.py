@@ -4,7 +4,8 @@ from botocore.exceptions import ClientError
 
 
 class DynamoKeyDB(KeyDB):
-    def __init__(self) -> None:
+    def __init__(self, table_name) -> None:
+        self.table_name = table_name
         self.dynamodb_client = boto3.client("dynamodb")
         self.error_help_strings = {
             # Operation specific errors
@@ -31,7 +32,7 @@ class DynamoKeyDB(KeyDB):
 
     def update_last_accessed(self, last_accessed_ts: int, hash_key: str):
         update_item = {
-            "TableName": "apinine_api_key",
+            "TableName": self.table_name,
             "Key": {"PK": {"S": hash_key}, "SK": {"S": hash_key}},
             "UpdateExpression": "SET #75040 = :75040",
             "ExpressionAttributeNames": {"#75040": "last_access"},
@@ -52,7 +53,7 @@ class DynamoKeyDB(KeyDB):
 
     def create_query_input(self, pk: str):
         return {
-            "TableName": "apinine_api_key",
+            "TableName": self.table_name,
             "KeyConditionExpression": "#e14e0 = :e14e0",
             "ExpressionAttributeNames": {"#e14e0": "PK"},
             "ExpressionAttributeValues": {":e14e0": {"S": pk}},
@@ -62,13 +63,14 @@ class DynamoKeyDB(KeyDB):
         try:
             response = self.dynamodb_client.query(**item)
             print("Query successful.")
+            return response
             # Handle response
         except ClientError as error:
             self.handle_error(error)
         except BaseException as error:
             print("Unknown error while querying: " + error)
 
-        return response
+        raise ValueError(f"Query error: {item}")
 
     def handle_error(self, error):
         error_code = error.response["Error"]["Code"]

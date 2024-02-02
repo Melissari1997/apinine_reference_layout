@@ -3,6 +3,7 @@ from datetime import datetime
 import argon2
 import boto3
 import pytest
+from moto import mock_aws
 
 
 @pytest.fixture(scope="function")
@@ -24,9 +25,9 @@ def dynamo_query_item():
 
 
 @pytest.fixture
-def create_table_query():
+def create_table_query(table_name):
     return {
-        "TableName": "apinine-api-key",
+        "TableName": table_name,
         "KeySchema": [
             {"AttributeName": "PK", "KeyType": "HASH"},
             {"AttributeName": "SK", "KeyType": "RANGE"},
@@ -40,14 +41,24 @@ def create_table_query():
 
 
 @pytest.fixture
-def create_write_batch_query():
+def pk():
+    return "USER#user"
+
+
+@pytest.fixture
+def table_name():
+    return "test-pippo-key"
+
+
+@pytest.fixture
+def create_write_batch_query(pk, table_name):
     return {
         "RequestItems": {
-            "apinine-api-key": [
+            table_name: [
                 {
                     "PutRequest": {
                         "Item": {
-                            "PK": {"S": "USER#user"},
+                            "PK": {"S": pk},
                             "SK": {
                                 "S": "KEY#$argon2id$v=19$m=32768,t=1,p=2$fQ3pbbOGdBeqJ+L2+tS7hA$eFWUm7SDdy/jWOaAnbm+3lMyFXucId4zxiKaHzkspXw"
                             },
@@ -60,7 +71,7 @@ def create_write_batch_query():
                 {
                     "PutRequest": {
                         "Item": {
-                            "PK": {"S": "USER#user"},
+                            "PK": {"S": pk},
                             "SK": {"S": "PERMISSION#GET#/flood/rcp85"},
                         }
                     }
@@ -68,7 +79,7 @@ def create_write_batch_query():
                 {
                     "PutRequest": {
                         "Item": {
-                            "PK": {"S": "USER#user"},
+                            "PK": {"S": pk},
                             "SK": {"S": "PERMISSION#GET#/drought"},
                         }
                     }
@@ -79,8 +90,17 @@ def create_write_batch_query():
 
 
 @pytest.fixture
-def create_and_populate_table(create_table_query, create_write_batch_query):
-    client = boto3.client("dynamodb")
-    client.create_table(**create_table_query)
+def result_set(create_write_batch_query, table_name):
+    return [
+        request["PutRequest"]["Item"]
+        for request in create_write_batch_query["RequestItems"][table_name]
+    ]
 
-    client.batch_write_item(create_write_batch_query)
+
+@pytest.fixture
+def populated_dynamodb(create_table_query, create_write_batch_query, table_name):
+    with mock_aws():
+        client = boto3.client("dynamodb")
+        client.create_table(**create_table_query)
+        client.batch_write_item(**create_write_batch_query)
+        yield {"client": client, "table_name": table_name}

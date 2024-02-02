@@ -1,3 +1,5 @@
+import os
+
 from authorizer.implementations.db_authenticator import DBAuthenticator
 from authorizer.implementations.dynamodb import DynamoKeyDB
 from aws_lambda_powertools import Logger  # , Tracer
@@ -41,8 +43,8 @@ def exception_handler_decorator(func):
 
 
 @exception_handler_decorator
-def authenticate_api_key(key, method_arn):
-    dynamo_keydb: KeyDB = DynamoKeyDB()
+def authenticate_api_key(table_name, key, method_arn):
+    dynamo_keydb: KeyDB = DynamoKeyDB(table_name=table_name)
     authenticator: Authenticator = DBAuthenticator(key_db=dynamo_keydb)
 
     logger.info("Checking API key")
@@ -66,8 +68,11 @@ def handler(event, context):
 
     api_key = event["headers"]["x-api-key"]
     method_arn = event["methodArn"]
+    table_name = os.env.get("TABLE_NAME", "apinine_api_key")
 
-    return authenticate_api_key(key=api_key, method_arn=method_arn)
+    return authenticate_api_key(
+        table_name=table_name, key=api_key, method_arn=method_arn
+    )
 
 
 if __name__ == "__main__":
