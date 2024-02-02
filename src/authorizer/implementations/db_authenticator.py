@@ -68,7 +68,7 @@ class DBAuthenticator(Authenticator):
             x["SK"]["S"].removeprefix("PERMISSION#")
             for x in result["Items"]
             if x["PK"]["S"] == pk_key_item
-            and x["SK"]["S"].startswith(f"PERMISSION#{method_resource}")
+            and x["SK"]["S"] == f"PERMISSION#{method_resource}"
         ]
 
         return len(permissions) > 0
