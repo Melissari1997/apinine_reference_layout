@@ -1,3 +1,4 @@
+-r requirements.txt
 moto==5.0.0
-pytest
-pytest-env
+pytest==8.0.0
+pytest-env==1.1.3
