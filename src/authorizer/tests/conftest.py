@@ -47,7 +47,7 @@ def pk():
 
 @pytest.fixture
 def table_name():
-    return "test-pippo-key"
+    return "test-table-key"
 
 
 @pytest.fixture
@@ -72,7 +72,7 @@ def create_write_batch_query(pk, table_name):
                     "PutRequest": {
                         "Item": {
                             "PK": {"S": pk},
-                            "SK": {"S": "PERMISSION#GET#/flood/rcp85"},
+                            "SK": {"S": "PERMISSION#GET#flood/rcp85"},
                         }
                     }
                 },
@@ -80,7 +80,7 @@ def create_write_batch_query(pk, table_name):
                     "PutRequest": {
                         "Item": {
                             "PK": {"S": pk},
-                            "SK": {"S": "PERMISSION#GET#/drought"},
+                            "SK": {"S": "PERMISSION#GET#drought"},
                         }
                     }
                 },
