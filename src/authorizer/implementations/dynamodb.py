@@ -1,12 +1,11 @@
-import datetime
-
 import boto3
+from authorizer.interfaces import KeyDB
 from botocore.exceptions import ClientError
-from domain.key import KeyRepository
 
 
-class DynamoDBKey(KeyRepository):
-    def __init__(self):
+class DynamoKeyDB(KeyDB):
+    def __init__(self, table_name) -> None:
+        self.table_name = table_name
         self.dynamodb_client = boto3.client("dynamodb")
         self.error_help_strings = {
             # Operation specific errors
@@ -26,73 +25,62 @@ class DynamoDBKey(KeyRepository):
             "RequestLimitExceeded": "Throughput exceeds the current throughput limit for your account, increase account level throughput before retrying",
         }
 
-    def save_key_and_permission(self, hashed_key, permissions, organization, user):
-        now = datetime.datetime.now()
-        expiration_interval = datetime.timedelta(days=1000)
-        expiration_date = now + expiration_interval
+    def query_by_key(self, pk: str):
+        query = self.create_query_input(pk)
+        result = self.execute_query(query)
+        return result
 
-        hash_secret_string = f"KEY#{hashed_key}"
-        user_pk = f"USER#{user}"
-
-        key_item = {
-            "TableName": "apinine_api_key",
-            "Item": {
-                "PK": {"S": user_pk},
-                "SK": {"S": hash_secret_string},
-                "last_access": {"N": str(int(now.timestamp()))},
-                "created_at": {"N": str(int(now.timestamp()))},
-                "expires_at": {"N": str(int(expiration_date.timestamp()))},
+    def update_last_accessed(self, last_accessed_ts: int, user: str, hash_key: str):
+        update_item = {
+            "TableName": self.table_name,
+            "Key": {"PK": {"S": user}, "SK": {"S": hash_key}},
+            "UpdateExpression": "SET #75040 = :75040",
+            # force to update only this specific item (using PK and SK)
+            "ConditionExpression": "#75041 = :75041 And #75042 = :75042",
+            "ExpressionAttributeNames": {
+                "#75040": "last_access",
+                "#75041": "PK",
+                "#75042": "SK",
+            },
+            "ExpressionAttributeValues": {
+                ":75040": {"N": str(last_accessed_ts)},
+                ":75041": {"S": user},
+                ":75042": {"S": hash_key},
             },
         }
 
-        permissions_items = []
-        for perm in permissions:
-            permissions_items.append(
-                {
-                    "PutRequest": {
-                        "Item": {
-                            "PK": {"S": user_pk},
-                            "SK": {"S": f"PERMISSION#GET#{perm}"},
-                        }
-                    }
-                }
-            )
+        self.execute_update_item(update_item)
 
-        batch_operations = [
-            {"PutRequest": {"Item": key_item["Item"]}},
-            {
-                "PutRequest": {
-                    "Item": {
-                        "PK": {"S": user_pk},
-                        "SK": {"S": f"ORG#{organization}"},
-                    }
-                }
-            },
-        ] + permissions_items
-
-        batch_items = {"apinine_api_key": batch_operations}
-
-        self.execute_batch_write_items(batch_items=batch_items)
-
-    def execute_put_item(self, item):
+    def execute_update_item(self, update_item):
         try:
-            self.dynamodb_client.put_item(**item)
-            print("Successfully put item.")
+            self.dynamodb_client.update_item(**update_item)
+            print("Successfully updated item.")
             # Handle response
         except ClientError as error:
             self.handle_error(error)
         except BaseException as error:
-            print(f"Unknown error while putting item: {error}")
+            print("Unknown error while updating item: " + error)
 
-    def execute_batch_write_items(self, batch_items):
+    def create_query_input(self, pk: str):
+        return {
+            "TableName": self.table_name,
+            "KeyConditionExpression": "#e14e0 = :e14e0",
+            "ExpressionAttributeNames": {"#e14e0": "PK"},
+            "ExpressionAttributeValues": {":e14e0": {"S": pk}},
+        }
+
+    def execute_query(self, item):
         try:
-            self.dynamodb_client.batch_write_item(RequestItems=batch_items)
-            print("Successfully put items.")
+            response = self.dynamodb_client.query(**item)
+            print("Query successful.")
+            return response
             # Handle response
         except ClientError as error:
             self.handle_error(error)
         except BaseException as error:
-            print(f"Unknown error while putting items: {error}")
+            print("Unknown error while querying: " + error)
+
+        raise ValueError(f"Query error: {item}")
 
     def handle_error(self, error):
         error_code = error.response["Error"]["Code"]

@@ -1,0 +1,55 @@
+name: apinine-lambda-authorizer-build-and-push
+
+on:
+  push:
+    paths:
+      - 'src/authorizer/**'
+    branches: [ "main" ]
+
+env:
+  image_name: apinine_authorizer
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: eu-central-1
+        role-to-assume: arn:aws:iam::600920596656:role/
+        role-session-name: _session
+
+    - name: Run tests
+      run: |
+        python -m venv env
+        source env/bin/activate
+        python -r install src/authorizer/requirements_dev.txt
+        pytest src/authorizer
+        deactivate
+
+    - name: Authenticate Docker to Amazon ECR
+      run: aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 600920596656.dkr.ecr.eu-central-1.amazonaws.com
+
+    - name: Build Docker Image
+      run: docker build -t ${image_name}:latest --build-arg GITHUB_SHA=${GITHUB_SHA} -f src/authorizer/Dockerfile src/authorizer/
+
+    - name: Tag Docker Image
+      run: |
+        docker tag ${image_name}:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${GITHUB_SHA}
+        docker tag ${image_name}:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:latest
+
+    - name: Push Docker Image to ECR
+      run: |
+        docker push 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${GITHUB_SHA}
+        docker push 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:latest
+
+    - name: Update lambda function
+      run: aws lambda update-function-code --function-name ${image_name} --image-uri 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:latest

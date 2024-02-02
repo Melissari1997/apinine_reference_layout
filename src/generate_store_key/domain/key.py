@@ -16,9 +16,10 @@ class Key:
 
         print(f"vlaue: {value}")
         # Hash the value
-        hashed_key = self.password_hasher.hash(value)
+        user, secret = value.split(":")
+        hashed_key = self.password_hasher.hash(secret)
         print(f"Hashed key: {hashed_key}")
-        repository.save_key_and_permission(hashed_key, permissions, organization)
+        repository.save_key_and_permission(hashed_key, permissions, organization, user)
         print("Saved item")
 
 
@@ -31,5 +32,5 @@ class KeyGenerator(metaclass=abc.ABCMeta):
 
 class KeyRepository(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def save_key_and_permission(self):
+    def save_key_and_permission(self, hashed_key, permissions, organization, user):
         raise NotImplementedError
