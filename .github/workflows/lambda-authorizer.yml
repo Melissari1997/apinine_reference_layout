@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'src/authorizer/**'
+      - '.github/workflows/lambda-authorizer.yml'
     branches: [ "main" ]
 
 env:
