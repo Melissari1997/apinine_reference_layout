@@ -78,7 +78,7 @@ class KeyDBMock(KeyDB):
             "Items": items if self.count else [],
         }
 
-    def update_last_accessed(self, last_accessed_ts: int):
+    def update_last_accessed(self, last_accessed_ts: int, user: str, hash_key: str):
         pass
 
 

@@ -30,10 +30,10 @@ class DynamoKeyDB(KeyDB):
         result = self.execute_query(query)
         return result["Items"]
 
-    def update_last_accessed(self, last_accessed_ts: int, hash_key: str):
+    def update_last_accessed(self, last_accessed_ts: int, user: str, hash_key: str):
         update_item = {
             "TableName": self.table_name,
-            "Key": {"PK": {"S": hash_key}, "SK": {"S": hash_key}},
+            "Key": {"PK": {"S": user}, "SK": {"S": hash_key}},
             "UpdateExpression": "SET #75040 = :75040",
             "ExpressionAttributeNames": {"#75040": "last_access"},
             "ExpressionAttributeValues": {":75040": {"N": str(last_accessed_ts)}},

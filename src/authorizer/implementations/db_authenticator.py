@@ -57,7 +57,11 @@ class DBAuthenticator(Authenticator):
         if int(key_item["expires_at"]["N"]) < now_ts:
             raise ValueError(f"EXPIREDKEYERROR - key is expired. User {pk_key_item}")
 
-        self.key_db.update_last_accessed(last_accessed_ts=now_ts)
+        self.key_db.update_last_accessed(
+            last_accessed_ts=now_ts,
+            user=key_item["PK"]["S"],
+            hash_key=key_item["SK"]["S"],
+        )
         method_resource = f"{method}#{resource}"  # this is how it is saved on our DB
         # We do not support PERMISSION* (wildcard)
         permissions = [

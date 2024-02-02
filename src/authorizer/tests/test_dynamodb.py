@@ -4,9 +4,7 @@ from moto import mock_aws
 
 
 class TestDynamoDB:
-    def init_populated_dynamodb(
-        self, create_table_query, create_write_batch_query, table_name
-    ):
+    def init_populated_dynamodb(self, create_table_query, create_write_batch_query):
         client = boto3.client("dynamodb")
         client.create_table(**create_table_query)
         client.batch_write_item(**create_write_batch_query)
@@ -15,9 +13,7 @@ class TestDynamoDB:
         self, create_table_query, create_write_batch_query, table_name, result_set, pk
     ):
         with mock_aws():
-            self.init_populated_dynamodb(
-                create_table_query, create_write_batch_query, table_name
-            )
+            self.init_populated_dynamodb(create_table_query, create_write_batch_query)
             dynamodb = DynamoKeyDB(table_name)
             result = dynamodb.query_by_key(pk)
 
@@ -25,3 +21,44 @@ class TestDynamoDB:
             got = sorted(result, key=lambda x: x["SK"]["S"])
 
             assert got == want
+
+    def test_query_by_key_wrong_pk(
+        self, create_table_query, create_write_batch_query, table_name
+    ):
+        with mock_aws():
+            self.init_populated_dynamodb(create_table_query, create_write_batch_query)
+            dynamodb = DynamoKeyDB(table_name)
+            got = dynamodb.query_by_key("wrongpartitionkey")
+
+            want = []
+            assert got == want
+
+    def test_update_last_accessed(
+        self, create_table_query, create_write_batch_query, table_name, pk
+    ):
+        with mock_aws():
+            self.init_populated_dynamodb(create_table_query, create_write_batch_query)
+            dynamodb = DynamoKeyDB(table_name)
+            want_before_update, want_after_update = "0", "10000000"
+            result_before = dynamodb.query_by_key(pk)
+            assert [
+                item.get("last_access")["N"]
+                for item in result_before
+                if "last_access" in item
+            ][0] == want_before_update
+
+            hash_key = [
+                item["PutRequest"]["Item"]["SK"]["S"]
+                for item in create_write_batch_query["RequestItems"][table_name]
+                if item["PutRequest"]["Item"]["PK"]["S"] == pk
+                and item["PutRequest"]["Item"]["SK"]["S"].startswith("KEY#")
+            ][0]
+
+            dynamodb.update_last_accessed(want_after_update, pk, hash_key)
+            result_after_update = dynamodb.query_by_key(pk)
+            got = [
+                item.get("last_access")["N"]
+                for item in result_after_update
+                if "last_access" in item
+            ][0]
+            assert got == want_after_update
