@@ -62,3 +62,22 @@ class TestDynamoDB:
                 if "last_access" in item
             ][0]
             assert got == want_after_update
+
+    def test_update_last_access_wrong_key(
+        self, create_table_query, create_write_batch_query, result_set, table_name, pk
+    ):
+        with mock_aws():
+            # I do not want to perform any update because the key is wrong
+            # No new item should be created before_update == after_update
+            self.init_populated_dynamodb(create_table_query, create_write_batch_query)
+            dynamodb = DynamoKeyDB(table_name)
+
+            want = sorted(result_set, key=lambda x: x["SK"]["S"])
+
+            timestamp = 25000
+            dynamodb.update_last_accessed(timestamp, pk, "wrong_hash")
+            items = dynamodb.dynamodb_client.scan(TableName=table_name)
+
+            got = sorted(items["Items"], key=lambda x: x["SK"]["S"])
+
+            assert want == got

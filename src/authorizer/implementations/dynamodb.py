@@ -35,8 +35,18 @@ class DynamoKeyDB(KeyDB):
             "TableName": self.table_name,
             "Key": {"PK": {"S": user}, "SK": {"S": hash_key}},
             "UpdateExpression": "SET #75040 = :75040",
-            "ExpressionAttributeNames": {"#75040": "last_access"},
-            "ExpressionAttributeValues": {":75040": {"N": str(last_accessed_ts)}},
+            # force to update only this specific item (using PK and SK)
+            "ConditionExpression": "#75041 = :75041 And #75042 = :75042",
+            "ExpressionAttributeNames": {
+                "#75040": "last_access",
+                "#75041": "PK",
+                "#75042": "SK",
+            },
+            "ExpressionAttributeValues": {
+                ":75040": {"N": str(last_accessed_ts)},
+                ":75041": {"S": user},
+                ":75042": {"S": hash_key},
+            },
         }
 
         self.execute_update_item(update_item)
