@@ -15,7 +15,7 @@ class TestDynamoDB:
         with mock_aws():
             self.init_populated_dynamodb(create_table_query, create_write_batch_query)
             dynamodb = DynamoKeyDB(table_name)
-            result = dynamodb.query_by_key(pk)
+            result = dynamodb.query_by_key(pk)["Items"]
 
             want = sorted(result_set, key=lambda x: x["SK"]["S"])
             got = sorted(result, key=lambda x: x["SK"]["S"])
@@ -28,7 +28,7 @@ class TestDynamoDB:
         with mock_aws():
             self.init_populated_dynamodb(create_table_query, create_write_batch_query)
             dynamodb = DynamoKeyDB(table_name)
-            got = dynamodb.query_by_key("wrongpartitionkey")
+            got = dynamodb.query_by_key("wrongpartitionkey")["Items"]
 
             want = []
             assert got == want
@@ -40,7 +40,7 @@ class TestDynamoDB:
             self.init_populated_dynamodb(create_table_query, create_write_batch_query)
             dynamodb = DynamoKeyDB(table_name)
             want_before_update, want_after_update = "0", "10000000"
-            result_before = dynamodb.query_by_key(pk)
+            result_before = dynamodb.query_by_key(pk)["Items"]
             assert [
                 item.get("last_access")["N"]
                 for item in result_before
@@ -55,7 +55,7 @@ class TestDynamoDB:
             ][0]
 
             dynamodb.update_last_accessed(want_after_update, pk, hash_key)
-            result_after_update = dynamodb.query_by_key(pk)
+            result_after_update = dynamodb.query_by_key(pk)["Items"]
             got = [
                 item.get("last_access")["N"]
                 for item in result_after_update
