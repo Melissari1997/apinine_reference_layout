@@ -83,7 +83,7 @@ class KeyDBMock(KeyDB):
 
 
 class TestAuthenticator:
-    def test_authorize_happy_path(self):
+    def test_authorize_happy_path(self, create_write_batch_query, result_set):
         key = "myuserpart:mysecretpart"
         user, secret = key.split(":")
         hashed_secret = argon2.PasswordHasher(

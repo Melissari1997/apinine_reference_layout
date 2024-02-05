@@ -13,11 +13,12 @@ class TestDynamoDB:
         self, create_table_query, create_write_batch_query, table_name, result_set, pk
     ):
         with mock_aws():
-            self.init_populated_dynamodb(create_table_query, create_write_batch_query)
+            query_items = create_write_batch_query()
+            self.init_populated_dynamodb(create_table_query, query_items)
             dynamodb = DynamoKeyDB(table_name)
             result = dynamodb.query_by_key(pk)["Items"]
 
-            want = sorted(result_set, key=lambda x: x["SK"]["S"])
+            want = sorted(result_set(query_items), key=lambda x: x["SK"]["S"])
             got = sorted(result, key=lambda x: x["SK"]["S"])
 
             assert got == want
@@ -26,7 +27,8 @@ class TestDynamoDB:
         self, create_table_query, create_write_batch_query, table_name
     ):
         with mock_aws():
-            self.init_populated_dynamodb(create_table_query, create_write_batch_query)
+            query_items = create_write_batch_query()
+            self.init_populated_dynamodb(create_table_query, query_items)
             dynamodb = DynamoKeyDB(table_name)
             got = dynamodb.query_by_key("wrongpartitionkey")["Items"]
 
@@ -37,7 +39,8 @@ class TestDynamoDB:
         self, create_table_query, create_write_batch_query, table_name, pk
     ):
         with mock_aws():
-            self.init_populated_dynamodb(create_table_query, create_write_batch_query)
+            query_items = create_write_batch_query()
+            self.init_populated_dynamodb(create_table_query, query_items)
             dynamodb = DynamoKeyDB(table_name)
             want_before_update, want_after_update = "0", "10000000"
             result_before = dynamodb.query_by_key(pk)["Items"]
@@ -49,7 +52,7 @@ class TestDynamoDB:
 
             hash_key = [
                 item["PutRequest"]["Item"]["SK"]["S"]
-                for item in create_write_batch_query["RequestItems"][table_name]
+                for item in query_items["RequestItems"][table_name]
                 if item["PutRequest"]["Item"]["PK"]["S"] == pk
                 and item["PutRequest"]["Item"]["SK"]["S"].startswith("KEY#")
             ][0]
@@ -67,12 +70,13 @@ class TestDynamoDB:
         self, create_table_query, create_write_batch_query, result_set, table_name, pk
     ):
         with mock_aws():
+            query_items = create_write_batch_query()
             # I do not want to perform any update because the key is wrong
             # No new item should be created before_update == after_update
-            self.init_populated_dynamodb(create_table_query, create_write_batch_query)
+            self.init_populated_dynamodb(create_table_query, query_items)
             dynamodb = DynamoKeyDB(table_name)
 
-            want = sorted(result_set, key=lambda x: x["SK"]["S"])
+            want = sorted(result_set(query_items), key=lambda x: x["SK"]["S"])
 
             timestamp = 25000
             dynamodb.update_last_accessed(timestamp, pk, "wrong_hash")

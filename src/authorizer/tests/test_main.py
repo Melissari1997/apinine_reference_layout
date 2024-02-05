@@ -17,7 +17,7 @@ class TestMain:
         self, create_table_query, create_write_batch_query
     ):
         with mock_aws():
-            init_populated_dynamodb(create_table_query, create_write_batch_query)
+            init_populated_dynamodb(create_table_query, create_write_batch_query())
             ctx = ContextMock()
             path = "/drought"
             method_arn = f"arn:aws:execute-api:eu-central-1:accountid:apigwid/apigwstage/GET{path}"
@@ -49,7 +49,8 @@ class TestMain:
         self, create_table_query, create_write_batch_query
     ):
         with mock_aws():
-            init_populated_dynamodb(create_table_query, create_write_batch_query)
+            query_items = create_write_batch_query()
+            init_populated_dynamodb(create_table_query, query_items)
             ctx = ContextMock()
             path = "/wildfire/wrong"
             method_arn = f"arn:aws:execute-api:eu-central-1:accountid:apigwid/apigwstage/GET{path}"
@@ -81,7 +82,8 @@ class TestMain:
         self, create_table_query, create_write_batch_query
     ):
         with mock_aws():
-            init_populated_dynamodb(create_table_query, create_write_batch_query)
+            query_items = create_write_batch_query()
+            init_populated_dynamodb(create_table_query, query_items)
             ctx = ContextMock()
             path = "/flood/rcp85"
             method_arn = f"arn:aws:execute-api:eu-central-1:accountid:apigwid/apigwstage/GET{path}"
@@ -111,7 +113,8 @@ class TestMain:
 
     def test_handler_wrong_secret(self, create_table_query, create_write_batch_query):
         with mock_aws():
-            init_populated_dynamodb(create_table_query, create_write_batch_query)
+            query_items = create_write_batch_query()
+            init_populated_dynamodb(create_table_query, query_items)
             ctx = ContextMock()
             path = "/flood/rcp85"
             method_arn = f"arn:aws:execute-api:eu-central-1:accountid:apigwid/apigwstage/GET{path}"
@@ -127,12 +130,30 @@ class TestMain:
 
     def test_handler_wrong_key(self, create_table_query, create_write_batch_query):
         with mock_aws():
-            init_populated_dynamodb(create_table_query, create_write_batch_query)
+            query_items = create_write_batch_query()
+            init_populated_dynamodb(create_table_query, query_items)
             ctx = ContextMock()
             path = "/flood/rcp85"
             method_arn = f"arn:aws:execute-api:eu-central-1:accountid:apigwid/apigwstage/GET{path}"
             event = {
                 "headers": {"x-api-key": "totallywrongkey"},
+                "httpMethod": "GET",
+                "methodArn": method_arn,
+                "requestContext": {"path": path},
+            }
+
+            with pytest.raises(Exception, match="Unauthorized"):
+                handler(event=event, context=ctx)
+
+    def test_handler_expired_key(self, create_table_query, create_write_batch_query):
+        with mock_aws():
+            query_items = create_write_batch_query(expires=0)
+            init_populated_dynamodb(create_table_query, query_items)
+            ctx = ContextMock()
+            path = "/flood/rcp85"
+            method_arn = f"arn:aws:execute-api:eu-central-1:accountid:apigwid/apigwstage/GET{path}"
+            event = {
+                "headers": {"x-api-key": "user:secret"},
                 "httpMethod": "GET",
                 "methodArn": method_arn,
                 "requestContext": {"path": path},

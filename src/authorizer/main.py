@@ -67,9 +67,6 @@ def authenticate_api_key(table_name, key, method_arn):
 @logger.inject_lambda_context
 # @tracer.capture_lambda_handler
 def handler(event, context):
-    # FIXME: do not print api-key
-    logger.info(f"event: {event}")
-
     api_key = event["headers"]["x-api-key"]
     method_arn = event["methodArn"]
     table_name = os.environ.get("TABLE_NAME", "apinine_api_key")

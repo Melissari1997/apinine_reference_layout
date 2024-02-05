@@ -51,50 +51,69 @@ def table_name():
 
 
 @pytest.fixture
-def create_write_batch_query(pk, table_name):
-    return {
-        "RequestItems": {
-            table_name: [
-                {
-                    "PutRequest": {
-                        "Item": {
-                            "PK": {"S": pk},
-                            "SK": {
-                                "S": "KEY#$argon2id$v=19$m=32768,t=1,p=2$fQ3pbbOGdBeqJ+L2+tS7hA$eFWUm7SDdy/jWOaAnbm+3lMyFXucId4zxiKaHzkspXw"
+def create_write_batch_query():
+    def _create_write_batch_query(
+        pk="USER#user",
+        table_name="test-table-key",
+        now=datetime.now().timestamp(),
+        expires=datetime.now().timestamp() + 10,
+    ):
+        return {
+            "RequestItems": {
+                table_name: [
+                    {
+                        "PutRequest": {
+                            "Item": {
+                                "PK": {"S": pk},
+                                "SK": {
+                                    "S": "KEY#$argon2id$v=19$m=32768,t=1,p=2$fQ3pbbOGdBeqJ+L2+tS7hA$eFWUm7SDdy/jWOaAnbm+3lMyFXucId4zxiKaHzkspXw"
+                                },
+                                "last_access": {"N": "0"},
+                                "created_at": {"N": str(int(now))},
+                                "expires_at": {"N": str(int(expires))},
                             },
-                            "last_access": {"N": "0"},
-                            "created_at": {"N": "1706803927"},
-                            "expires_at": {"N": "1706903927"},
-                        },
-                    }
-                },
-                {
-                    "PutRequest": {
-                        "Item": {
-                            "PK": {"S": pk},
-                            "SK": {"S": "PERMISSION#GET#flood/rcp85"},
                         }
-                    }
-                },
-                {
-                    "PutRequest": {
-                        "Item": {
-                            "PK": {"S": pk},
-                            "SK": {"S": "PERMISSION#GET#drought"},
+                    },
+                    {
+                        "PutRequest": {
+                            "Item": {
+                                "PK": {"S": pk},
+                                "SK": {"S": "PERMISSION#GET#flood/rcp85"},
+                            }
                         }
-                    }
-                },
-            ]
+                    },
+                    {
+                        "PutRequest": {
+                            "Item": {
+                                "PK": {"S": pk},
+                                "SK": {"S": "PERMISSION#GET#drought"},
+                            }
+                        }
+                    },
+                    {
+                        "PutRequest": {
+                            "Item": {
+                                "PK": {"S": pk},
+                                "SK": {"S": "ORG#terna"},
+                            }
+                        }
+                    },
+                ]
+            }
         }
-    }
+
+    return _create_write_batch_query
 
 
 @pytest.fixture
-def result_set(create_write_batch_query, table_name):
-    return [
-        request["PutRequest"]["Item"]
-        for request in create_write_batch_query["RequestItems"][table_name]
-    ]
+def result_set():
+    def _result_set(items, table_name="test-table-key"):
+        return [
+            request["PutRequest"]["Item"]
+            for request in items["RequestItems"][table_name]
+        ]
+
+    return _result_set
 
 
 @pytest.fixture
