@@ -7,6 +7,13 @@ resource "aws_ecr_repository" "apinine_authorizer" {
   }
 }
 
+resource "aws_ssm_parameter" "authorizer_hasher_config" {
+  name  = "authorizer_hasher_config"
+  type  = "String"
+  value = jsonencode(var.authorizer_hasher_config)
+}
+
+
 data "aws_iam_policy_document" "apinine_authorizer_dynamo" {
   statement {
     effect = "Allow"
@@ -42,14 +49,19 @@ module "apinine_authorizer" {
   attach_tracing_policy = true
   tracing_mode          = "Active"
   package_type          = "Image"
-  image_uri             = "${aws_ecr_repository.apinine_authorizer.repository_url}:test"
+  image_uri             = "${aws_ecr_repository.apinine_authorizer.repository_url}:latest"
 
   attach_policy_json = true
   policy_json        = data.aws_iam_policy_document.apinine_authorizer_dynamo.json
 
   environment_variables = {
     "POWERTOOLS_LOG_LEVEL" : "INFO",
-    "POWERTOOLS_SERVICE_NAME" : "APININE_AUTHORIZER"
+    "POWERTOOLS_SERVICE_NAME" : "APININE_AUTHORIZER",
+    "HASHER_TIME_COST" : var.authorizer_hasher_config["time_cost"],
+    "HASHER_MEMORY_COST" : var.authorizer_hasher_config["memory_cost"],
+    "HASHER_PARALLELISM" : var.authorizer_hasher_config["parallelism"],
+    "HASHER_HASH_LEN" : var.authorizer_hasher_config["hash_len"],
+    "HASHER_SALT_LEN" : var.authorizer_hasher_config["salt_len"]
   }
 
 }
