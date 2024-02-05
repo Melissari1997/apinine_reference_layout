@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 import argon2
@@ -9,8 +10,22 @@ logger = Logger()
 
 class DBAuthenticator(Authenticator):
     def __init__(self, key_db: KeyDB) -> None:
+        """_summary_
+
+        Args:
+            key_db (KeyDB): _description_
+        """
+        time_cost = int(os.environ.get("HASHER_TIME_COST"))
+        memory_cost = int(os.environ.get("HASHER_MEMORY_COST"))
+        parallelism = int(os.environ.get("HASHER_PARALLELISM"))
+        hash_len = int(os.environ.get("HASHER_HASH_LEN"))
+        salt_len = int(os.environ.get("HASHER_SALT_LEN"))
         self.password_hasher = argon2.PasswordHasher(
-            time_cost=1, memory_cost=2**15, parallelism=2, hash_len=32, salt_len=16
+            time_cost=time_cost,
+            memory_cost=memory_cost,
+            parallelism=parallelism,
+            hash_len=hash_len,
+            salt_len=salt_len,
         )
         self.key_db = key_db
 
