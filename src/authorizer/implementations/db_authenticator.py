@@ -1,7 +1,10 @@
 from datetime import datetime
 
 import argon2
+from aws_lambda_powertools import Logger
 from interfaces import Authenticator, KeyDB
+
+logger = Logger()
 
 
 class DBAuthenticator(Authenticator):
@@ -27,6 +30,8 @@ class DBAuthenticator(Authenticator):
             user, secret = key.split(":")
         except ValueError as ve:
             raise ValueError("INVALIDKEYFORMAT - Invalid key format") from ve
+
+        logger.info(f"Found user {user}")
 
         pk_key_item = f"USER#{user}"
         result = self.key_db.query_by_key(pk_key_item)

@@ -65,6 +65,8 @@ def handler(event, context):
     method_arn = event["methodArn"]
     table_name = os.environ.get("TABLE_NAME", "apinine_api_key")
 
+    logger.info(f"Starting authorizer on method {method_arn}")
+
     return authenticate_api_key(
         table_name=table_name, key=api_key, method_arn=method_arn
     )
