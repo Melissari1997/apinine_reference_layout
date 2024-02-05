@@ -1,6 +1,6 @@
 import boto3
-from authorizer.interfaces import KeyDB
 from botocore.exceptions import ClientError
+from interfaces import KeyDB
 
 
 class DynamoKeyDB(KeyDB):
