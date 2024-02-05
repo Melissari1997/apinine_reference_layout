@@ -1,16 +1,11 @@
 import os
 
-from authorizer.implementations.db_authenticator import DBAuthenticator
-from authorizer.implementations.dynamodb import DynamoKeyDB
 from aws_lambda_powertools import Logger  # , Tracer
+from implementations.db_authenticator import DBAuthenticator
+from implementations.dynamodb import DynamoKeyDB
 from interfaces import Authenticator, KeyDB
 
 logger = Logger()
-# tracer = Tracer()
-# import logging
-
-
-# logger = logging.getLogger()
 
 
 def generate_policy(effect, resources):
@@ -65,7 +60,6 @@ def authenticate_api_key(table_name, key, method_arn):
 
 
 @logger.inject_lambda_context
-# @tracer.capture_lambda_handler
 def handler(event, context):
     api_key = event["headers"]["x-api-key"]
     method_arn = event["methodArn"]
