@@ -1,7 +1,7 @@
 import pytest
+from common import init_populated_dynamodb
 from main import handler
 from moto import mock_aws
-from tests.common import init_populated_dynamodb
 
 
 class ContextMock:

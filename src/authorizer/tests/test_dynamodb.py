@@ -1,5 +1,5 @@
 import boto3
-from authorizer.implementations.dynamodb import DynamoKeyDB
+from implementations.dynamodb import DynamoKeyDB
 from moto import mock_aws
 
 
