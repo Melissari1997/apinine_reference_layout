@@ -40,7 +40,9 @@ jobs:
       run: aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 600920596656.dkr.ecr.eu-central-1.amazonaws.com
 
     - name: Build Docker Image
-      run: docker build -t ${image_name}:latest --build-arg GITHUB_SHA=${GITHUB_SHA} -f src/authorizer/Dockerfile src/authorizer/
+      run: |
+        cd src/authorizer
+        docker build -t ${image_name}:latest --build-arg GITHUB_SHA=${GITHUB_SHA} .
 
     - name: Tag Docker Image
       run: |
