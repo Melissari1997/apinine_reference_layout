@@ -1,15 +1,15 @@
 from api.common.errors.errors import ConflictingInputsError
-from api.common.errors.handler import exception_handler
 from api.common.implementations.gmaps_geocoder import GMapsGeocoder
+from api.common.response import handle_response
 
 
-def main(address: str, lat: float, lon: float) -> dict:
-    if lat and lon and address:
-        raise ConflictingInputsError(
-            "Either 'address' or 'lat' and 'long' parameters must be supplied - not both."
-        )
+def main(address: str = None, lon: float = None, lat: float = None) -> dict:
+    correct = (address and not (lon or lat)) or ((lon and lat) and not address)
+    if not correct:
+        raise ConflictingInputsError
+
     if address:
-        (lat, lon), address = GMapsGeocoder().geocode(address)
+        (lon, lat), address = GMapsGeocoder().geocode(address)
 
     output_placeholder = {
         "address": "Via Milazzo, 193, 27100 Pavia PV, Italy",
@@ -34,7 +34,7 @@ def main(address: str, lat: float, lon: float) -> dict:
     return output_placeholder
 
 
-@exception_handler
+@handle_response
 def handler(event, context=None):
     query_params = event["queryStringParameters"]
     address = query_params.get("address")
