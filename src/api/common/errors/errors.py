@@ -1,2 +1,6 @@
-def error(stmt):
-    print(f"You raised error {stmt}")
+class ConflictingInputsError(Exception):
+    pass
+
+
+class FailedGeocodeError(Exception):
+    pass
