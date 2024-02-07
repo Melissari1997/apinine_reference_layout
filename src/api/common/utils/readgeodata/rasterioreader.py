@@ -15,9 +15,10 @@ class RasterIOReader(GeoDataReader):
             current_crs = ds.profile["crs"]
 
             # FIXME: handle multiple coordinates
+            points = [list(pair) for pair in coordinates]
             feature = {
-                "type": "Point",
-                "coordinates": [coordinates[0][0], coordinates[0][1]],
+                "type": "MultiPoint",
+                "coordinates": points,
             }
 
             # FIXME: avoid warp if same crs
@@ -26,7 +27,7 @@ class RasterIOReader(GeoDataReader):
             )
 
             # FIXME: handle multiple bands
-            sampled_data_points = ds.sample([feature_proj["coordinates"]])
+            sampled_data_points = ds.sample(feature_proj["coordinates"])
             values = [v[0] for v in sampled_data_points]
 
         return values
