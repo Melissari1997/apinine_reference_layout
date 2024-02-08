@@ -1,6 +1,6 @@
-from api.common.errors.errors import ConflictingInputsError
-from api.common.implementations.gmaps_geocoder import GMapsGeocoder
-from api.common.response import handle_response
+from common.errors import ConflictingInputsError
+from common.geocoder.gmaps_geocoder import GMapsGeocoder
+from common.response import handle_response
 
 
 def main(address: str = None, lon: float = None, lat: float = None) -> dict:
@@ -43,8 +43,8 @@ def handler(event, context=None):
     return main(address=address, lat=lat, lon=lon)
 
 
-if __name__ == "__main__":
-    event = {"queryStringParameters": {"address": "via verruca 1 trento"}}
+# if __name__ == "__main__":
+#     event = {"queryStringParameters": {"address": "via verruca 1 trento"}}
 
-    result = handler(event)
-    print(result, type(result))
+#     result = handler(event)
+#     print(result, type(result))

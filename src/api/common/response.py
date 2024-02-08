@@ -34,8 +34,9 @@
 
 import traceback
 
-from api.common.errors.errors import ConflictingInputsError, FailedGeocodeError
-from api.common.status_codes import StatusCodes
+from errors import ConflictingInputsError
+from geocoder.geocoder import FailedGeocodeError
+from status_codes import StatusCodes
 
 
 # TODO: structure the code better? Move logic of response format elsewhere?
