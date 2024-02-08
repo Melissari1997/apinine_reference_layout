@@ -1,7 +1,6 @@
 import googlemaps
-from api.common.errors.errors import FailedGeocodeError
-from api.common.interfaces.geocoder import Geocoder
-from api.common.utils.aws import get_api_secret_key_from_aws
+from geocoder.geocoder import FailedGeocodeError, Geocoder
+from utils.aws import get_api_secret_key_from_aws
 
 
 class GMapsGeocoder(Geocoder):
