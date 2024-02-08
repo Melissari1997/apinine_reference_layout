@@ -23,8 +23,8 @@ class TestReadCoordinatesPoint:
     def test_read_aal_with_single_coord(self, x, y, crs, want):
         rio = RasterIOReader()
         got = rio.sample_data_points(
-            filename="src/api/common/utils/readgeodata/tests/fixtures/ostia_near_sea_fixture_1b.tiff",
-            # filename="tests/fixtures/ostia_near_sea_fixture_1b.tiff",
+            # filename="src/api/common/utils/readgeodata/tests/fixtures/ostia_near_sea_fixture_1b.tiff",
+            filename="tests/fixtures/ostia_near_sea_fixture_1b.tiff",
             coordinates=[(x, y)],
             coordinates_crs=crs,
         )
@@ -48,8 +48,8 @@ class TestReadCoordinatesPoint:
     def test_read_multiple_coords(self, coordinates, crs, want):
         rio = RasterIOReader()
         got = rio.sample_data_points(
-            filename="src/api/common/utils/readgeodata/tests/fixtures/ostia_near_sea_fixture_1b.tiff",
-            # filename="tests/fixtures/ostia_near_sea_fixture_1b.tiff",
+            # filename="src/api/common/utils/readgeodata/tests/fixtures/ostia_near_sea_fixture_1b.tiff",
+            filename="tests/fixtures/ostia_near_sea_fixture_1b.tiff",
             coordinates=coordinates,
             coordinates_crs=crs,
         )
@@ -81,8 +81,8 @@ class TestReadCoordinatesPoint:
     def test_read_all_bands(self, coordinates, crs, want):
         rio = RasterIOReader()
         got = rio.sample_data_points(
-            filename="src/api/common/utils/readgeodata/tests/fixtures/ostia_near_sea_fixture_3bands.tiff",
-            # filename="tests/fixtures/ostia_near_sea_fixture_3bands.tiff",
+            # filename="src/api/common/utils/readgeodata/tests/fixtures/ostia_near_sea_fixture_3bands.tiff",
+            filename="tests/fixtures/ostia_near_sea_fixture_3bands.tiff",
             coordinates=coordinates,
             coordinates_crs=crs,
         )
@@ -97,8 +97,8 @@ class TestReadCoordinatesPoint:
 
         with pytest.raises(BandsNameNotFoundError):
             rio.sample_data_points(
-                filename="src/api/common/utils/readgeodata/tests/fixtures/ostia_near_sea_fixture_1b_nodescriptions.tiff",
-                # filemame="tests/fixtures/ostia_near_sea_fixture_1b_nodescriptions.tiff"",
+                # filename="src/api/common/utils/readgeodata/tests/fixtures/ostia_near_sea_fixture_1b_nodescriptions.tiff",
+                filename="tests/fixtures/ostia_near_sea_fixture_1b_nodescriptions.tiff",
                 coordinates=coordinates,
                 coordinates_crs=crs,
             )
