@@ -35,7 +35,7 @@
 import traceback
 
 from .errors import ConflictingInputsError
-from .geocoder.geocoder import FailedGeocodeError
+from .geocoder.src.geocoder.geocoder import FailedGeocodeError
 from .status_codes import StatusCodes
 
 

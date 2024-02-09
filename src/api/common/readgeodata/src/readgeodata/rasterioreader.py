@@ -3,7 +3,7 @@ import rasterio
 import rasterio.warp
 from rasterio.crs import CRS
 
-from .interfaces import BandsNameNotFoundError, GeoDataReader
+from readgeodata.interfaces import BandsNameNotFoundError, GeoDataReader
 
 
 class RasterIOReader(GeoDataReader):

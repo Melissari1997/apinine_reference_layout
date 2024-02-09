@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
-from interfaces import BandsNameNotFoundError
-from rasterioreader import RasterIOReader
+from readgeodata.interfaces import BandsNameNotFoundError
+from readgeodata.rasterioreader import RasterIOReader
 
 
 class TestReadCoordinatesPoint:
