@@ -1,34 +1,45 @@
-# The proposed response structure is suggested here:
-# https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html
-
 import traceback
 
-from geocoder.geocoder import FailedGeocodeError
+from geocoder.geocoder import (
+    FailedGeocodeError,
+    MultipleMatchesForAddressError,
+    OutOfBoundsError,
+)
 
-from .errors import ConflictingInputsError
+from .errors import ConflictingInputsError, MissingDataError
 from .status_codes import StatusCodes
 
 
-def handle_response(func):
-    def response_wrapper(*args, **kwargs):
-        def exception_wrapper(*args, **kwargs):
-            body, status_code, err_message = {}, 200, None
-            try:
-                body = func(*args, **kwargs)
-            except ConflictingInputsError:
-                status_code, err_message = StatusCodes.CONFLICTING_INPUTS
-            except FailedGeocodeError:
-                status_code, err_message = StatusCodes.UNKNOWN_ADDRESS
-            except Exception:
-                status_code, err_message = StatusCodes.INTERNAL_SERVER_ERROR
-                print(traceback.format_exc())
+def handle_response(validate_schema):
+    def function_wrapper(func):
+        def response_wrapper(*args, **kwargs):
+            def exception_wrapper(*args, **kwargs):
+                body, status_code, err_message = {}, 200, None
+                try:
+                    raw_body = func(*args, **kwargs)
+                    body = validate_schema(**raw_body).dict()
+                except ConflictingInputsError:
+                    status_code, err_message = StatusCodes.CONFLICTING_INPUTS
+                except FailedGeocodeError:
+                    status_code, err_message = StatusCodes.UNKNOWN_ADDRESS
+                except OutOfBoundsError:
+                    status_code, err_message = StatusCodes.OUT_OF_BOUNDS
+                except MultipleMatchesForAddressError:
+                    status_code, err_message = StatusCodes.UNKNOWN_ADDRESS
+                except MissingDataError:
+                    status_code, err_message = StatusCodes.MISSING_DATA
+                except Exception:
+                    status_code, err_message = StatusCodes.INTERNAL_SERVER_ERROR
+                    print(traceback.format_exc())
 
-            return body, (status_code, err_message)
+                return body, (status_code, err_message)
 
-        body, (status_code, err_message) = exception_wrapper(*args, **kwargs)
+            body, (status_code, err_message) = exception_wrapper(*args, **kwargs)
 
-        response = {"body": body or err_message, "statusCode": status_code}
+            response = {"body": body or err_message, "statusCode": status_code}
 
-        return response
+            return response
 
-    return response_wrapper
+        return response_wrapper
+
+    return function_wrapper
