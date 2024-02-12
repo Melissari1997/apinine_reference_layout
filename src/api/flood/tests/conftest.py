@@ -28,7 +28,22 @@ def event_invalid_address():
 
 @pytest.fixture(scope="function")
 def event_lat_lon():
+    yield {"queryStringParameters": {"lat": 46.0701698, "lon": 11.1135156}}
+
+
+@pytest.fixture(scope="function")
+def event_invalid_lat_lon():
     yield {"queryStringParameters": {"lat": 45.26464, "lon": 12.57188}}
+
+
+@pytest.fixture(scope="function")
+def event_too_generic_address():
+    yield {"queryStringParameters": {"address": "via aurelia"}}
+
+
+@pytest.fixture(scope="function")
+def event_oob_address():
+    yield {"queryStringParameters": {"address": "calle santa nicerata lima"}}
 
 
 @pytest.fixture(scope="function")

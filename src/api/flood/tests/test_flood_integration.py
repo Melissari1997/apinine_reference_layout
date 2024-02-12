@@ -3,7 +3,6 @@ from common.status_codes import StatusCodes
 from geocoder.gmaps_geocoder import GMapsGeocoder
 from main import handler, main
 from readgeodata.rasterioreader import RasterIOReader
-from schema import OutputSchema
 
 
 # Real calls to gmaps and aws
@@ -23,13 +22,12 @@ class TestFloodIntegration:
         )
 
         # Checking only format and types, not the values
-        OutputSchema(**got)
+        assert isinstance(got, dict)
 
     def test_integ_handler_address(self, geotiff_path_s3, event_address):
         got = handler(event=event_address, context=None)
 
         want_status_code = 200
-        OutputSchema(**got["body"])
 
         assert want_status_code == got["statusCode"]
 
@@ -47,12 +45,17 @@ class TestFloodIntegration:
 
         want_status_code = 200
 
-        # FIXME: handler no value: -2
+        assert want_status_code == got["statusCode"]
+
+    def test_integ_handler_invalid_lat_lon(
+        self, geotiff_path_s3, event_invalid_lat_lon
+    ):
+        got = handler(event=event_invalid_lat_lon, context=None)
+
+        want_status_code, wanted_body = StatusCodes.MISSING_DATA
 
         assert want_status_code == got["statusCode"]
-        assert got["body"]["address"] is None
-
-        OutputSchema(**got["body"])
+        assert wanted_body == got["body"]
 
     def test_integ_handler_conflict(self, geotiff_path_s3, event_conflict_lat_lon_addr):
         got = handler(event=event_conflict_lat_lon_addr, context=None)
@@ -64,6 +67,24 @@ class TestFloodIntegration:
 
     def test_integ_invalid_address(self, geotiff_path_s3, event_invalid_address):
         got = handler(event=event_invalid_address, context=None)
+
+        want_status_code, wanted_body = StatusCodes.UNKNOWN_ADDRESS
+
+        assert want_status_code == got["statusCode"]
+        assert wanted_body == got["body"]
+
+    def test_integ_oob_address(self, geotiff_path_s3, event_oob_address):
+        got = handler(event=event_oob_address, context=None)
+
+        want_status_code, wanted_body = StatusCodes.OUT_OF_BOUNDS
+
+        assert want_status_code == got["statusCode"]
+        assert wanted_body == got["body"]
+
+    def test_integ_too_generic_address(
+        self, geotiff_path_s3, event_too_generic_address
+    ):
+        got = handler(event=event_too_generic_address, context=None)
 
         want_status_code, wanted_body = StatusCodes.UNKNOWN_ADDRESS
 

@@ -12,7 +12,7 @@
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
     "python.testing.pytestArgs": [
-        "src/authorizer"
+        "src/api/flood"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true

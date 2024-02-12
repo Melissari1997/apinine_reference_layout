@@ -6,6 +6,7 @@ from geocoder.geocoder import Geocoder
 from geocoder.gmaps_geocoder import GMapsGeocoder
 from readgeodata.interfaces import GeoDataReader
 from readgeodata.rasterioreader import RasterIOReader
+from schema import OutputSchema
 
 gmapsgeocoder = GMapsGeocoder()
 riogeoreader = RasterIOReader()
@@ -66,7 +67,7 @@ def main(
     return output
 
 
-@handle_response
+@handle_response(validate_schema=OutputSchema)
 def handler(event, context=None):
     filename = os.environ.get("GEOTIFF_PATH", None)
     if filename is None:

@@ -4,7 +4,6 @@ from common.status_codes import StatusCodes
 from geocoder.geocoder import Geocoder
 from main import FloodKeys, handler
 from readgeodata.interfaces import GeoDataReader
-from schema import OutputSchema
 
 
 class MockGeocoder(Geocoder):
@@ -44,7 +43,6 @@ class TestFloodUnit:
         want_status_code = 200
 
         assert want_status_code == got["statusCode"]
-        OutputSchema(**got["body"])
 
     def test_handler_lat_lon(self, event_lat_lon, geotiff_path_s3, monkeypatch):
         gmaps = MockGeocoder()
@@ -57,7 +55,6 @@ class TestFloodUnit:
         want_status_code = 200
 
         assert want_status_code == got["statusCode"]
-        OutputSchema(**got["body"])
 
     def test_handler_conflicting(
         self, geotiff_path_s3, monkeypatch, event_conflict_lat_lon_addr
