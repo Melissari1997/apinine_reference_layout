@@ -1,0 +1,3 @@
+-r requirements.txt
+pydantic
+pytest~=8.0.0

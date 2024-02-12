@@ -1,6 +1,10 @@
+import os
+
 from common.errors import ConflictingInputsError
 from common.response import handle_response
+from geocoder.geocoder import Geocoder
 from geocoder.gmaps_geocoder import GMapsGeocoder
+from readgeodata.interfaces import GeoDataReader
 from readgeodata.rasterioreader import RasterIOReader
 
 
@@ -15,17 +19,25 @@ class FloodKeys:
     RISK_INDEX = "risk_ind layer, band 8"
 
 
-def main(address: str = None, lon: float = None, lat: float = None) -> dict:
+def main(
+    filename: str,
+    address: str,
+    lon: float,
+    lat: float,
+    geocoder: Geocoder,
+    geodatareader: GeoDataReader,
+) -> dict:
     correct = (address and not (lon or lat)) or ((lon and lat) and not address)
     if not correct:
         raise ConflictingInputsError
 
     if address:
-        (lon, lat), address = GMapsGeocoder().geocode(address)
+        (lon, lat), address = geocoder.geocode(address)
 
-    filename = "s3://mlflow-monitoring/93/cf7509a33fe543a9a87aa7658e551659/artifacts/inference/aal_baseline_8bands.tif"
-    reader = RasterIOReader()
-    values = reader.sample_data_points(filename=filename, coordinates=[(lon, lat)])
+    print(f"MAIN: {filename}")
+    values = geodatareader.sample_data_points(
+        filename=filename, coordinates=[(lon, lat)]
+    )
 
     output = {
         "address": address,
@@ -53,11 +65,24 @@ def main(address: str = None, lon: float = None, lat: float = None) -> dict:
 
 @handle_response
 def handler(event, context=None):
+    filename = os.environ.get("GEOTIFF_PATH", None)
+    if filename is None:
+        raise ValueError("Missing env var GEOTIFF_PATH")
+
     query_params = event["queryStringParameters"]
     address = query_params.get("address")
     lat = query_params.get("lat")
     lon = query_params.get("lon")
-    return main(address=address, lat=lat, lon=lon)
+    gmapsgeocoder = GMapsGeocoder()
+    riogeoreader = RasterIOReader()
+    return main(
+        filename=filename,
+        address=address,
+        lat=lat,
+        lon=lon,
+        geocoder=gmapsgeocoder,
+        geodatareader=riogeoreader,
+    )
 
 
 # if __name__ == "__main__":
