@@ -1,3 +1,4 @@
+import pytest
 from common.status_codes import StatusCodes
 from geocoder.gmaps_geocoder import GMapsGeocoder
 from main import handler, main
@@ -6,6 +7,7 @@ from schema import OutputSchema
 
 
 # Real calls to gmaps and aws
+@pytest.mark.integration
 class TestFloodIntegration:
     def test_integ_main(self, geotiff_path_s3):
         lon, lat = 12.215283630441727, 44.88393348245498
@@ -37,8 +39,6 @@ class TestFloodIntegration:
         want_status_code = 500
         wanted_body = "Internal Server Error"
 
-        # FIXME: handler no value: -2
-
         assert want_status_code == got["statusCode"]
         assert wanted_body == got["body"]
 
@@ -46,6 +46,8 @@ class TestFloodIntegration:
         got = handler(event=event_lat_lon, context=None)
 
         want_status_code = 200
+
+        # FIXME: handler no value: -2
 
         assert want_status_code == got["statusCode"]
         assert got["body"]["address"] is None

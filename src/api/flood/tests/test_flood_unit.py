@@ -29,6 +29,7 @@ class MockGeoDataReaderFlood(GeoDataReader):
         }
 
 
+@pytest.mark.unit
 class TestFloodUnit:
     def test_flood_with_lat_lon(self):
         # lon, lat = 9.081023090011794, 44.395733386344574
@@ -36,7 +37,12 @@ class TestFloodUnit:
         gmaps = MockGeocoder()
         rioreader = MockGeoDataReaderFlood()
         got = main(
-            address=None, lon=lon, lat=lat, geocoder=gmaps, geodatareader=rioreader
+            filename="random_filename",
+            address=None,
+            lon=lon,
+            lat=lat,
+            geocoder=gmaps,
+            geodatareader=rioreader,
         )
 
         # Checking only format and types, not the values
@@ -50,6 +56,7 @@ class TestFloodUnit:
 
         with pytest.raises(ConflictingInputsError):
             main(
+                filename="random_filename",
                 address=address,
                 lon=lon,
                 lat=lat,
@@ -85,7 +92,12 @@ class TestFloodUnit:
         }
 
         got = main(
-            address=address, lon=lon, lat=lat, geocoder=gmaps, geodatareader=rioreader
+            filename="random_filename",
+            address=address,
+            lon=lon,
+            lat=lat,
+            geocoder=gmaps,
+            geodatareader=rioreader,
         )
 
         assert want == got

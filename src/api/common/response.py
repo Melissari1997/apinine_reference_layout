@@ -3,8 +3,9 @@
 
 import traceback
 
+from geocoder.geocoder import FailedGeocodeError
+
 from .errors import ConflictingInputsError
-from .geocoder.src.geocoder.geocoder import FailedGeocodeError
 from .status_codes import StatusCodes
 
 
