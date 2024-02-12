@@ -5,6 +5,7 @@ on:
     paths:
       - 'src/api/flood/**'
       - 'src/api/common/**'
+      - '.github/workflows/flood.yml'
     branches: [ "main" ]
 
 env:
