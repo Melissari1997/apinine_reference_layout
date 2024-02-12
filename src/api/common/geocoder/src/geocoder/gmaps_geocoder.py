@@ -1,4 +1,5 @@
 import json
+import os
 
 import boto3
 import googlemaps
@@ -20,8 +21,9 @@ class GMapsGeocoder(Geocoder):
         # If you need more information about configurations
         # or implementing the sample code, visit the AWS docs:
         # https://aws.amazon.com/developer/language/python/
-        secret_name = "apinine/gmaps_apikey"  # TODO: get from env
-        region_name = "eu-central-1"  # TODO: get from env
+
+        secret_name = os.environ.get("GMAPS_SECRET_NAME")
+        region_name = os.environ.get("GMAPS_SECRET_REGION", "eu-central-1")
 
         # Create a Secrets Manager client
         session = boto3.session.Session()

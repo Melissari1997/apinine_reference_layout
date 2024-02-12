@@ -6,7 +6,10 @@ import pytest
 @pytest.fixture(scope="function")
 def geotiff_path_s3():
     geotiff_path = "s3://mlflow-monitoring/93/cf7509a33fe543a9a87aa7658e551659/artifacts/inference/aal_baseline_8bands.tif"
+
     os.environ["GEOTIFF_PATH"] = geotiff_path
+    os.environ["GMAPS_SECRET_NAME"] = "apinine/gmaps_apikey"
+    os.environ["GMAPS_SECRET_REGION"] = "eu-central-1"
 
     yield {"GEOTIFF_PATH": geotiff_path}
 
