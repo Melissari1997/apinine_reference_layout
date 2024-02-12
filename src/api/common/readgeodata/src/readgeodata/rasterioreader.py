@@ -1,8 +1,9 @@
 import numpy as np
 import rasterio
 import rasterio.warp
-from interfaces import BandsNameNotFoundError, GeoDataReader
 from rasterio.crs import CRS
+
+from readgeodata.interfaces import BandsNameNotFoundError, GeoDataReader
 
 
 class RasterIOReader(GeoDataReader):
