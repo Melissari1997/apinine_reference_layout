@@ -9,6 +9,9 @@ from geocoder.geocoder import FailedGeocodeError, Geocoder
 
 class GMapsGeocoder(Geocoder):
     def __init__(self) -> None:
+        self.gmaps_client = None
+
+    def _setup_client(self):
         self.gmaps_client = googlemaps.Client(
             key=self._get_api_secret_key_from_aws()["gmaps_api_key"]
         )
@@ -38,6 +41,10 @@ class GMapsGeocoder(Geocoder):
         return json.loads(secret)
 
     def geocode(self, address: str) -> tuple[tuple[float, float], str]:
+        # Lazy init
+        if not self.gmaps_client:
+            self._setup_client()
+
         geocode_result = self.gmaps_client.geocode(address)
         try:
             coords, formatted_address = (
