@@ -5,7 +5,12 @@ import boto3
 import googlemaps
 from botocore.exceptions import ClientError
 
-from geocoder.geocoder import FailedGeocodeError, Geocoder
+from geocoder.geocoder import (
+    FailedGeocodeError,
+    Geocoder,
+    MultipleMatchesForAddressError,
+    OutOfBoundsError,
+)
 
 
 class GMapsGeocoder(Geocoder):
@@ -42,20 +47,38 @@ class GMapsGeocoder(Geocoder):
         # Your code goes here.
         return json.loads(secret)
 
+    def _valid_location(self, geocode_result: str) -> bool:
+        valid_countries = ["Italy"]
+        country = next(
+            filter(
+                lambda comp: "country" in comp["types"],
+                geocode_result["address_components"],
+            )
+        )["long_name"]
+        return country in valid_countries
+
     def geocode(self, address: str) -> tuple[tuple[float, float], str]:
         # Lazy init
         if not self.gmaps_client:
             self._setup_client()
 
         geocode_result = self.gmaps_client.geocode(address)
-        try:
-            coords, formatted_address = (
-                (
-                    geocode_result[0]["geometry"]["location"]["lng"],
-                    geocode_result[0]["geometry"]["location"]["lat"],
-                ),
-                geocode_result[0]["formatted_address"],
-            )
-            return coords, formatted_address
-        except Exception as exc:
-            raise FailedGeocodeError("Unable to resolve address " + address) from exc
+        result_size = len(geocode_result)
+
+        if result_size == 0:
+            raise FailedGeocodeError("Unable to resolve address " + address)
+        if result_size > 1:
+            raise MultipleMatchesForAddressError
+
+        geocode_result = geocode_result[0]
+        if not self._valid_location(geocode_result):
+            raise OutOfBoundsError
+
+        coords, formatted_address = (
+            (
+                geocode_result["geometry"]["location"]["lng"],
+                geocode_result["geometry"]["location"]["lat"],
+            ),
+            geocode_result["formatted_address"],
+        )
+        return coords, formatted_address
