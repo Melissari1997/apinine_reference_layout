@@ -17,7 +17,7 @@ def handle_response(validate_schema):
                 body, status_code, err_message = {}, 200, None
                 try:
                     raw_body = func(*args, **kwargs)
-                    body = validate_schema(**raw_body).dict()
+                    body = validate_schema(**raw_body).model_dump()
                 except ConflictingInputsError:
                     status_code, err_message = StatusCodes.CONFLICTING_INPUTS
                 except FailedGeocodeError:
