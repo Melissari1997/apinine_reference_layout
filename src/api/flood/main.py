@@ -7,6 +7,9 @@ from geocoder.gmaps_geocoder import GMapsGeocoder
 from readgeodata.interfaces import GeoDataReader
 from readgeodata.rasterioreader import RasterIOReader
 
+gmapsgeocoder = GMapsGeocoder()
+riogeoreader = RasterIOReader()
+
 
 class FloodKeys:
     WH_20 = "20 layer, band 1"
@@ -73,8 +76,8 @@ def handler(event, context=None):
     address = query_params.get("address")
     lat = query_params.get("lat")
     lon = query_params.get("lon")
-    gmapsgeocoder = GMapsGeocoder()
-    riogeoreader = RasterIOReader()
+    # gmapsgeocoder = GMapsGeocoder()
+    # riogeoreader = RasterIOReader()
     return main(
         filename=filename,
         address=address,
