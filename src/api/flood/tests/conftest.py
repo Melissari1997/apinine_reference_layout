@@ -19,5 +19,21 @@ def event_address():
 
 
 @pytest.fixture(scope="function")
+def event_invalid_address():
+    yield {"queryStringParameters": {"address": "via 12345676789poiuyttr"}}
+
+
+@pytest.fixture(scope="function")
 def event_lat_lon():
     yield {"queryStringParameters": {"lat": 45.26464, "lon": 12.57188}}
+
+
+@pytest.fixture(scope="function")
+def event_conflict_lat_lon_addr():
+    yield {
+        "queryStringParameters": {
+            "lat": 45.26464,
+            "lon": 12.57188,
+            "address": "via verruca 1 trento",
+        }
+    }

@@ -1,3 +1,4 @@
+from common.status_codes import StatusCodes
 from geocoder.gmaps_geocoder import GMapsGeocoder
 from main import handler, main
 from readgeodata.rasterioreader import RasterIOReader
@@ -30,22 +31,39 @@ class TestFloodIntegration:
 
         assert want_status_code == got["statusCode"]
 
-    def test_integ_handler_filename(self, event_address):
+    def test_integ_handler_missing_filename(self, event_address):
         got = handler(event=event_address, context=None)
 
         want_status_code = 500
         wanted_body = "Internal Server Error"
 
+        # FIXME: handler no value: -2
+
         assert want_status_code == got["statusCode"]
         assert wanted_body == got["body"]
 
     def test_integ_handler_lat_lon(self, geotiff_path_s3, event_lat_lon):
-        # got = handler(event=event_lat_lon, context=None)
+        got = handler(event=event_lat_lon, context=None)
 
-        assert 1 == 2
+        want_status_code = 200
 
-    def test_integ_handler_conflicting(self, geotiff_path_s3):
-        assert 1 == 2
+        assert want_status_code == got["statusCode"]
+        assert got["body"]["address"] is None
 
-    def test_integ_invalid_address(self, geotiff_path_s3):
-        assert 1 == 2
+        OutputSchema(**got["body"])
+
+    def test_integ_handler_conflict(self, geotiff_path_s3, event_conflict_lat_lon_addr):
+        got = handler(event=event_conflict_lat_lon_addr, context=None)
+
+        want_status_code, wanted_body = StatusCodes.CONFLICTING_INPUTS
+
+        assert want_status_code == got["statusCode"]
+        assert wanted_body == got["body"]
+
+    def test_integ_invalid_address(self, geotiff_path_s3, event_invalid_address):
+        got = handler(event=event_invalid_address, context=None)
+
+        want_status_code, wanted_body = StatusCodes.UNKNOWN_ADDRESS
+
+        assert want_status_code == got["statusCode"]
+        assert wanted_body == got["body"]
