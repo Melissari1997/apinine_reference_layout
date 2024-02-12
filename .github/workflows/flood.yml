@@ -37,7 +37,7 @@ jobs:
       run: |
         cd src/api
         docker build --target test -f flood/Dockerfile .
-        docker build -t ${image_name}:latest --build-arg GITHUB_SHA=${GITHUB_SHA} --target production .
+        docker build -t ${image_name}:latest --target production -f flood/Dockerfile .
 
     - name: Tag Docker Image
       run: |
