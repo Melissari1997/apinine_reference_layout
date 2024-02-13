@@ -1,3 +1,4 @@
+import logging
 import traceback
 
 from geocoder.geocoder import (
@@ -8,6 +9,9 @@ from geocoder.geocoder import (
 
 from .errors import ConflictingInputsError, MissingDataError
 from .status_codes import StatusCodes
+
+logger = logging.getLogger()
+logger.setLevel("INFO")
 
 
 def handle_response(validate_schema):
@@ -30,7 +34,7 @@ def handle_response(validate_schema):
                     status_code, err_message = StatusCodes.MISSING_DATA
                 except Exception:
                     status_code, err_message = StatusCodes.INTERNAL_SERVER_ERROR
-                    print(traceback.format_exc())
+                    logger.error(traceback.format_exc())
 
                 return body, (status_code, err_message)
 

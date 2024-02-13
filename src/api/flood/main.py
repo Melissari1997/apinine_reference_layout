@@ -1,3 +1,4 @@
+import logging
 import os
 
 from common.errors import ConflictingInputsError
@@ -10,6 +11,8 @@ from schema import OutputSchema
 
 gmapsgeocoder = GMapsGeocoder()
 riogeoreader = RasterIOReader()
+logger = logging.getLogger()
+logger.setLevel("INFO")
 
 
 class FloodKeys:
@@ -38,7 +41,7 @@ def main(
     if address:
         (lon, lat), address = geocoder.geocode(address)
 
-    print(f"MAIN: {filename}")
+    logger.info(f"MAIN: {filename}")
     values = geodatareader.sample_data_points(
         filename=filename, coordinates=[(lon, lat)]
     )
@@ -77,10 +80,15 @@ def handler(event, context=None):
 
     query_params = event["queryStringParameters"]
     address = query_params.get("address")
+
     lat = query_params.get("lat")
+    if lat is not None:
+        lat = float(lat)
+
     lon = query_params.get("lon")
-    # gmapsgeocoder = GMapsGeocoder()
-    # riogeoreader = RasterIOReader()
+    if lon is not None:
+        lon = float(lon)
+
     return main(
         filename=filename,
         address=address,
