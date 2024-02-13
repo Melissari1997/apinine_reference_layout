@@ -31,6 +31,12 @@ data "aws_iam_policy_document" "apinine_flood" {
       "arn:aws:s3:::mlflow-monitoring/*"
     ]
   }
+
+  statement {
+    effect    = "Allow"
+    actions   = ["secretsmanager:GetSecretValue"]
+    resources = [data.aws_secretsmanager_secret.apinine_gmaps_apikey.arn]
+  }
 }
 
 module "apinine_flood" {
