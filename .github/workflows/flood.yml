@@ -33,21 +33,32 @@ jobs:
     - name: Authenticate Docker to Amazon ECR
       run: aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 600920596656.dkr.ecr.eu-central-1.amazonaws.com
 
-    - name: Retrieve geotiff path from file, build Docker Image and run tests
+    - name: Build Docker Image and run tests
       run: |
         cd src/api
-        s3_path=$(grep 'GEOTIFF_PATH=' flood/build-env-variables | cut -d '=' -f2)
+
+        # Retrieve geotiff path from file
+        geotiff_path=$(grep 'GEOTIFF_PATH=' flood/build-env-variables | cut -d '=' -f2)
+
+        # Remove "s3://" prefix
+        geotiff_path=${geotiff_path#s3://}
+
+        # Substitute "/" with "-"
+        geotiff_path=$(echo $geotiff_path | tr '/' '-')
+
         docker build --target test -f flood/Dockerfile .
-        docker build --tag ${image_name}:latest --tag tiff_path:${s3_path} --target production --build-arg GEOTIFF_PATH=${s3_path} -f flood/Dockerfile .
+        docker build --tag ${image_name}:latest --target production --build-arg GEOTIFF_PATH=${geotiff_path} -f flood/Dockerfile .
 
     - name: Tag Docker Image
       run: |
         docker tag ${image_name}:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${GITHUB_SHA}
+        docker tag {image_name}:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${geotiff_path}
         docker tag ${image_name}:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:latest
 
     - name: Push Docker Image to ECR
       run: |
         docker push 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${GITHUB_SHA}
+        docker push 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${geotiff_path}
         docker push 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:latest
 
     - name: Update lambda function
