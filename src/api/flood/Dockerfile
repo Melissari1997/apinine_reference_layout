@@ -11,8 +11,8 @@ COPY common/ ${LAMBDA_TASK_ROOT}/common/
 RUN pip install ${LAMBDA_TASK_ROOT}/common/geocoder/ && \
     pip install ${LAMBDA_TASK_ROOT}/common/readgeodata/
 
-COPY flood/ ${LAMBDA_TASK_ROOT}/flood/
-WORKDIR ${LAMBDA_TASK_ROOT}/flood/
+COPY flood/ ${LAMBDA_TASK_ROOT}/
+WORKDIR ${LAMBDA_TASK_ROOT}/
 
 FROM base as test
 RUN pip install -r requirements-dev.txt && pytest -m unit

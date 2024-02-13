@@ -46,13 +46,12 @@ data "aws_iam_policy_document" "gh_flood_permissions" {
     ]
     resources = [aws_ecr_repository.apinine_flood.arn]
   }
-  /*
+
   statement {
     effect    = "Allow"
     actions   = ["lambda:UpdateFunctionCode"]
     resources = [module.apinine_flood.lambda_function_arn]
   }
-  */
 }
 
 resource "aws_iam_role" "gh_flood" {
