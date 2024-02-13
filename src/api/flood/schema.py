@@ -11,7 +11,7 @@ def check_positive(f: float) -> float:
     return f
 
 
-PositiveInt = Annotated[int, Field(gt=0)]
+PositiveInt = Annotated[int, Field(ge=0)]
 PositiveFloat = Annotated[float, AfterValidator(check_positive)]
 Probability = Annotated[float, Field(ge=0, le=1)]
 
