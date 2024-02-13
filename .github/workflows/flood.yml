@@ -39,13 +39,14 @@ jobs:
         GEOTIFF_PATH=$(grep 'GEOTIFF_PATH=' src/api/flood/build-env-variables | cut -d '=' -f2)
 
         # Remove "s3://" prefix
-        GEOTIFF_PATH=${GEOTIFF_PATH#s3://}
+        GEOTIFF_PATH_TAG=${GEOTIFF_PATH#s3://}
 
         # Substitute "/" with "-"
-        GEOTIFF_PATH=$(echo $GEOTIFF_PATH | tr '/' '-')
+        GEOTIFF_PATH_TAG=$(echo $GEOTIFF_PATH_TAG | tr '/' '-')
 
         # Put it inside the GitHub env
         echo "GEOTIFF_PATH=$GEOTIFF_PATH" >> $GITHUB_ENV
+        echo "GEOTIFF_PATH_TAG=$GEOTIFF_PATH_TAG" >> $GITHUB_ENV
 
     - name: Build Docker Image and run tests
       run: |
@@ -56,13 +57,13 @@ jobs:
     - name: Tag Docker Image
       run: |
         docker tag ${image_name}:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${GITHUB_SHA}
-        docker tag ${image_name}:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${GEOTIFF_PATH}
+        docker tag ${image_name}:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${GEOTIFF_PATH_TAG}
         docker tag ${image_name}:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:latest
 
     - name: Push Docker Image to ECR
       run: |
         docker push 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${GITHUB_SHA}
-        docker push 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${GEOTIFF_PATH}
+        docker push 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${GEOTIFF_PATH_TAG}
         docker push 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:latest
 
     - name: Update lambda function
