@@ -1,7 +1,7 @@
 import os
 
 from aws_lambda_powertools import Logger
-from common.errors import ConflictingInputsError
+from common.errors import ConflictingInputsError, QuerystringInputError
 from common.response import handle_response
 from geocoder.geocoder import Geocoder
 from geocoder.gmaps_geocoder import GMapsGeocoder
@@ -25,7 +25,6 @@ class FloodKeys:
     RISK_INDEX = "risk_ind layer, band 8"
 
 
-@handle_response(validate_schema=OutputSchema)
 def main(
     filename: str,
     address: str,
@@ -34,9 +33,6 @@ def main(
     geocoder: Geocoder,
     geodatareader: GeoDataReader,
 ) -> dict:
-    if filename is None:
-        raise ValueError("Missing env var GEOTIFF_PATH")
-
     correct = (address and not (lon or lat)) or ((lon and lat) and not address)
     if not correct:
         raise ConflictingInputsError
@@ -75,11 +71,18 @@ def main(
     return output
 
 
+@handle_response(validate_schema=OutputSchema)
 @logger.inject_lambda_context
 def handler(event, context=None):
     filename = os.environ.get("GEOTIFF_PATH")
 
-    query_params = event["queryStringParameters"]
+    if filename is None:
+        raise ValueError("Missing env var GEOTIFF_PATH")
+
+    query_params = event.get("queryStringParameters", None)
+    if query_params is None:
+        raise QuerystringInputError
+
     address = query_params.get("address")
 
     lat = query_params.get("lat")

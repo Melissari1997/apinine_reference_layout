@@ -1,7 +1,11 @@
 class StatusCodes:
     CONFLICTING_INPUTS = (
         422,
-        "Either 'address' or both 'lat' and 'long' parameters must be supplied",
+        "Either 'address' or both 'lat' and 'lon' parameters must be supplied",
+    )
+    QUERYSTRING_ERROR = (
+        400,
+        "One of 'address' or 'lat and 'lon' parameters must be supplied",
     )
     # Returned when GMaps api fails to geocode provided address
     UNKNOWN_ADDRESS = (

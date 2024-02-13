@@ -8,7 +8,7 @@ from geocoder.geocoder import (
     OutOfBoundsError,
 )
 
-from .errors import ConflictingInputsError, MissingDataError
+from .errors import ConflictingInputsError, MissingDataError, QuerystringInputError
 from .status_codes import StatusCodes
 
 logger = Logger()
@@ -32,6 +32,8 @@ def handle_response(validate_schema):
                     status_code, err_message = StatusCodes.UNKNOWN_ADDRESS
                 except MissingDataError:
                     status_code, err_message = StatusCodes.MISSING_DATA
+                except QuerystringInputError:
+                    status_code, err_message = StatusCodes.QUERYSTRING_ERROR
                 except Exception:
                     status_code, err_message = StatusCodes.INTERNAL_SERVER_ERROR
                     logger.error(traceback.format_exc())
