@@ -1,0 +1,1 @@
+GEOTIFF_PATH=s3://mlflow-monitoring/93/cf7509a33fe543a9a87aa7658e551659/artifacts/inference/aal_baseline_8bands.tif

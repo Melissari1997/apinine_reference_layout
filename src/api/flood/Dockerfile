@@ -1,7 +1,10 @@
-# This file is supposed to be built through Makefile
+# This file is supposed to be built through Makefile or GitHub Actions
 # TODO: verify how USER directive works
 # TODO: make sure .dockerignore is not ignored
 FROM public.ecr.aws/lambda/python:3.12 as base
+
+ARG GEOTIFF_PATH
+ENV GEOTIFF_PATH=${GEOTIFF_PATH}
 
 COPY common/ ${LAMBDA_TASK_ROOT}/common/
 
