@@ -40,7 +40,7 @@ jobs:
       run: |
         cd src/api
         docker build --target test -f flood/Dockerfile .
-        docker build -t ${image_name}:latest --target production --build-args ${GEOTIFF_PATH} -f flood/Dockerfile .
+        docker build -t ${image_name}:latest --target production --build-arg ${GEOTIFF_PATH} -f flood/Dockerfile .
 
     - name: Tag Docker Image
       run: |
