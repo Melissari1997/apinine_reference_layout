@@ -60,8 +60,10 @@ def main(
             },
         },
         "risk_index": values[FloodKeys.RISK_INDEX][0],
-        "average_annual_loss": values[FloodKeys.AAL][0],
-        "national_average_annual_loss": 0.0423,
+        "average_annual_loss": {
+            "value": values[FloodKeys.AAL][0],
+            "national_average": 0.0423,
+        },
     }
 
     return output

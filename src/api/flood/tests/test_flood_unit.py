@@ -86,8 +86,7 @@ class TestFloodUnit:
                 },
             },
             "risk_index": 2,
-            "average_annual_loss": 0.032,
-            "national_average_annual_loss": 0.0423,
+            "average_annual_loss": {"value": 0.032, "national_average": 0.0423},
         }
 
         got = main(

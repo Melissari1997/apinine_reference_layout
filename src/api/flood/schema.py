@@ -35,8 +35,13 @@ class FloodRiskAssessment(BaseModel):
     return_period_200y: ReturnPeriod
 
 
+class AverageAnnualLoss(BaseModel):
+    value: PositiveFloat
+    national_average: PositiveFloat
+
+
 class OutputSchema(BaseModel):
     address: str | None
     flood_risk_assessment: FloodRiskAssessment
     risk_index: PositiveInt
-    average_annual_loss: Probability
+    average_annual_loss: AverageAnnualLoss
