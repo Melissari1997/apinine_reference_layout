@@ -57,7 +57,8 @@ module "apinine_flood" {
 
   environment_variables = {
     "POWERTOOLS_LOG_LEVEL" : "INFO",
-    "POWERTOOLS_SERVICE_NAME" : "APININE_FLOOD"
+    "POWERTOOLS_SERVICE_NAME" : "APININE_FLOOD",
+    "GMAPS_SECRET_NAME" : "apinine/gmaps_apikey"
   }
 
 }
