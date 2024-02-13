@@ -34,7 +34,7 @@ jobs:
       run: aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 600920596656.dkr.ecr.eu-central-1.amazonaws.com
 
     - name: Load env variables from 'build-env-variables' file
-      run: export $(egrep -v '^#' flood/build-env-variables | xargs)
+      run: export $(egrep -v '^#' src/api/flood/build-env-variables | xargs)
 
     - name: Build Docker Image and run tests
       run: |
