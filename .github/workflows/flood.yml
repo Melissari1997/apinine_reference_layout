@@ -38,7 +38,7 @@ jobs:
         cd src/api
         s3_path=$(grep 'GEOTIFF_PATH=' flood/build-env-variables | cut -d '=' -f2)
         docker build --target test -f flood/Dockerfile .
-        docker build -t ${image_name}:latest --target production --build-arg GEOTIFF_PATH=${s3_path} -f flood/Dockerfile .
+        docker build --tag ${image_name}:latest --tag tiff_path:${s3_path} --target production --build-arg GEOTIFF_PATH=${s3_path} -f flood/Dockerfile .
 
     - name: Tag Docker Image
       run: |
