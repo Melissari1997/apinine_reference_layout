@@ -1,3 +1,4 @@
+import json
 import traceback
 
 from aws_lambda_powertools import Logger
@@ -39,7 +40,10 @@ def handle_response(validate_schema):
 
             body, (status_code, err_message) = exception_wrapper(*args, **kwargs)
 
-            response = {"body": body or err_message, "statusCode": status_code}
+            response = {
+                "body": err_message or json.dumps(body),
+                "statusCode": status_code,
+            }
             return response
 
         return response_wrapper

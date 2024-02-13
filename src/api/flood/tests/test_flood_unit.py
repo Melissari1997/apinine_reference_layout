@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from common.status_codes import StatusCodes
 from geocoder.geocoder import Geocoder
@@ -75,25 +77,27 @@ class TestFloodUnit:
 
         want = {
             "statusCode": 200,
-            "body": {
-                "address": "via verruca 1 trento",
-                "flood_risk_assessment": {
-                    "return_period_20y": {
-                        "intensity": {"water_height": 0.0},
-                        "vulnerability": 0.0,
+            "body": json.dumps(
+                {
+                    "address": "via verruca 1 trento",
+                    "flood_risk_assessment": {
+                        "return_period_20y": {
+                            "intensity": {"water_height": 0.0},
+                            "vulnerability": 0.0,
+                        },
+                        "return_period_100y": {
+                            "intensity": {"water_height": 0.01},
+                            "vulnerability": 0.0001,
+                        },
+                        "return_period_200y": {
+                            "intensity": {"water_height": 0.3},
+                            "vulnerability": 0.56,
+                        },
                     },
-                    "return_period_100y": {
-                        "intensity": {"water_height": 0.01},
-                        "vulnerability": 0.0001,
-                    },
-                    "return_period_200y": {
-                        "intensity": {"water_height": 0.3},
-                        "vulnerability": 0.56,
-                    },
-                },
-                "risk_index": 2,
-                "average_annual_loss": {"value": 0.032, "national_average": 0.0423},
-            },
+                    "risk_index": 2,
+                    "average_annual_loss": {"value": 0.032, "national_average": 0.0423},
+                }
+            ),
         }
 
         got = main(
