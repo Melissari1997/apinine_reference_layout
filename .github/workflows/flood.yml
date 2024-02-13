@@ -52,7 +52,7 @@ jobs:
     - name: Tag Docker Image
       run: |
         docker tag ${image_name}:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${GITHUB_SHA}
-        docker tag {image_name}:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${geotiff_path}
+        docker tag ${image_name}:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${geotiff_path}
         docker tag ${image_name}:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:latest
 
     - name: Push Docker Image to ECR
