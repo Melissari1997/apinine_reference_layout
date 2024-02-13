@@ -25,6 +25,7 @@ class FloodKeys:
     RISK_INDEX = "risk_ind layer, band 8"
 
 
+@handle_response(validate_schema=OutputSchema)
 def main(
     filename: str,
     address: str,
@@ -33,6 +34,9 @@ def main(
     geocoder: Geocoder,
     geodatareader: GeoDataReader,
 ) -> dict:
+    if filename is None:
+        raise ValueError("Missing env var GEOTIFF_PATH")
+
     correct = (address and not (lon or lat)) or ((lon and lat) and not address)
     if not correct:
         raise ConflictingInputsError
@@ -71,12 +75,9 @@ def main(
     return output
 
 
-@handle_response(validate_schema=OutputSchema)
 @logger.inject_lambda_context
 def handler(event, context=None):
-    filename = os.environ.get("GEOTIFF_PATH", None)
-    if filename is None:
-        raise ValueError("Missing env var GEOTIFF_PATH")
+    filename = os.environ.get("GEOTIFF_PATH")
 
     query_params = event["queryStringParameters"]
     address = query_params.get("address")
