@@ -24,15 +24,17 @@ class TestFloodIntegration:
         # Checking only format and types, not the values
         assert isinstance(got, dict)
 
-    def test_integ_handler_address(self, geotiff_path_s3, event_address):
-        got = handler(event=event_address, context=None)
+    def test_integ_handler_address(
+        self, geotiff_path_s3, lambda_powertools_ctx, event_address
+    ):
+        got = handler(event=event_address, context=lambda_powertools_ctx)
 
         want_status_code = 200
 
         assert want_status_code == got["statusCode"]
 
-    def test_integ_handler_missing_filename(self, event_address):
-        got = handler(event=event_address, context=None)
+    def test_integ_handler_missing_filename(self, event_address, lambda_powertools_ctx):
+        got = handler(event=event_address, context=lambda_powertools_ctx)
 
         want_status_code = 500
         wanted_body = "Internal Server Error"
@@ -40,41 +42,49 @@ class TestFloodIntegration:
         assert want_status_code == got["statusCode"]
         assert wanted_body == got["body"]
 
-    def test_integ_handler_lat_lon(self, geotiff_path_s3, event_lat_lon):
-        got = handler(event=event_lat_lon, context=None)
+    def test_integ_handler_lat_lon(
+        self, geotiff_path_s3, event_lat_lon, lambda_powertools_ctx
+    ):
+        got = handler(event=event_lat_lon, context=lambda_powertools_ctx)
 
         want_status_code = 200
 
         assert want_status_code == got["statusCode"]
 
     def test_integ_handler_invalid_lat_lon(
-        self, geotiff_path_s3, event_invalid_lat_lon
+        self, geotiff_path_s3, event_invalid_lat_lon, lambda_powertools_ctx
     ):
-        got = handler(event=event_invalid_lat_lon, context=None)
+        got = handler(event=event_invalid_lat_lon, context=lambda_powertools_ctx)
 
         want_status_code, wanted_body = StatusCodes.MISSING_DATA
 
         assert want_status_code == got["statusCode"]
         assert wanted_body == got["body"]
 
-    def test_integ_handler_conflict(self, geotiff_path_s3, event_conflict_lat_lon_addr):
-        got = handler(event=event_conflict_lat_lon_addr, context=None)
+    def test_integ_handler_conflict(
+        self, geotiff_path_s3, event_conflict_lat_lon_addr, lambda_powertools_ctx
+    ):
+        got = handler(event=event_conflict_lat_lon_addr, context=lambda_powertools_ctx)
 
         want_status_code, wanted_body = StatusCodes.CONFLICTING_INPUTS
 
         assert want_status_code == got["statusCode"]
         assert wanted_body == got["body"]
 
-    def test_integ_invalid_address(self, geotiff_path_s3, event_invalid_address):
-        got = handler(event=event_invalid_address, context=None)
+    def test_integ_invalid_address(
+        self, geotiff_path_s3, event_invalid_address, lambda_powertools_ctx
+    ):
+        got = handler(event=event_invalid_address, context=lambda_powertools_ctx)
 
         want_status_code, wanted_body = StatusCodes.UNKNOWN_ADDRESS
 
         assert want_status_code == got["statusCode"]
         assert wanted_body == got["body"]
 
-    def test_integ_oob_address(self, geotiff_path_s3, event_oob_address):
-        got = handler(event=event_oob_address, context=None)
+    def test_integ_oob_address(
+        self, geotiff_path_s3, event_oob_address, lambda_powertools_ctx
+    ):
+        got = handler(event=event_oob_address, context=lambda_powertools_ctx)
 
         want_status_code, wanted_body = StatusCodes.OUT_OF_BOUNDS
 
@@ -82,9 +92,9 @@ class TestFloodIntegration:
         assert wanted_body == got["body"]
 
     def test_integ_too_generic_address(
-        self, geotiff_path_s3, event_too_generic_address
+        self, geotiff_path_s3, event_too_generic_address, lambda_powertools_ctx
     ):
-        got = handler(event=event_too_generic_address, context=None)
+        got = handler(event=event_too_generic_address, context=lambda_powertools_ctx)
 
         want_status_code, wanted_body = StatusCodes.UNKNOWN_ADDRESS
 

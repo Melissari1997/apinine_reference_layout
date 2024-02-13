@@ -1,6 +1,6 @@
-import logging
 import os
 
+from aws_lambda_powertools import Logger
 from common.errors import ConflictingInputsError
 from common.response import handle_response
 from geocoder.geocoder import Geocoder
@@ -9,10 +9,9 @@ from readgeodata.interfaces import GeoDataReader
 from readgeodata.rasterioreader import RasterIOReader
 from schema import OutputSchema
 
+logger = Logger()
 gmapsgeocoder = GMapsGeocoder()
 riogeoreader = RasterIOReader()
-logger = logging.getLogger()
-logger.setLevel("INFO")
 
 
 class FloodKeys:
@@ -73,6 +72,7 @@ def main(
 
 
 @handle_response(validate_schema=OutputSchema)
+@logger.inject_lambda_context
 def handler(event, context=None):
     filename = os.environ.get("GEOTIFF_PATH", None)
     if filename is None:
@@ -89,7 +89,7 @@ def handler(event, context=None):
     if lon is not None:
         lon = float(lon)
 
-    return main(
+    response = main(
         filename=filename,
         address=address,
         lat=lat,
@@ -98,9 +98,5 @@ def handler(event, context=None):
         geodatareader=riogeoreader,
     )
 
-
-# if __name__ == "__main__":
-#     event = {"queryStringParameters": {"address": "via verruca 1 trento"}}
-
-#     result = handler(event)
-#     print(result, type(result))
+    logger.info(f"Returning response: {response}")
+    return response

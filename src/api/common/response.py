@@ -1,6 +1,6 @@
-import logging
 import traceback
 
+from aws_lambda_powertools import Logger
 from geocoder.geocoder import (
     FailedGeocodeError,
     MultipleMatchesForAddressError,
@@ -10,8 +10,7 @@ from geocoder.geocoder import (
 from .errors import ConflictingInputsError, MissingDataError
 from .status_codes import StatusCodes
 
-logger = logging.getLogger()
-logger.setLevel("INFO")
+logger = Logger()
 
 
 def handle_response(validate_schema):

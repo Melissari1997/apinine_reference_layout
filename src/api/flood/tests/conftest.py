@@ -55,3 +55,16 @@ def event_conflict_lat_lon_addr():
             "address": "via verruca 1 trento",
         }
     }
+
+
+class ContextMock:
+    def __init__(self) -> None:
+        self.function_name = "lambda_handler"
+        self.memory_limit_in_mb = 512
+        self.invoked_function_arn = "ARN"
+        self.aws_request_id = "111111111111"
+
+
+@pytest.fixture(scope="function")
+def lambda_powertools_ctx():
+    yield ContextMock()

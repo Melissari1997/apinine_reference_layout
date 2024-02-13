@@ -32,39 +32,47 @@ class MockGeoDataReaderFlood(GeoDataReader):
 
 @pytest.mark.unit
 class TestFloodUnit:
-    def test_handler_address(self, geotiff_path_s3, event_address, monkeypatch):
-        gmaps = MockGeocoder()
-        rioreader = MockGeoDataReaderFlood()
-        monkeypatch.setattr(main, "gmapsgeocoder", gmaps)
-        monkeypatch.setattr(main, "riogeoreader", rioreader)
-
-        got = handler(event=event_address, context={})
-
-        want_status_code = 200
-
-        assert want_status_code == got["statusCode"]
-
-    def test_handler_lat_lon(self, event_lat_lon, geotiff_path_s3, monkeypatch):
-        gmaps = MockGeocoder()
-        rioreader = MockGeoDataReaderFlood()
-        monkeypatch.setattr(main, "gmapsgeocoder", gmaps)
-        monkeypatch.setattr(main, "riogeoreader", rioreader)
-
-        got = handler(event=event_lat_lon, context={})
-
-        want_status_code = 200
-
-        assert want_status_code == got["statusCode"]
-
-    def test_handler_conflicting(
-        self, geotiff_path_s3, monkeypatch, event_conflict_lat_lon_addr
+    def test_handler_address(
+        self, geotiff_path_s3, event_address, lambda_powertools_ctx, monkeypatch
     ):
         gmaps = MockGeocoder()
         rioreader = MockGeoDataReaderFlood()
         monkeypatch.setattr(main, "gmapsgeocoder", gmaps)
         monkeypatch.setattr(main, "riogeoreader", rioreader)
 
-        got = handler(event=event_conflict_lat_lon_addr, context={})
+        got = handler(event=event_address, context=lambda_powertools_ctx)
+
+        want_status_code = 200
+
+        assert want_status_code == got["statusCode"]
+
+    def test_handler_lat_lon(
+        self, event_lat_lon, geotiff_path_s3, lambda_powertools_ctx, monkeypatch
+    ):
+        gmaps = MockGeocoder()
+        rioreader = MockGeoDataReaderFlood()
+        monkeypatch.setattr(main, "gmapsgeocoder", gmaps)
+        monkeypatch.setattr(main, "riogeoreader", rioreader)
+
+        got = handler(event=event_lat_lon, context=lambda_powertools_ctx)
+
+        want_status_code = 200
+
+        assert want_status_code == got["statusCode"]
+
+    def test_handler_conflicting(
+        self,
+        geotiff_path_s3,
+        monkeypatch,
+        lambda_powertools_ctx,
+        event_conflict_lat_lon_addr,
+    ):
+        gmaps = MockGeocoder()
+        rioreader = MockGeoDataReaderFlood()
+        monkeypatch.setattr(main, "gmapsgeocoder", gmaps)
+        monkeypatch.setattr(main, "riogeoreader", rioreader)
+
+        got = handler(event=event_conflict_lat_lon_addr, context=lambda_powertools_ctx)
 
         want_status_code, wanted_body = StatusCodes.CONFLICTING_INPUTS
 
