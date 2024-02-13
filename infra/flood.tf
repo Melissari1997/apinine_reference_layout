@@ -49,7 +49,7 @@ module "apinine_flood" {
   description   = "This function returns the flood risk analysis on the provided location (address or lat and lon)."
 
   timeout     = 30
-  memory_size = 256
+  memory_size = 2048
   #ephemeral_storage_size = 1024
 
 

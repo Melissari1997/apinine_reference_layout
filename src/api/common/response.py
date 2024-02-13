@@ -40,7 +40,6 @@ def handle_response(validate_schema):
             body, (status_code, err_message) = exception_wrapper(*args, **kwargs)
 
             response = {"body": body or err_message, "statusCode": status_code}
-
             return response
 
         return response_wrapper

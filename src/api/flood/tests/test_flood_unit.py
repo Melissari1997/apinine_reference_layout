@@ -1,6 +1,7 @@
 import pytest
+from common.status_codes import StatusCodes
 from geocoder.geocoder import Geocoder
-from main import ConflictingInputsError, FloodKeys, main
+from main import FloodKeys, main
 from readgeodata.interfaces import GeoDataReader
 
 
@@ -53,15 +54,18 @@ class TestFloodUnit:
         rioreader = MockGeoDataReaderFlood()
         address = "via verruca 1 trento"
 
-        with pytest.raises(ConflictingInputsError):
-            main(
-                filename="random_filename",
-                address=address,
-                lon=lon,
-                lat=lat,
-                geocoder=gmaps,
-                geodatareader=rioreader,
-            )
+        got = main(
+            filename="random_filename",
+            address=address,
+            lon=lon,
+            lat=lat,
+            geocoder=gmaps,
+            geodatareader=rioreader,
+        )
+        want_status_code, wanted_body = StatusCodes.CONFLICTING_INPUTS
+
+        assert want_status_code == got["statusCode"]
+        assert wanted_body == got["body"]
 
     def test_with_address(self):
         lon, lat = (None, None)
@@ -70,23 +74,26 @@ class TestFloodUnit:
         address = "via verruca 1 trento"
 
         want = {
-            "address": "via verruca 1 trento",
-            "flood_risk_assessment": {
-                "return_period_20y": {
-                    "intensity": {"water_height": 0.0},
-                    "vulnerability": 0.0,
+            "statusCode": 200,
+            "body": {
+                "address": "via verruca 1 trento",
+                "flood_risk_assessment": {
+                    "return_period_20y": {
+                        "intensity": {"water_height": 0.0},
+                        "vulnerability": 0.0,
+                    },
+                    "return_period_100y": {
+                        "intensity": {"water_height": 0.01},
+                        "vulnerability": 0.0001,
+                    },
+                    "return_period_200y": {
+                        "intensity": {"water_height": 0.3},
+                        "vulnerability": 0.56,
+                    },
                 },
-                "return_period_100y": {
-                    "intensity": {"water_height": 0.01},
-                    "vulnerability": 0.0001,
-                },
-                "return_period_200y": {
-                    "intensity": {"water_height": 0.3},
-                    "vulnerability": 0.56,
-                },
+                "risk_index": 2,
+                "average_annual_loss": {"value": 0.032, "national_average": 0.0423},
             },
-            "risk_index": 2,
-            "average_annual_loss": {"value": 0.032, "national_average": 0.0423},
         }
 
         got = main(
