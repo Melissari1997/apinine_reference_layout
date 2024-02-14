@@ -11,10 +11,17 @@ class RasterIOReader(GeoDataReader):
         pass
 
     def sample_data_points(
-        self, filename: str, coordinates: list[tuple], coordinates_crs: int = 4326
+        self,
+        filename: str,
+        coordinates: list[tuple],
+        metadata: list[str] = None,
+        coordinates_crs: int = 4326,
     ):
+        if metadata is None:
+            metadata = []
         with rasterio.open(filename) as ds:
             current_crs = ds.profile["crs"]
+            tags = {tag: ds.tags()[tag] for tag in metadata}
 
             points = [list(pair) for pair in coordinates]
             feature = {
@@ -38,6 +45,6 @@ class RasterIOReader(GeoDataReader):
             sampled_data_points = ds.sample(feature_proj["coordinates"])
             mat = np.array(list(sampled_data_points))
             t = mat.T
-            output = dict(zip(ds.descriptions, t, strict=False))
+            output = dict(zip(ds.descriptions, t, strict=False), **{"metadata": tags})
 
         return output
