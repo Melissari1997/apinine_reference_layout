@@ -42,6 +42,8 @@ class AverageAnnualLoss(BaseModel):
 
 class OutputSchema(BaseModel):
     address: str | None
+    lat: PositiveFloat
+    lon: PositiveFloat
     flood_risk_assessment: FloodRiskAssessment
     risk_index: PositiveInt
     average_annual_loss: AverageAnnualLoss

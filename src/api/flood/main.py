@@ -47,6 +47,8 @@ def main(
 
     output = {
         "address": address,
+        "lat": lat,
+        "lon": lon,
         "flood_risk_assessment": {
             "return_period_20y": {
                 "intensity": {"water_height": values[FloodKeys.WH_20][0]},

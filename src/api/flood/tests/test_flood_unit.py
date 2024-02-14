@@ -72,6 +72,8 @@ class TestFloodUnit:
 
         want = {
             "address": "via verruca 1 trento",
+            "lat": 44.88393348245498,
+            "lon": 12.215283630441727,
             "flood_risk_assessment": {
                 "return_period_20y": {
                     "intensity": {"water_height": 0.0},
