@@ -16,7 +16,11 @@ class MockGeocoder(Geocoder):
 
 class MockGeoDataReaderFlood(GeoDataReader):
     def sample_data_points(
-        self, filename: str, coordinates: list[tuple], coordinates_crs: int = 4326
+        self,
+        filename: str,
+        coordinates: list[tuple],
+        metadata: list[str],
+        coordinates_crs: int = 4326,
     ):
         return {
             FloodKeys.WH_20: [0.0],
@@ -27,6 +31,7 @@ class MockGeoDataReaderFlood(GeoDataReader):
             FloodKeys.VULN_200: [0.56],
             FloodKeys.RISK_INDEX: [2],
             FloodKeys.AAL: [0.032],
+            "metadata": {FloodKeys.NATIONAL_AAL: 0.045},
         }
 
 

@@ -23,6 +23,7 @@ class FloodKeys:
     VULN_200 = "vuln_200 layer, band 6"
     AAL = "aal layer, band 7"
     RISK_INDEX = "risk_ind layer, band 8"
+    NATIONAL_AAL = "STATISTICS_MEAN"
 
 
 def main(
@@ -42,7 +43,7 @@ def main(
 
     logger.info(f"MAIN: {filename}")
     values = geodatareader.sample_data_points(
-        filename=filename, coordinates=[(lon, lat)]
+        filename=filename, coordinates=[(lon, lat)], metadata=["STATISTICS_MEAN"]
     )
 
     output = {
@@ -66,7 +67,7 @@ def main(
         "risk_index": values[FloodKeys.RISK_INDEX][0],
         "average_annual_loss": {
             "value": values[FloodKeys.AAL][0],
-            "national_average": 0.0423,
+            "national_average": values["metadata"][FloodKeys.NATIONAL_AAL],
         },
     }
 
