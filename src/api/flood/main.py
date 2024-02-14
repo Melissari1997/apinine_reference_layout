@@ -1,7 +1,7 @@
 import os
 
 from aws_lambda_powertools import Logger
-from common.errors import ConflictingInputsError, QuerystringInputError
+from common.errors import QuerystringInputError
 from common.response import handle_response
 from geocoder.geocoder import Geocoder
 from geocoder.gmaps_geocoder import GMapsGeocoder
@@ -21,7 +21,7 @@ querystring_schema = {
     "properties": {
         "lat": {"type": "number", "minimum": -90, "maximum": 90},
         "lon": {"type": "number", "minimum": -180, "maximum": 180},
-        "address": {"type": "string"},
+        "address": {"type": "string", "minLength": 1},
     },
 }
 
@@ -46,10 +46,6 @@ def main(
     geocoder: Geocoder,
     geodatareader: GeoDataReader,
 ) -> dict:
-    correct = (address and not (lon or lat)) or ((lon and lat) and not address)
-    if not correct:
-        raise ConflictingInputsError
-
     if address:
         (lon, lat), address = geocoder.geocode(address)
 
