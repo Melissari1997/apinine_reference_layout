@@ -93,3 +93,17 @@ class TestFloodUnit:
 
         assert want_status_code == got["statusCode"]
         assert wanted_body == got["body"]
+
+    def test_invalid_lat_lon(
+        self,
+        geotiff_path_s3,
+        # monkeypatch,
+        lambda_powertools_ctx,
+        event_invalid_lat_lon_values,
+    ):
+        got = handler(event=event_invalid_lat_lon_values, context=lambda_powertools_ctx)
+
+        want_status_code, wanted_body = StatusCodes.QUERYSTRING_ERROR
+
+        assert want_status_code == got["statusCode"]
+        assert wanted_body == got["body"]

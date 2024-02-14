@@ -5,6 +5,7 @@ from common.errors import ConflictingInputsError, QuerystringInputError
 from common.response import handle_response
 from geocoder.geocoder import Geocoder
 from geocoder.gmaps_geocoder import GMapsGeocoder
+from jsonschema import validate
 from readgeodata.interfaces import GeoDataReader
 from readgeodata.rasterioreader import RasterIOReader
 from schema import OutputSchema
@@ -12,6 +13,17 @@ from schema import OutputSchema
 logger = Logger()
 gmapsgeocoder = GMapsGeocoder()
 riogeoreader = RasterIOReader()
+
+# Allow only lat-lon or address
+querystring_schema = {
+    "type": "object",
+    "oneOf": [{"required": ["lat", "lon"]}, {"required": ["address"]}],
+    "properties": {
+        "lat": {"type": "number", "minimum": -90, "maximum": 90},
+        "lon": {"type": "number", "minimum": -180, "maximum": 180},
+        "address": {"type": "string"},
+    },
+}
 
 
 class FloodKeys:
@@ -83,6 +95,9 @@ def handler(event, context=None):
         raise ValueError("Missing env var GEOTIFF_PATH")
 
     query_params = event.get("queryStringParameters", None)
+
+    validate(instance=query_params, schema=querystring_schema)
+
     if query_params is None:
         raise QuerystringInputError
 

@@ -7,6 +7,7 @@ from geocoder.geocoder import (
     MultipleMatchesForAddressError,
     OutOfBoundsError,
 )
+from jsonschema.exceptions import ValidationError
 
 from .errors import ConflictingInputsError, MissingDataError, QuerystringInputError
 from .status_codes import StatusCodes
@@ -32,6 +33,9 @@ def handle_response(validate_schema):
                     status_code, err_message = StatusCodes.UNKNOWN_ADDRESS
                 except MissingDataError:
                     status_code, err_message = StatusCodes.MISSING_DATA
+                except ValidationError:
+                    # coming from jsonschema validate
+                    status_code, err_message = StatusCodes.QUERYSTRING_ERROR
                 except QuerystringInputError:
                     status_code, err_message = StatusCodes.QUERYSTRING_ERROR
                 except Exception:
