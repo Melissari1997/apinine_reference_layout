@@ -1,5 +1,4 @@
 import pytest
-from common.errors import ConflictingInputsError
 from geocoder.geocoder import Geocoder
 from main import FloodKeys, main
 from readgeodata.interfaces import GeoDataReader
@@ -52,22 +51,6 @@ class TestFloodUnit:
 
         # Checking only format and types, not the values
         assert isinstance(got, dict)
-
-    def test_conflicting_input(self):
-        lon, lat = 12.215283630441727, 44.88393348245498
-        gmaps = MockGeocoder()
-        rioreader = MockGeoDataReaderFlood()
-        address = "via verruca 1 trento"
-
-        with pytest.raises(ConflictingInputsError):
-            main(
-                filename="random_filename",
-                address=address,
-                lon=lon,
-                lat=lat,
-                geocoder=gmaps,
-                geodatareader=rioreader,
-            )
 
     def test_with_address(self):
         lon, lat = (None, None)

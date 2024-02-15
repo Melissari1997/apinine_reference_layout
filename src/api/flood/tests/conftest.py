@@ -57,6 +57,16 @@ def event_conflict_lat_lon_addr():
     }
 
 
+@pytest.fixture(scope="function")
+def event_invalid_lat_lon_values():
+    yield {
+        "queryStringParameters": {
+            "lat": 45555.26464,
+            "lon": 12.57188,
+        }
+    }
+
+
 class ContextMock:
     def __init__(self) -> None:
         self.function_name = "lambda_handler"

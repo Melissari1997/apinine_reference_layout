@@ -66,7 +66,7 @@ class TestFloodIntegration:
     ):
         got = handler(event=event_conflict_lat_lon_addr, context=lambda_powertools_ctx)
 
-        want_status_code, wanted_body = StatusCodes.CONFLICTING_INPUTS
+        want_status_code, wanted_body = StatusCodes.QUERYSTRING_ERROR
 
         assert want_status_code == got["statusCode"]
         assert wanted_body == got["body"]
