@@ -5,7 +5,7 @@ class StatusCodes:
     )
     QUERYSTRING_ERROR = (
         400,
-        "Either 'address' or both 'lat' and 'lon' parameters must be supplied. 'lon' must be between -180 and 180, 'lat' must be between -90 and 90",
+        "Either 'address' or both 'lat' and 'lon' parameters must be supplied. 'lon' must be between -22 and 45, 'lat' must be between 27 and 72",
     )
     # Returned when GMaps api fails to geocode provided address
     UNKNOWN_ADDRESS = (

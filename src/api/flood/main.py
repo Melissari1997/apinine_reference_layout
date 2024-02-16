@@ -19,8 +19,8 @@ querystring_schema = {
     "type": "object",
     "oneOf": [{"required": ["lat", "lon"]}, {"required": ["address"]}],
     "properties": {
-        "lat": {"type": "number", "minimum": -90, "maximum": 90},
-        "lon": {"type": "number", "minimum": -180, "maximum": 180},
+        "lat": {"type": "number", "minimum": 27, "maximum": 72},
+        "lon": {"type": "number", "minimum": -22, "maximum": 45},
         "address": {"type": "string", "minLength": 1},
     },
 }
