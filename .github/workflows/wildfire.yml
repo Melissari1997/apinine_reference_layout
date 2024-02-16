@@ -1,46 +1,27 @@
-name: wildfire
+name: Build, push and update lambda images for wildfire
 
 on:
   push:
     paths:
-      - 'src/wildfire/**'
-      - 'src/common/**'
+      - 'src/api/wildfire/**'
+      - 'src/api/common/**'
+      - '.github/workflows/wildfire.yml'
+      - '.github/workflows/build-test-deploy.yml'
+      - '.github/actions/build-push-layout/action.yml'
     branches: [ "main" ]
 
-## FIXME: Change names, the code below was copied from another workflow
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  build-and-push-lookupper-splitter:
-    runs-on: ubuntu-22.04
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-region: eu-central-1
-        role-to-assume: arn:aws:iam::600920596656:role/github_actions_lookupper_build
-        role-session-name: github_actions_lookupper_build_session
-
-    - name: Authenticate Docker to Amazon ECR
-      run: aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 600920596656.dkr.ecr.eu-central-1.amazonaws.com
-
-    - name: Build Docker Image
-      run: docker build -t blocks_splitter:latest --build-arg GITHUB_SHA=${GITHUB_SHA} ./src/lookupper/blocks_splitter/
-
-    - name: Tag Docker Image
-      run: |
-        docker tag blocks_splitter:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/blocks_splitter:${GITHUB_SHA}
-        docker tag blocks_splitter:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/blocks_splitter:latest
-
-    - name: Push Docker Image to ECR
-      run: |
-        docker push 600920596656.dkr.ecr.eu-central-1.amazonaws.com/blocks_splitter:${GITHUB_SHA}
-        docker push 600920596656.dkr.ecr.eu-central-1.amazonaws.com/blocks_splitter:latest
-
-    - name: Update lambda function
-      run: aws lambda update-function-code --function-name blocks_splitter --image-uri 600920596656.dkr.ecr.eu-central-1.amazonaws.com/blocks_splitter:latest
+  wildfire-build-push:
+    uses: ./.github/workflows/build-test-deploy.yml
+    with:
+      aws-role-name: gh_wildfire
+      aws-account-id: 600920596656
+      aws-region: eu-central-1
+      geotiff-keyword: GEOTIFF_PATH
+      risk-folder: wildfire
+      image-name: apinine_wildfire_rcp85
+      lambda-name: apinine_wildfire_rcp85

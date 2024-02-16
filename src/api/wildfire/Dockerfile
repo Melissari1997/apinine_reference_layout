@@ -1,8 +1,20 @@
-FROM python:3.10.13-bookworm
-# Called from src (ctx)
-WORKDIR /wildfire
-COPY wildfire/main.py wildfire/requirements.txt ./
-COPY ./common ./common
-RUN pip install -r requirements.txt
+# This file is supposed to be built through Makefile or GitHub Actions
+FROM public.ecr.aws/lambda/python:3.12 as base
 
-ENTRYPOINT ["python", "main.py"]
+ARG GEOTIFF_PATH
+ENV GEOTIFF_PATH=${GEOTIFF_PATH}
+
+COPY common/ ${LAMBDA_TASK_ROOT}/common/
+
+RUN pip install ${LAMBDA_TASK_ROOT}/common/geocoder/ && \
+    pip install ${LAMBDA_TASK_ROOT}/common/readgeodata/
+
+COPY wildfire/ ${LAMBDA_TASK_ROOT}/
+WORKDIR ${LAMBDA_TASK_ROOT}/
+
+FROM base as test
+RUN pip install -r requirements-dev.txt && pytest -m unit
+
+FROM base as production
+RUN pip install -r requirements.txt
+CMD [ "main.handler" ]
