@@ -1,0 +1,65 @@
+name: build-push-flood-rcps
+
+on:
+  workflow_call:
+    inputs:
+      aws-role-name:
+        required: true
+        description: "Role that github will assume"
+        type: string
+      aws-account-id:
+        required: true
+        type: string
+      aws-region:
+        required: true
+        type: string
+      geotiff-keyword:
+        required: true
+        type: string
+        description: "Keywork used to idenfiy which variable to extract"
+      image-name:
+        required: true
+        type: string
+      lambda-name:
+        required: true
+        type: string
+      risk-folder:
+        description: "Name of the folder containing the Dockerfile"
+        required: true
+        type: string
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Parse and get geotiff path
+        id: parse-geotiff-path
+        run: |
+          # Retrieve geotiff path from file
+          GEOTIFF_PATH=$(grep "${{ inputs.geotiff-keyword }}=" src/api/${{ inputs.risk-folder }}/build-env-variables | cut -d '=' -f2)
+
+          # Remove "s3://" prefix
+          GEOTIFF_PATH_TAG=${GEOTIFF_PATH#s3://}
+
+          # Substitute "/" with "-"
+          GEOTIFF_PATH_TAG=$(echo $GEOTIFF_PATH_TAG | tr '/' '-')
+
+          # Put it inside the GitHub env
+          echo "GEOTIFF_PATH=$GEOTIFF_PATH" >> $GITHUB_OUTPUT
+          echo "GEOTIFF_PATH_TAG=$GEOTIFF_PATH_TAG" >> $GITHUB_OUTPUT
+
+      - name: Build and push specific image
+        id: build-push-layout
+        uses: ./.github/actions/build-push-layout
+        with:
+          aws-role-name: ${{ inputs.aws-role-name }}
+          aws-account-id: ${{ inputs.aws-account-id }}
+          aws-region: ${{ inputs.aws-region }}
+          geotiff-path: ${{ steps.parse-geotiff-path.outputs.GEOTIFF_PATH }}
+          geotiff-tag: ${{ steps.parse-geotiff-path.outputs.GEOTIFF_PATH_TAG }}
+          risk-folder: ${{ inputs.risk-folder }}
+          image-name: ${{ inputs.image-name }}
+          lambda-name: ${{ inputs.lambda-name }}

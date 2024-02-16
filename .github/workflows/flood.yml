@@ -1,4 +1,4 @@
-name: flood
+name: Build, push and update lambda images for flood baseline and rcp 8.5
 
 on:
   push:
@@ -6,65 +6,33 @@ on:
       - 'src/api/flood/**'
       - 'src/api/common/**'
       - '.github/workflows/flood.yml'
+      - '.github/workflows/build-test-deploy.yml'
+      - '.github/actions/build-push-layout/action.yml'
     branches: [ "main" ]
-
-env:
-  image_name: apinine_flood
-  lambda_name: apinine_flood
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  apinine-flood-build-and-push:
-    runs-on: ubuntu-22.04
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
+  flood85-build-push:
+    uses: ./.github/workflows/build-test-deploy.yml
+    with:
+      aws-role-name: gh_flood
+      aws-account-id: 600920596656
+      aws-region: eu-central-1
+      geotiff-keyword: GEOTIFF_PATH_RCP85
+      risk-folder: flood
+      image-name: apinine_flood_rcp85
+      lambda-name: apinine_flood_rcp85
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-region: eu-central-1
-        role-to-assume: arn:aws:iam::600920596656:role/gh_flood
-        role-session-name: gh_flood_session
-
-    - name: Authenticate Docker to Amazon ECR
-      run: aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 600920596656.dkr.ecr.eu-central-1.amazonaws.com
-
-    - name: Add GEOTIFF_PATH to Github env
-      run: |
-        # Retrieve geotiff path from file
-        GEOTIFF_PATH=$(grep 'GEOTIFF_PATH=' src/api/flood/build-env-variables | cut -d '=' -f2)
-
-        # Remove "s3://" prefix
-        GEOTIFF_PATH_TAG=${GEOTIFF_PATH#s3://}
-
-        # Substitute "/" with "-"
-        GEOTIFF_PATH_TAG=$(echo $GEOTIFF_PATH_TAG | tr '/' '-')
-
-        # Put it inside the GitHub env
-        echo "GEOTIFF_PATH=$GEOTIFF_PATH" >> $GITHUB_ENV
-        echo "GEOTIFF_PATH_TAG=$GEOTIFF_PATH_TAG" >> $GITHUB_ENV
-
-    - name: Build Docker Image and run tests
-      run: |
-        cd src/api
-        docker build --target test -f flood/Dockerfile .
-        docker build --tag ${image_name}:latest --target production --build-arg GEOTIFF_PATH=${GEOTIFF_PATH} -f flood/Dockerfile .
-
-    - name: Tag Docker Image
-      run: |
-        docker tag ${image_name}:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${GITHUB_SHA}
-        docker tag ${image_name}:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${GEOTIFF_PATH_TAG}
-        docker tag ${image_name}:latest 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:latest
-
-    - name: Push Docker Image to ECR
-      run: |
-        docker push 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${GITHUB_SHA}
-        docker push 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:${GEOTIFF_PATH_TAG}
-        docker push 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:latest
-
-    - name: Update lambda function
-      run: aws lambda update-function-code --function-name ${lambda_name} --image-uri 600920596656.dkr.ecr.eu-central-1.amazonaws.com/${image_name}:latest
+  floodbase-build-push:
+    uses: ./.github/workflows/build-test-deploy.yml
+    with:
+      aws-role-name: gh_flood
+      aws-account-id: 600920596656
+      aws-region: eu-central-1
+      geotiff-keyword: GEOTIFF_PATH
+      risk-folder: flood
+      image-name: apinine_flood
+      lambda-name: apinine_flood

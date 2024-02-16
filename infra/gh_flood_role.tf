@@ -44,13 +44,13 @@ data "aws_iam_policy_document" "gh_flood_permissions" {
       "ecr:PutImage",
       "ecr:UploadLayerPart"
     ]
-    resources = [aws_ecr_repository.apinine_flood.arn]
+    resources = [aws_ecr_repository.apinine_flood.arn, aws_ecr_repository.apinine_flood_rcp85.arn]
   }
 
   statement {
     effect    = "Allow"
     actions   = ["lambda:UpdateFunctionCode"]
-    resources = [module.apinine_flood.lambda_function_arn]
+    resources = [module.apinine_flood.lambda_function_arn, module.apinine_flood_rcp85.lambda_function_arn]
   }
 }
 

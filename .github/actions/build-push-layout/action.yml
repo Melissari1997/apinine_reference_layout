@@ -1,0 +1,61 @@
+name: Layout for building and pushing a risk api image
+
+inputs:
+  aws-role-name:
+    required: true
+    description: "Role that github will assume"
+    type: string
+  aws-account-id:
+    required: true
+    type: string
+  aws-region:
+    required: true
+    type: string
+  geotiff-path:
+    required: true
+    type: string
+  geotiff-tag:
+    required: true
+    description: "String used to tag the container to univocally refer to a Mlflow run"
+    type: string
+  image-name:
+    required: true
+    type: string
+  lambda-name:
+    required: true
+    type: string
+  risk-folder:
+    description: "Name of the folder containing the Dockerfile"
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: ${{ inputs.aws-region }}
+        role-to-assume: arn:aws:iam::${{ inputs.aws-account-id }}:role/${{ inputs.aws-role-name }}
+        role-session-name: ${{ inputs.aws-role-name }}-session
+    - name: Authenticate Docker to Amazon ECR
+      shell: bash
+      run: aws ecr get-login-password --region ${{ inputs.aws-region }} | docker login --username AWS --password-stdin ${{ inputs.aws-account-id }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com
+    - name: Build Docker Image and run tests
+      shell: bash
+      run: |
+        cd src/api
+        docker build --target test -f ${{ inputs.risk-folder }}/Dockerfile .
+        docker build --tag ${{ inputs.image-name }}:latest --target production --build-arg GEOTIFF_PATH=${{ inputs.geotiff-path }} -f ${{ inputs.risk-folder }}/Dockerfile .
+    - name: Tag Docker Image
+      shell: bash
+      run: |
+        docker tag ${{ inputs.image-name }}:latest ${{ inputs.aws-account-id }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com/${{ inputs.image-name }}:${GITHUB_SHA}
+        docker tag ${{ inputs.image-name }}:latest ${{ inputs.aws-account-id }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com/${{ inputs.image-name }}:${{ inputs.geotiff-tag }}
+        docker tag ${{ inputs.image-name }}:latest ${{ inputs.aws-account-id }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com/${{ inputs.image-name }}:latest
+    - name: Push Docker Image to ECR
+      shell: bash
+      run: docker push --all-tags ${{ inputs.aws-account-id }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com/${{ inputs.image-name }}
+    - name: Update lambda function
+      shell: bash
+      run: aws lambda update-function-code --function-name ${{ inputs.lambda-name }} --image-uri ${{ inputs.aws-account-id }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com/${{ inputs.image-name }}:latest
