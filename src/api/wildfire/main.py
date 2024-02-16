@@ -17,8 +17,8 @@ riogeoreader = RasterIOReader()
 
 class WildfireKeys:
     FWI_2 = "2 layer, band 1"
-    FWI_5 = "5 layer, band 2"
-    FWI_10 = "10 layer, band 3"
+    FWI_10 = "10 layer, band 2"
+    FWI_30 = "30 layer, band 3"
 
 
 def main(
@@ -39,17 +39,19 @@ def main(
 
     output = {
         "address": address,
+        "lat": lat,
+        "lon": lon,
         "wildfire_risk_assessment": {
             "return_period_2y": {
                 "intensity": values[WildfireKeys.FWI_2][0],
                 "vulnerability": "Not implemented",
             },
             "return_period_10y": {
-                "intensity": values[WildfireKeys.FWI_5][0],
+                "intensity": values[WildfireKeys.FWI_10][0],
                 "vulnerability": "Not implemented",
             },
             "return_period_30y": {
-                "intensity": values[WildfireKeys.FWI_10][0],
+                "intensity": values[WildfireKeys.FWI_30][0],
                 "vulnerability": "Not implemented",
             },
         },
