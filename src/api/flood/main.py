@@ -1,7 +1,6 @@
 import os
 
 from aws_lambda_powertools import Logger
-from common.errors import QuerystringInputError
 from common.response import handle_response
 from geocoder.geocoder import Geocoder
 from geocoder.gmaps_geocoder import GMapsGeocoder
@@ -93,9 +92,6 @@ def handler(event, context=None):
     query_params = event.get("queryStringParameters", None)
 
     validate(instance=query_params, schema=querystring_schema)
-
-    if query_params is None:
-        raise QuerystringInputError
 
     address = query_params.get("address")
 

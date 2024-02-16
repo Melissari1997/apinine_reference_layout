@@ -9,7 +9,7 @@ from geocoder.geocoder import (
 )
 from jsonschema.exceptions import ValidationError
 
-from .errors import ConflictingInputsError, MissingDataError, QuerystringInputError
+from .errors import MissingDataError, QuerystringInputError
 from .status_codes import StatusCodes
 
 logger = Logger()
@@ -23,8 +23,6 @@ def handle_response(validate_schema):
                 try:
                     raw_body = func(*args, **kwargs)
                     body = validate_schema(**raw_body).model_dump()
-                except ConflictingInputsError:
-                    status_code, err_message = StatusCodes.CONFLICTING_INPUTS
                 except FailedGeocodeError:
                     status_code, err_message = StatusCodes.UNKNOWN_ADDRESS
                 except OutOfBoundsError:
@@ -35,6 +33,7 @@ def handle_response(validate_schema):
                     status_code, err_message = StatusCodes.MISSING_DATA
                 except ValidationError:
                     # coming from jsonschema validate
+                    logger.info(traceback.format_exc())
                     status_code, err_message = StatusCodes.QUERYSTRING_ERROR
                 except QuerystringInputError:
                     status_code, err_message = StatusCodes.QUERYSTRING_ERROR
