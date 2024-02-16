@@ -28,12 +28,12 @@ def event_invalid_address():
 
 @pytest.fixture(scope="function")
 def event_lat_lon():
-    yield {"queryStringParameters": {"lat": 46.0701698, "lon": 11.1135156}}
+    yield {"queryStringParameters": {"lat": "46.0701698", "lon": "11.1135156"}}
 
 
 @pytest.fixture(scope="function")
 def event_invalid_lat_lon():
-    yield {"queryStringParameters": {"lat": 45.26464, "lon": 12.57188}}
+    yield {"queryStringParameters": {"lat": "45.26464", "lon": "12.57188"}}
 
 
 @pytest.fixture(scope="function")
@@ -50,8 +50,8 @@ def event_oob_address():
 def event_conflict_lat_lon_addr():
     yield {
         "queryStringParameters": {
-            "lat": 45.26464,
-            "lon": 12.57188,
+            "lat": "45.26464",
+            "lon": "12.57188",
             "address": "via verruca 1 trento",
         }
     }
@@ -61,8 +61,8 @@ def event_conflict_lat_lon_addr():
 def event_invalid_lat_lon_values():
     yield {
         "queryStringParameters": {
-            "lat": 45555.26464,
-            "lon": 12.57188,
+            "lat": "45555.26464",
+            "lon": "12.57188",
         }
     }
 
