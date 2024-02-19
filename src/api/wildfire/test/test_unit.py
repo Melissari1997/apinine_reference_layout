@@ -94,3 +94,13 @@ class TestWildfireUnit:
 
         assert want_status_code == got["statusCode"]
         assert wanted_body == got["body"]
+
+    def test_handler_no_queryparams(
+        self, geotiff_path_s3, lambda_powertools_ctx, monkeypatch
+    ):
+        got = handler(event={}, context=lambda_powertools_ctx)
+
+        want_status_code, wanted_body = StatusCodes.QUERYSTRING_ERROR
+
+        assert want_status_code == got["statusCode"]
+        assert wanted_body == got["body"]
