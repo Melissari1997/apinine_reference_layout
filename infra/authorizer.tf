@@ -33,7 +33,8 @@ data "aws_iam_policy_document" "apinine_authorizer_dynamo" {
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecr_lifecycle_policy
 
 module "apinine_authorizer" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "7.2.1"
 
   create         = true
   create_package = false

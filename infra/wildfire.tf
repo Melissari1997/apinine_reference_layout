@@ -49,7 +49,8 @@ data "aws_iam_policy_document" "apinine_wildfire" {
 }
 
 module "apinine_wildfire" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "7.2.1"
 
   create         = true
   create_package = false
