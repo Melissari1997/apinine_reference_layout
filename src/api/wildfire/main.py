@@ -16,9 +16,9 @@ riogeoreader = RasterIOReader()
 
 
 class WildfireKeys:
-    FWI_2 = "2 layer, band 1"
-    FWI_10 = "10 layer, band 2"
-    FWI_30 = "30 layer, band 3"
+    FWI_2 = "wildfire rp 2 layer, band 1"
+    FWI_10 = "wildfire rp 10 layer, band 2"
+    FWI_30 = "wildfire rp 30 layer, band 3"
 
 
 def main(
@@ -34,9 +34,9 @@ def main(
 
     logger.info(f"MAIN: {filename}")
     values = geodatareader.sample_data_points(
-        filename=filename, coordinates=[(lon, lat)], metadata=["STATISTICS_MEAN"]
+        filename=filename, coordinates=[(lon, lat)]
     )
-
+    print(values)
     output = {
         "address": address,
         "lat": lat,
