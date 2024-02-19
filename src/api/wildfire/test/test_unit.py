@@ -23,7 +23,7 @@ class MockGeoDataReaderFlood(GeoDataReader):
         self,
         filename: str,
         coordinates: list[tuple],
-        metadata: list[str],
+        metadata: list[str] | None = None,
         coordinates_crs: int = 4326,
     ):
         return {
