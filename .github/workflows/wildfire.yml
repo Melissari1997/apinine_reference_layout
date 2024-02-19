@@ -1,4 +1,4 @@
-name: Build, push and update lambda images for wildfire
+name: "Wildfire: push and update lambda images"
 
 on:
   push:
