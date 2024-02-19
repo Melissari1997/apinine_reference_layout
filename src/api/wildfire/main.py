@@ -36,7 +36,7 @@ def main(
     values = geodatareader.sample_data_points(
         filename=filename, coordinates=[(lon, lat)]
     )
-    print(values)
+
     output = {
         "address": address,
         "lat": lat,
