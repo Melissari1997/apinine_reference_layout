@@ -23,5 +23,5 @@ jobs:
       aws-region: eu-central-1
       geotiff-keyword: GEOTIFF_PATH
       risk-folder: wildfire
-      image-name: apinine_wildfire_rcp85
-      lambda-name: apinine_wildfire_rcp85
+      image-name: apinine_wildfire
+      lambda-name: apinine_wildfire
