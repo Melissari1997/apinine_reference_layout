@@ -5,7 +5,7 @@ variable "account_role" {
 
 variable "github_oidc_provider" {
   type        = string
-  description = "Arn of the IDC provider to allow Github to use this role"
+  description = "Arn of the OIDC provider to allow Github to use this role"
 }
 
 variable "authorizer_hasher_config" {
