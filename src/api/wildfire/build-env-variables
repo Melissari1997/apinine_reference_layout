@@ -1,1 +1,1 @@
-GEOTIFF_PATH=GEOTIFF_PATH=s3://mlflow-monitoring/93/cf7509a33fe543a9a87aa7658e551659/artifacts/inference/wildfire.tif
+GEOTIFF_PATH=s3://mlflow-monitoring/93/cf7509a33fe543a9a87aa7658e551659/artifacts/inference/wildfire.tif
