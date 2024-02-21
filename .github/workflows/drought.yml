@@ -1,0 +1,27 @@
+name: "Drought: push and update lambda images"
+
+on:
+  push:
+    paths:
+      - 'src/api/drought/**'
+      - 'src/api/common/**'
+      - '.github/workflows/drought.yml'
+      - '.github/workflows/build-test-deploy.yml'
+      - '.github/actions/build-push-layout/action.yml'
+    branches: [ "main" ]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  drought-build-push:
+    uses: ./.github/workflows/build-test-deploy.yml
+    with:
+      aws-role-name: gh_drought
+      aws-account-id: 600920596656
+      aws-region: eu-central-1
+      geotiff-keyword: GEOTIFF_PATH
+      risk-folder: drought
+      image-name: apinine_drought
+      lambda-name: apinine_drought

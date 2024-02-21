@@ -7,6 +7,17 @@ resource "aws_ecr_repository" "apinine_authorizer" {
   }
 }
 
+module "gh_authorizer" {
+
+  source = "./modules/github_risks_role"
+
+  role_name            = "gh_authorizer"
+  github_oidc_provider = var.github_oidc_provider
+  lambda_functions_arn = [module.apinine_authorizer.lambda_function_arn]
+  ecr_repositories     = [aws_ecr_repository.apinine_authorizer.arn]
+}
+
+
 resource "aws_ssm_parameter" "authorizer_hasher_config" {
   name  = "authorizer_hasher_config"
   type  = "String"
@@ -33,7 +44,8 @@ data "aws_iam_policy_document" "apinine_authorizer_dynamo" {
 // https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecr_lifecycle_policy
 
 module "apinine_authorizer" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "7.2.1"
 
   create         = true
   create_package = false

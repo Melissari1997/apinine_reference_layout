@@ -1,5 +1,16 @@
-resource "aws_ecr_repository" "apinine_flood_rcp85" {
-  name                 = "apinine_flood_rcp85"
+module "drought" {
+
+  source = "./modules/github_risks_role"
+
+  role_name            = "gh_drought"
+  github_oidc_provider = var.github_oidc_provider
+  lambda_functions_arn = [module.apinine_drought.lambda_function_arn]
+  ecr_repositories     = [aws_ecr_repository.apinine_drought.arn]
+}
+
+
+resource "aws_ecr_repository" "apinine_drought" {
+  name                 = "apinine_drought"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -7,7 +18,7 @@ resource "aws_ecr_repository" "apinine_flood_rcp85" {
   }
 }
 
-data "aws_iam_policy_document" "apinine_flood_rcp85" {
+data "aws_iam_policy_document" "apinine_drought" {
   statement {
     effect = "Allow"
     actions = [
@@ -39,15 +50,15 @@ data "aws_iam_policy_document" "apinine_flood_rcp85" {
   }
 }
 
-module "apinine_flood_rcp85" {
+module "apinine_drought" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "7.2.1"
 
   create         = true
   create_package = false
 
-  function_name = "apinine_flood_rcp85"
-  description   = "This function returns the flood risk analysis on the provided location (address or lat and lon)."
+  function_name = "apinine_drought"
+  description   = "This function returns the drought risk analysis on the provided location (address or lat and lon)."
 
   timeout     = 30
   memory_size = 2048
@@ -57,14 +68,14 @@ module "apinine_flood_rcp85" {
   attach_tracing_policy = true
   tracing_mode          = "Active"
   package_type          = "Image"
-  image_uri             = "${aws_ecr_repository.apinine_flood_rcp85.repository_url}:latest"
+  image_uri             = "${aws_ecr_repository.apinine_drought.repository_url}:latest"
 
   attach_policy_json = true
-  policy_json        = data.aws_iam_policy_document.apinine_flood_rcp85.json
+  policy_json        = data.aws_iam_policy_document.apinine_drought.json
 
   environment_variables = {
     "POWERTOOLS_LOG_LEVEL" : "INFO",
-    "POWERTOOLS_SERVICE_NAME" : "APININE_FLOOD_RCP85",
+    "POWERTOOLS_SERVICE_NAME" : "APININE_DROUGHT",
     "GMAPS_SECRET_NAME" : "apinine/gmaps_apikey"
   }
 
