@@ -16,12 +16,12 @@ riogeoreader = RasterIOReader()
 
 
 class DroughtKeys:
-    FWI_2 = "drought rp 2 layer, band 1"
-    FWI_10 = "drought rp 10 layer, band 2"
-    FWI_30 = "drought rp 30 layer, band 3"
-    II_2 = "drought intensity 2 layer, band 1"
-    II_10 = "drought intensity 10 layer, band 2"
-    II_30 = "drought intensity 30 layer, band 3"
+    DURATION_RP20 = "duration_rp20y"
+    DURATION_RP100 = "duration_rp100y"
+    DURATION_RP200 = "duration_rp200y"
+    SEVERITY_RP20 = "severity_rp20y"
+    SEVERITY_RP100 = "severity_rp100y"
+    SEVERITY_RP200 = "severity_rp200y"
 
 
 def main(
@@ -45,17 +45,17 @@ def main(
         "lat": lat,
         "lon": lon,
         "drought_risk_assessment": {
-            "return_period_2y": {
-                "duration_month": values[DroughtKeys.FWI_2][0],
-                "severity": values[DroughtKeys.II_2][0],
+            "return_period_20y": {
+                "duration_months": values[DroughtKeys.DURATION_RP20][0],
+                "severity": values[DroughtKeys.SEVERITY_RP20][0],
             },
-            "return_period_10y": {
-                "duration_month": values[DroughtKeys.FWI_10][0],
-                "severity": values[DroughtKeys.II_10][0],
+            "return_period_100y": {
+                "duration_months": values[DroughtKeys.DURATION_RP100][0],
+                "severity": values[DroughtKeys.SEVERITY_RP100][0],
             },
-            "return_period_30y": {
-                "duration_month": values[DroughtKeys.FWI_30][0],
-                "severity": values[DroughtKeys.II_30][0],
+            "return_period_200y": {
+                "duration_months": values[DroughtKeys.DURATION_RP200][0],
+                "severity": values[DroughtKeys.SEVERITY_RP200][0],
             },
         },
     }

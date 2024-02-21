@@ -27,12 +27,12 @@ class MockGeoDataReaderDrought(GeoDataReader):
         coordinates_crs: int = 4326,
     ):
         return {
-            DroughtKeys.FWI_2: [0.0],
-            DroughtKeys.FWI_10: [0.01],
-            DroughtKeys.FWI_30: [0.3],
-            DroughtKeys.II_2: [11.2],
-            DroughtKeys.II_10: [12.3],
-            DroughtKeys.II_30: [15.3],
+            DroughtKeys.DURATION_RP20: [0.0],
+            DroughtKeys.DURATION_RP100: [0.01],
+            DroughtKeys.DURATION_RP200: [0.3],
+            DroughtKeys.SEVERITY_RP20: [11.2],
+            DroughtKeys.SEVERITY_RP100: [12.3],
+            DroughtKeys.SEVERITY_RP200: [15.3],
         }
 
 

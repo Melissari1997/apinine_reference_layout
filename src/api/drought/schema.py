@@ -23,14 +23,14 @@ PositiveRoundedFloat = Annotated[PositiveFloat, AfterValidator(round_float)]
 
 
 class ReturnPeriod(BaseModel):
-    duration_month: PositiveRoundedFloat
+    duration_months: PositiveRoundedFloat
     severity: PositiveRoundedFloat
 
 
 class DroughtRiskAssessment(BaseModel):
-    return_period_2y: ReturnPeriod
-    return_period_10y: ReturnPeriod
-    return_period_30y: ReturnPeriod
+    return_period_20y: ReturnPeriod
+    return_period_100y: ReturnPeriod
+    return_period_200y: ReturnPeriod
 
 
 class OutputSchema(BaseModel):
