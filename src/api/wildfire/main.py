@@ -43,15 +43,21 @@ def main(
         "lon": lon,
         "wildfire_risk_assessment": {
             "return_period_2y": {
-                "intensity": values[WildfireKeys.FWI_2][0],
+                "intensity": {
+                    "fwi": values[WildfireKeys.FWI_2][0],
+                },
                 "vulnerability": "Not implemented",
             },
             "return_period_10y": {
-                "intensity": values[WildfireKeys.FWI_10][0],
+                "intensity": {
+                    "fwi": values[WildfireKeys.FWI_10][0],
+                },
                 "vulnerability": "Not implemented",
             },
             "return_period_30y": {
-                "intensity": values[WildfireKeys.FWI_30][0],
+                "intensity": {
+                    "fwi": values[WildfireKeys.FWI_30][0],
+                },
                 "vulnerability": "Not implemented",
             },
         },
