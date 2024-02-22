@@ -112,27 +112,35 @@ components:
       additionalProperties:
         $ref: "#/components/schemas/flood_risk_single_rp"
       example:
-        rp_20:
-          water_height: 0.65
+        return_period_20y:
+          intensity:
+            water_height: 0.65
           vulnerability: 0.21
-        rp_100:
-          water_height: 0.75
+        return_period_100y:
+          intensity:
+            water_height: 0.75
           vulnerability: 0.22
-        rp_200:
-          water_height: 0.78
+        return_period_200y:
+          intensity:
+            water_height: 0.78
           vulnerability: 0.23
 
     flood_risk_single_rp:
       type: object
       required:
-        - water_height
+        - intensity
         - vulnerability
       properties:
-        water_height:
-          type: number
-          minimum: 0
-          description: Height of the water in this specific return period
-          example: 1.1
+        intensity:
+          type: object
+          required:
+            - water_height
+          properties:
+            water_height:
+              type: number
+              minimum: 0
+              description: Height of the water in this specific return period
+              example: 1.1
         vulnerability:
           type: number
           minimum: 0
@@ -140,7 +148,8 @@ components:
           description: Probability of ....
           example: 0.296
       example:
-        water_height: 1.1
+        intensity:
+          water_height: 1.1
         vulnerability: 0.296
 
     flood:
@@ -260,10 +269,16 @@ components:
       type: object
       required:
         - address
+        - lat
+        - lon
         - wildfire_risk_assessment
       properties:
         address:
           $ref: "#/components/schemas/address"
+        lat:
+          $ref: "#/components/schemas/lat"
+        lon:
+          $ref: "#/components/schemas/lon"
         wildfire_risk_assessment:
           $ref: "#/components/schemas/wildfire_risk_assessment"
 
