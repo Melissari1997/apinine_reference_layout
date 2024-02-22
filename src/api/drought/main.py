@@ -46,16 +46,25 @@ def main(
         "lon": lon,
         "drought_risk_assessment": {
             "return_period_20y": {
-                "duration_months": values[DroughtKeys.DURATION_RP20][0],
-                "severity": values[DroughtKeys.SEVERITY_RP20][0],
+                "intensity": {
+                    "duration_months": values[DroughtKeys.DURATION_RP20][0],
+                    "severity": values[DroughtKeys.SEVERITY_RP20][0],
+                },
+                "vulnerability": "Not implemented"
             },
             "return_period_100y": {
-                "duration_months": values[DroughtKeys.DURATION_RP100][0],
-                "severity": values[DroughtKeys.SEVERITY_RP100][0],
+                "intensity": {
+                    "duration_months": values[DroughtKeys.DURATION_RP100][0],
+                    "severity": values[DroughtKeys.SEVERITY_RP100][0],
+                },
+                "vulnerability": "Not implemented"
             },
             "return_period_200y": {
-                "duration_months": values[DroughtKeys.DURATION_RP200][0],
-                "severity": values[DroughtKeys.SEVERITY_RP200][0],
+                "intensity": {
+                    "duration_months": values[DroughtKeys.DURATION_RP200][0],
+                    "severity": values[DroughtKeys.SEVERITY_RP200][0],
+                },
+                "vulnerability": "Not implemented"
             },
         },
     }

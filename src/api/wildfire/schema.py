@@ -1,29 +1,15 @@
 from typing import Annotated
 
-from common.errors import MissingDataError
+from common.schema import Intensity, PositiveRoundedFloat
 from pydantic import BaseModel, Field
-from pydantic.functional_validators import AfterValidator
-
-# TODO: move rounding logic to the components producing the lookup
-DECIMAL_PLACES = 4
 
 
-def check_positive(f: float) -> float:
-    if f < 0:
-        raise MissingDataError
-    return f
-
-
-def round_float(f: float) -> float:
-    return round(f, DECIMAL_PLACES)
-
-
-PositiveFloat = Annotated[float, AfterValidator(check_positive)]
-PositiveRoundedFloat = Annotated[PositiveFloat, AfterValidator(round_float)]
+class WildfireIntensity(Intensity):
+    fwi: PositiveRoundedFloat
 
 
 class ReturnPeriod(BaseModel):
-    intensity: PositiveRoundedFloat
+    intensity: WildfireIntensity
     vulnerability: str
 
 
