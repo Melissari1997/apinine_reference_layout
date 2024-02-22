@@ -9,16 +9,30 @@ The top level folders are the following:
 - **.vscode**: contains the VSC editor configurations
 - **.github/wokrflows**: contains the definitions of the github workflows (pipelines)
 
-## SRC
-Each folder in **src** represents a specific risk assessemnt endpoint (wildifire, flood) with exception of the folder *common* which is a module containing shared utilities functions.
+## src
+The **src** folder contains the following folders:
+- **api**: endpoint code
+- **authorizer**: lambda custom authorizer
+- **generate_store_key**: script used for generating API keys. It stores the key both in API Gateway and inside a DynamoDB table. In the future it could be extended to implement key updates, addition or subtraction of specific authorization policies, and more.
+
+
+## Generate Key
+
+It is possible to generate a key from the script in *src/generate_store_key*.
+The script will generate an API Gateway Key, hash it and store it on DynamoDB. Additionally it is possible to specify
+which API the key is allowed to invoke and in which Organization it belongs to. All these pieces of information are persisted on DynamoDB (the table is created in the *infra* folder).
+
+## src/api
+Each folder in **src/api** represents a specific risk assessemnt endpoint (wildifire, flood) with exception of the folder *common* which is a module containing shared utilities functions.
 Within each directory, one can find:
 
 - ***.py** files: application code
 - **test** folder: contains pytest tests
 - **Dockerfile**: used to build the Docker image to be used in Lambda functions
+- **build-env-variables**: file in the form ENV=VALUE. Stores the value of env variables needed at build time, namely geotiff paths
 - **Makefile**: automates common actions (build, tests, etc..)
 
-*Makefile* and *Dockerfile* are not present in the *common* folder -> TO BE VERIFIED
+*Makefile* and *Dockerfile* are not present in the *common* folder.
 
 Every Dockerfile uses the parent context (src) instead of the current folder (src/wildfire) to solve import
 issues between folders. The other option was to copy the common folder inside the current directory, build the container image and then delete the copied folder. This solution could lead to unclean situation that lead to unexpected behaviours and committing multiple copies of *common*.
@@ -29,10 +43,15 @@ The Makefile inside each directory moves to the src parent folder before buildin
 The only important configuration is *terminal.integrated.env.linux* that injects custom environment variable in VSC shell.
 We set it to update the PYTHONPATH, so that the code inside every risk folder can import common folder.
 
+In order to use the integrated test VSCode utility, it's necessary to set the *python.testing.pytestArgs* value to the directory whose tests have to be run (e.g. "src/api/flood")
+
+## .github/actions
+Contains the single folder *build-push-layout* that automates the docker building, tagging and pushing of images to ECR. 
+
 ## .github/workflows
 Each application folder trigger a build only when the code inside that specific folder **or in common**  is updated.
 
-TODO: write a workflow for each risk and infra.
+Each workflow leverage the reusable workflow *build-test-deploy.yml* that extracts the GEOTIFF_PATH from the *build-env-variables* file before calling the *build-push-layout* action. This way each workflow just has to specify a list of variables, like the name of Docker image and Lambda function to be updated.
 
 
 # Code consistency
@@ -61,10 +80,3 @@ In case of fixable erros, pre-commit will fix the appropriate files but is still
 Ruff works alongside Black to format the codebase in a clean fashion.
 
 It runs every time a *.py* file is saved and performs, among other things, linting, import sorting, etc. The list of rules we use is present in the pyproject.toml file, under **[tool.ruff.select]** voice.
-
-
-## Generate Key
-
-It is possible to generate a key from the script in *src/generate_store_key*.
-The script will generate an API Gateway Key, hash it and store it on DynamoDB. Additionally it is possible to specify
-which API the key is allowed to invoke and in which Organization it belongs to. All these pieces of information are persisted on DynamoDB (the table is created in the *infra* folder).
