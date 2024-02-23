@@ -16,9 +16,10 @@ paths:
         - $ref: "#/components/parameters/lon"
         - $ref: "#/components/parameters/x-api-key"
       x-amazon-apigateway-integration:
-        httpMethod: GET
+        httpMethod: POST
         type: aws_proxy
         uri: ${invoke_arn}
+        credentials: ${apinine_resource_drought_role}
       security:
         - apinineAuthorizerv2: []
       responses:
@@ -42,9 +43,10 @@ paths:
         - $ref: "#/components/parameters/lon"
         - $ref: "#/components/parameters/x-api-key"
       x-amazon-apigateway-integration:
-        httpMethod: GET
+        httpMethod: POST
         type: aws_proxy
         uri: ${invoke_arn}
+        credentials: ${apinine_resource_flood_role}
       security:
         - apinineAuthorizerv2: []
       responses:
@@ -67,7 +69,7 @@ paths:
         - $ref: "#/components/parameters/lon"
         - $ref: "#/components/parameters/x-api-key"
       x-amazon-apigateway-integration:
-        httpMethod: GET
+        httpMethod: POST
         type: aws_proxy
         uri: ${invoke_arn}
       security:
@@ -89,9 +91,10 @@ paths:
       summary: Returns a wildfire assessment for an address.
       description: Optional extended description in Markdown.
       x-amazon-apigateway-integration:
-        httpMethod: GET
+        httpMethod: POST
         type: aws_proxy
         uri: ${invoke_arn}
+        credentials: null
       security:
         - apinineAuthorizerv2: []
       responses:
@@ -369,9 +372,10 @@ components:
       name: apinineAuthorizerv2
       type: apiKey
       in: header
-      x-amazon-apigateway-authtype: "Custom scheme"
+      x-amazon-apigateway-authtype: Custom scheme with corporate claims
       x-amazon-apigateway-authorizer:
-        authorizerUri: ${authorizer_lambda}
-        authorizerResultTtlInSeconds: 250
-        identitySource: "method.request.header.x-api-key"
         type: request
+        authorizerUri: ${authorizer_lambda}
+        authorizerResultTtlInSeconds: 2
+        authorizerPayloadFormatVersion: "1.0"
+        identitySource: "method.request.header.x-api-key"
