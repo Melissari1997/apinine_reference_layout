@@ -4,7 +4,7 @@ from interfaces import KeyDB
 
 
 class DynamoKeyDB(KeyDB):
-    def __init__(self, table_name) -> None:
+    def __init__(self, table_name: str) -> None:
         self.table_name = table_name
         self.dynamodb_client = boto3.client("dynamodb")
         self.error_help_strings = {
@@ -25,12 +25,37 @@ class DynamoKeyDB(KeyDB):
             "RequestLimitExceeded": "Throughput exceeds the current throughput limit for your account, increase account level throughput before retrying",
         }
 
-    def query_by_key(self, pk: str):
+    def query_by_key(self, pk: str) -> dict:
+        """Retrieve any data with provided Partition Key.
+
+        Parameters
+        ----------
+        pk : str
+            Partition Key to look for.
+
+        Returns
+        -------
+        dict
+
+        """
         query = self.create_query_input(pk)
         result = self.execute_query(query)
         return result
 
-    def update_last_accessed(self, last_accessed_ts: int, user: str, hash_key: str):
+    def update_last_accessed(
+        self, last_accessed_ts: float, user: str, hash_key: str
+    ) -> None:
+        """Update 'last_accessed_ts' for items matching provided user and hash_key.
+
+        Parameters
+        ----------
+        last_accessed_ts : float
+            POSIX timestamp as float, to be set as last_accessed_ts field.
+        user : str
+            The 'user' part of the API key.
+        hash_key : str
+            The 'secret', hashed part of the API key.
+        """
         update_item = {
             "TableName": self.table_name,
             "Key": {"PK": {"S": user}, "SK": {"S": hash_key}},
@@ -51,7 +76,7 @@ class DynamoKeyDB(KeyDB):
 
         self.execute_update_item(update_item)
 
-    def execute_update_item(self, update_item):
+    def execute_update_item(self, update_item: dict) -> None:
         try:
             self.dynamodb_client.update_item(**update_item)
             print("Successfully updated item.")
@@ -61,7 +86,19 @@ class DynamoKeyDB(KeyDB):
         except BaseException as error:
             print("Unknown error while updating item: " + error)
 
-    def create_query_input(self, pk: str):
+    def create_query_input(self, pk: str) -> dict:
+        """Create a DynamoDB query, looking for the provided Partition Key.
+
+        Parameters
+        ----------
+        pk : str
+            Partition Key to query.
+
+        Returns
+        -------
+        dict
+            Query to be executed by DynamoDB SDK.
+        """
         return {
             "TableName": self.table_name,
             "KeyConditionExpression": "#e14e0 = :e14e0",
@@ -69,7 +106,21 @@ class DynamoKeyDB(KeyDB):
             "ExpressionAttributeValues": {":e14e0": {"S": pk}},
         }
 
-    def execute_query(self, item):
+    def execute_query(self, item: dict) -> dict:
+        """Wrapper for boto3.dynamodb.client.query() method.
+
+        Perform the query unpacking the provided item as keyword arguments.
+
+        Parameters
+        ----------
+        item : dict
+            Item to be passed to .query().
+
+        Returns
+        -------
+        dict
+            Query result.
+        """
         try:
             response = self.dynamodb_client.query(**item)
             print("Query successful.")
@@ -82,7 +133,14 @@ class DynamoKeyDB(KeyDB):
 
         raise ValueError(f"Query error: {item}")
 
-    def handle_error(self, error):
+    def handle_error(self, error: Exception) -> None:
+        """Handle common DynamoDB errors.
+
+        Parameters
+        ----------
+        error : Exception
+            The exception to analyze and print information about.
+        """
         error_code = error.response["Error"]["Code"]
         error_message = error.response["Error"]["Message"]
 

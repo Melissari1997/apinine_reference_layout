@@ -10,10 +10,12 @@ logger = Logger()
 
 class DBAuthenticator(Authenticator):
     def __init__(self, key_db: KeyDB) -> None:
-        """_summary_
+        """Constructor for DBAuthenticator.
+
+        Create the Argon2 password hasher from the required env variables.
 
         Args:
-            key_db (KeyDB): _description_
+            key_db (KeyDB): Database used to retrieve the permissions from the API key.
         """
         time_cost = int(os.environ.get("HASHER_TIME_COST"))
         memory_cost = int(os.environ.get("HASHER_MEMORY_COST"))
@@ -29,15 +31,37 @@ class DBAuthenticator(Authenticator):
         )
         self.key_db = key_db
 
-    def authorize(self, key: str, method: str, resource: str):
-        """
-        Inputs:
-            - key: string e.g. myuser:mysecret
-            - method: string e.g GET (upper)
-            - resource: string e.g. /flood/rcp85
+    def authorize(self, key: str, method: str, resource: str) -> bool:
+        """Authorize an API operation.
 
-        Return an array of the type ["GET#/wildfire/", "GET#/flood/", ...]
-        raise Exception("Unauthorized") is the suggested way to return 401 to the client
+        Check whether the provided key has is allowed to perform
+        the provided method on the provided resource.
+
+        Parameters
+        ----------
+        key : str
+            API key in the form myuser:mysecret
+        method : str
+            HTTP method of the request (e.g. GET).
+        resource : str
+            Endpoint of the requested resource (e.g. /flood/rcp85).
+
+        Returns
+        -------
+        bool
+            True if the operation is allowed, False otherwise.
+
+        Raises
+        ------
+        ValueError
+            Invalid key format.
+        ValueError
+            The hash or the hasher have been changed.
+        ValueError
+            The sort key was not found. Data may be inconsistent.
+            This is probably the result of someone messing with keys manually.
+        ValueError
+            Key is expired.
         """
 
         # Verify the key is in the correct format user:secret
