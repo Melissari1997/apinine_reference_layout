@@ -66,7 +66,6 @@ module "apinine_authorizer" {
   attach_policy_json = true
   policy_json        = data.aws_iam_policy_document.apinine_authorizer_dynamo.json
 
-  # FIXME: add permission for authorizer. How to get the correct id? Use *?
   environment_variables = {
     "POWERTOOLS_LOG_LEVEL" : "INFO",
     "POWERTOOLS_SERVICE_NAME" : "APININE_AUTHORIZER",
