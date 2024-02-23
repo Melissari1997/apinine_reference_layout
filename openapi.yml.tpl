@@ -376,6 +376,7 @@ components:
       x-amazon-apigateway-authorizer:
         type: request
         authorizerUri: ${authorizer_lambda}
+        authorizerCredentials: ${authorizer_credentials}
         authorizerResultTtlInSeconds: 2
         authorizerPayloadFormatVersion: "1.0"
         identitySource: "method.request.header.x-api-key"
