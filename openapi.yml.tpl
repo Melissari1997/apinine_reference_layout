@@ -18,7 +18,7 @@ paths:
       x-amazon-apigateway-integration:
         httpMethod: POST
         type: aws_proxy
-        uri: ${invoke_arn}
+        uri: ${drought_lambda_uri}
         credentials: ${apinine_resource_drought_role}
       security:
         - apinineAuthorizerv2: []

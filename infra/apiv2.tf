@@ -9,6 +9,7 @@ resource "aws_api_gateway_rest_api" "apininev2" {
     authorizer_lambda      = module.apinine_authorizer.lambda_function_invoke_arn
 
     apinine_resource_drought_role = module.apinine_resource_drought_role.role.arn
+    drought_lambda_uri            = module.apinine_drought.lambda_function_invoke_arn
 
     apinine_resource_flood_role = module.apinine_resource_flood_role.role.arn
     flood_lambda_uri            = module.apinine_flood.lambda_function_invoke_arn
@@ -60,7 +61,7 @@ module "apinine_resource_drought_role" {
   source = "./modules/apigw_resource_role"
 
   role_name   = "apinine_resource_drought_role"
-  lambda_arns = ["arn:aws:lambda:eu-central-1:600920596656:function:test*"]
+  lambda_arns = ["${module.apinine_drought.lambda_function_arn}*"]
 }
 
 module "apinine_resource_wildfire_role" {
