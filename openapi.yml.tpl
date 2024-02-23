@@ -45,7 +45,7 @@ paths:
       x-amazon-apigateway-integration:
         httpMethod: POST
         type: aws_proxy
-        uri: ${invoke_arn}
+        uri: ${flood_lambda_uri}
         credentials: ${apinine_resource_flood_role}
       security:
         - apinineAuthorizerv2: []
@@ -71,7 +71,8 @@ paths:
       x-amazon-apigateway-integration:
         httpMethod: POST
         type: aws_proxy
-        uri: ${invoke_arn}
+        uri: ${flood_rcp85_lambda_uri}
+        credentials: ${apinine_resource_flood_rcp85_role}
       security:
         - apinineAuthorizerv2: []
 
@@ -93,8 +94,8 @@ paths:
       x-amazon-apigateway-integration:
         httpMethod: POST
         type: aws_proxy
-        uri: ${invoke_arn}
-        credentials: null
+        uri: ${wildfire_lambda_uri}
+        credentials: ${apinine_resource_wildfire_role}
       security:
         - apinineAuthorizerv2: []
       responses:

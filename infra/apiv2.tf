@@ -4,11 +4,20 @@ resource "aws_api_gateway_rest_api" "apininev2" {
 
   // I strongly sugget to use OpenAPI with Lambda
   body = templatefile("${path.root}/../openapi.yml.tpl", {
-    invoke_arn                    = "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:600920596656:function:test/invocations"
-    authorizer_lambda             = module.apinine_authorizer.lambda_function_invoke_arn
+    invoke_arn             = "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:600920596656:function:test/invocations"
+    authorizer_credentials = module.apinine_resource_authorizer_role.role.arn
+    authorizer_lambda      = module.apinine_authorizer.lambda_function_invoke_arn
+
     apinine_resource_drought_role = module.apinine_resource_drought_role.role.arn
-    apinine_resource_flood_role   = module.apinine_resource_flood_role.role.arn
-    authorizer_credentials        = module.apinine_resource_authorizer_role.role.arn
+
+    apinine_resource_flood_role = module.apinine_resource_flood_role.role.arn
+    flood_lambda_uri            = module.apinine_flood.lambda_function_invoke_arn
+
+    apinine_resource_flood_rcp85_role = module.apinine_resource_flood_rcp85_role.role.arn
+    flood_rcp85_lambda_uri            = module.apinine_flood_rcp85.lambda_function_invoke_arn
+
+    apinine_resource_wildfire_role = module.apinine_resource_wildfire_role.role.arn
+    wildfire_lambda_uri            = module.apinine_wildfire.lambda_function_invoke_arn
   })
 
   endpoint_configuration {
@@ -54,11 +63,25 @@ module "apinine_resource_drought_role" {
   lambda_arns = ["arn:aws:lambda:eu-central-1:600920596656:function:test*"]
 }
 
+module "apinine_resource_wildfire_role" {
+  source = "./modules/apigw_resource_role"
+
+  role_name   = "apinine_resource_wildfire_role"
+  lambda_arns = ["${module.apinine_wildfire.lambda_function_arn}*"]
+}
+
 module "apinine_resource_flood_role" {
   source = "./modules/apigw_resource_role"
 
   role_name   = "apinine_resource_flood_role"
-  lambda_arns = ["arn:aws:lambda:eu-central-1:600920596656:function:test*"]
+  lambda_arns = ["${module.apinine_flood.lambda_function_arn}*"]
+}
+
+module "apinine_resource_flood_rcp85_role" {
+  source = "./modules/apigw_resource_role"
+
+  role_name   = "apinine_resource_flood_rcp85_role"
+  lambda_arns = ["${module.apinine_flood_rcp85.lambda_function_arn}*"]
 }
 
 module "apinine_resource_authorizer_role" {
