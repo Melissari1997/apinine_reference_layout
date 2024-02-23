@@ -1,8 +1,4 @@
 class StatusCodes:
-    CONFLICTING_INPUTS = (
-        422,
-        "Either 'address' or both 'lat' and 'lon' parameters must be supplied",
-    )
     QUERYSTRING_ERROR = (
         400,
         "Either 'address' or both 'lat' and 'lon' parameters must be supplied. 'lon' must be between -22 and 45, 'lat' must be between 27 and 72",
