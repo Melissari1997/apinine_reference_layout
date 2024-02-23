@@ -21,6 +21,7 @@ paths:
         uri: ${drought_lambda_uri}
         credentials: ${apinine_resource_drought_role}
       security:
+        - apinineApiKey: []
         - apinineAuthorizerv2: []
       responses:
         "200":
@@ -48,6 +49,7 @@ paths:
         uri: ${flood_lambda_uri}
         credentials: ${apinine_resource_flood_role}
       security:
+        - apinineApiKey: []
         - apinineAuthorizerv2: []
       responses:
         "200":
@@ -74,6 +76,7 @@ paths:
         uri: ${flood_rcp85_lambda_uri}
         credentials: ${apinine_resource_flood_rcp85_role}
       security:
+        - apinineApiKey: []
         - apinineAuthorizerv2: []
 
       responses:
@@ -97,6 +100,7 @@ paths:
         uri: ${wildfire_lambda_uri}
         credentials: ${apinine_resource_wildfire_role}
       security:
+        - apinineApiKey: []
         - apinineAuthorizerv2: []
       responses:
         "200":
@@ -369,6 +373,11 @@ components:
 
   # security schemese
   securitySchemes:
+    apinineApiKey:
+      name: "x-api-key"
+      type: apiKey
+      in: header
+      x-amazon-apigateway-api-key-source: HEADER
     apinineAuthorizerv2:
       name: apinineAuthorizerv2
       type: apiKey
