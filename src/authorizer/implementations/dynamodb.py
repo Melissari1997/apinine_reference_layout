@@ -36,7 +36,7 @@ class DynamoKeyDB(KeyDB):
         Returns
         -------
         dict
-
+            Query result.
         """
         query = self.create_query_input(pk)
         result = self.execute_query(query)

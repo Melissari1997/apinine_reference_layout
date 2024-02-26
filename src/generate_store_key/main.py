@@ -4,6 +4,7 @@
 3 - Store it in DynamoDB with all the timestamps
 4 - Store Permissions
 """
+
 import click
 from adapter.api_gw_key import ApiGwKeyGenerator
 from adapter.dynamodb import DynamoDBKey
@@ -12,7 +13,7 @@ from permissions import Permissions
 
 
 @click.group()
-def cli():
+def cli() -> None:
     pass
 
 
@@ -28,7 +29,22 @@ def cli():
     type=click.Choice(choices=[permission.value for permission in Permissions]),
 )
 @click.option("--description", "-d", help="Optional description", default="")
-def generate_key(name, org, permission, description):
+def generate_key(name: str, org: str, permission: list[str], description: str) -> None:
+    """Generate key with provided name, organization, description and set of permissions.
+
+    This creates both an API Gateway key, and an item in a backend DynamoDB table.
+
+    Parameters
+    ----------
+    name : str
+        Name of the API Gateway key to be generated.
+    org : str
+        Organization of the key to be generated.
+    permission : list[str]
+        List of resources the generated key will be allowed to access.
+    description : str
+        Description of the key to be generated.
+    """
     apigwkey = ApiGwKeyGenerator()
     dynamodb_repository = DynamoDBKey()
 
