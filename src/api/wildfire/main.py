@@ -1,11 +1,8 @@
-import os
-
 from aws_lambda_powertools import Logger
-from common.input_schema import querystring_schema
+from common.event_parser import parse_aws_event
 from common.response import handle_response
 from geocoder.geocoder import Geocoder
 from geocoder.gmaps_geocoder import GMapsGeocoder
-from jsonschema import validate
 from readgeodata.interfaces import GeoDataReader
 from readgeodata.rasterioreader import RasterIOReader
 from schema import OutputSchema
@@ -103,24 +100,7 @@ def main(
 @handle_response(validate_schema=OutputSchema)
 @logger.inject_lambda_context
 def handler(event: dict, context: dict = None) -> dict:
-    filename = os.environ.get("GEOTIFF_PATH")
-
-    if filename is None:
-        raise ValueError("Missing env var GEOTIFF_PATH")
-
-    query_params = event.get("queryStringParameters")
-
-    validate(instance=query_params, schema=querystring_schema)
-
-    address = query_params.get("address")
-
-    lat = query_params.get("lat")
-    if lat is not None:
-        lat = float(lat)
-
-    lon = query_params.get("lon")
-    if lon is not None:
-        lon = float(lon)
+    filename, address, lat, lon = parse_aws_event(event)
 
     response = main(
         filename=filename,
