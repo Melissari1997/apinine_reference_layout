@@ -16,9 +16,42 @@ class RasterIOReader(GeoDataReader):
         coordinates: list[tuple],
         metadata: list[str] = None,
         coordinates_crs: int = 4326,
-    ):
+    ) -> dict:
+        """Sample a .tif file at specific coordinates.
+
+        This does the following:
+        - Open the file
+        - Transform the coordinates in the provided CRS
+        - Sample the data points from the file
+        - Include any provided metadata
+
+        Parameters
+        ----------
+        filename : str
+            Path of the file to be read.
+        coordinates : list[tuple]
+            List of tuples in the form (lon, lat).
+        metadata : list[str], optional
+            Metadatas to fetch from file, by default None.
+        coordinates_crs : int, optional
+            CRS of the provided coordinates, by default 4326.
+
+        Returns
+        -------
+        dict
+            Dictionary of data mapping the .tif band names to a list of values
+            sampled at specified coordinates. Any additional metadata included
+            as arguments is included in a 'metadata' field, which is a dictionary
+            mapping metadata fields and values found in the .tif file.
+
+        Raises
+        ------
+        BandsNameNotFoundError
+            Raised when any of the tif file's bands has no name.
+        """
         if metadata is None:
             metadata = []
+
         with rasterio.open(filename) as ds:
             current_crs = ds.profile["crs"]
             tags = {tag: ds.tags()[tag] for tag in metadata}
