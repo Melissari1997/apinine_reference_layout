@@ -1,4 +1,4 @@
-from aws_lambda_powertools import Logger
+from aws_lambda_powertools import Logger, Tracer
 from common.event_parser import parse_aws_event
 from common.response import handle_response
 from geocoder.geocoder import Geocoder
@@ -8,6 +8,7 @@ from readgeodata.rasterioreader import RasterIOReader
 from schema import OutputSchema
 
 logger = Logger()
+tracer = Tracer()
 gmapsgeocoder = GMapsGeocoder()
 riogeoreader = RasterIOReader()
 
@@ -23,6 +24,7 @@ class DroughtKeys:
     SEVERITY_RP200 = "severity_rp200y"
 
 
+@tracer.capture_method
 def main(
     filename: str,
     address: str,
@@ -105,6 +107,7 @@ def main(
 
 @handle_response(validate_schema=OutputSchema)
 @logger.inject_lambda_context
+@tracer.capture_lambda_handler
 def handler(event: dict, context: dict = None) -> dict:
     filename, address, lat, lon = parse_aws_event(event)
 

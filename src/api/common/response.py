@@ -2,7 +2,7 @@ import json
 import traceback
 from typing import Callable
 
-from aws_lambda_powertools import Logger
+from aws_lambda_powertools import Logger, Tracer
 from geocoder.geocoder import (
     FailedGeocodeError,
     MultipleMatchesForAddressError,
@@ -15,8 +15,10 @@ from .errors import MissingDataError, QuerystringInputError
 from .status_codes import StatusCodes
 
 logger = Logger()
+tracer = Tracer()
 
 
+@tracer.capture_method
 def handle_response(validate_schema: BaseModel) -> Callable:
     """Decorator handling common exceptions and formatting.
 
