@@ -14,7 +14,9 @@ select = [
     "I", # isort
     "C", # flake8-comprehensions
     "B", # flake8-bugbear
-    "N", # pep8-naming
+    "N", # pep8-naming,
+    "ANN001", # argument type annotations
+    "ANN201" # missing public function return type
 ]
 
 ignore = [
@@ -23,9 +25,14 @@ ignore = [
     "C901", # too complex
 ]
 
+
 # Avoid automatically removing unused imports in __init__.py files
 # https://docs.astral.sh/ruff/settings/#ignore-init-module-imports
 ignore-init-module-imports = true
 
 [tool.ruff.pydocstyle]
 convention = "numpy"
+
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["ANN"]

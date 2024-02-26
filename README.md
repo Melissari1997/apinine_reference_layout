@@ -10,10 +10,11 @@ The top level folders are the following:
 - **.github/wokrflows**: contains the definitions of the github workflows (pipelines)
 
 ## src
-The **src** folder contains the following folders:
-- **api**: endpoint code
-- **authorizer**: lambda custom authorizer
-- **generate_store_key**: script used for generating API keys. It stores the key both in API Gateway and inside a DynamoDB table. In the future it could be extended to implement key updates, addition or subtraction of specific authorization policies, and more.
+The **src** folder contains:
+- **api** folder: endpoint code
+- **authorizer** folder: lambda custom authorizer
+- **generate_store_key** folder: script used for generating API keys. It stores the key both in API Gateway and inside a DynamoDB table. In the future it could be extended to implement key updates, addition or subtraction of specific authorization policies, and more
+- **Makefile**: automates common actions (build, tests)
 
 
 ## Generate Key
@@ -30,7 +31,6 @@ Within each directory, one can find:
 - **test** folder: contains pytest tests
 - **Dockerfile**: used to build the Docker image to be used in Lambda functions
 - **build-env-variables**: file in the form ENV=VALUE. Stores the value of env variables needed at build time, namely geotiff paths
-- **Makefile**: automates common actions (build, tests, etc..)
 
 *Makefile* and *Dockerfile* are not present in the *common* folder.
 
@@ -53,6 +53,14 @@ Each application folder trigger a build only when the code inside that specific 
 
 Each workflow leverage the reusable workflow *build-test-deploy.yml* that extracts the GEOTIFF_PATH from the *build-env-variables* file before calling the *build-push-layout* action. This way each workflow just has to specify a list of variables, like the name of Docker image and Lambda function to be updated.
 
+# Testing
+
+There are two ways to run tests:
+1. By running make inside the src folder. The following combinations are supported:
+   - ```make testapi```            Run API tests
+   - ```make testauthorizer```     Run Lambda Authorizer tests
+   - ```make testall```            Run all the tests
+2. By using the VSCode extension as explained in the [.vscode subsection](#vscode)
 
 # Code consistency
 Code consistency is enforced through the use of [pre-commit](https://pre-commit.com/) and [Ruff](https://docs.astral.sh/ruff/).

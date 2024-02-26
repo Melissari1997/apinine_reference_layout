@@ -58,6 +58,30 @@ class GMapsGeocoder(Geocoder):
         return country in valid_countries
 
     def geocode(self, address: str) -> tuple[tuple[float, float], str]:
+        """Call Google Maps to look up the provided address and retrieve
+        the corresponding (lon, lat) coordinates.
+
+        Parameters
+        ----------
+        address : str
+            The address to be looked up.
+
+        Returns
+        -------
+        tuple[tuple[float, float], str]
+            Couple of coordinates (lon, lat) and formatted address.
+
+        Raises
+        ------
+        FailedGeocodeError
+            Raised when geocode returns no results.
+        MultipleMatchesForAddressError
+            Raised when the address cannot be uniquely identified.
+        OutOfBoundsError
+            Raised when the looked up address is out of bounds.
+            As of today, any location outside of Italy is OOB.
+        """
+
         # Lazy init
         if not self.gmaps_client:
             self._setup_client()

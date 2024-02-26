@@ -1,11 +1,8 @@
-import os
-
 from aws_lambda_powertools import Logger
-from common.input_schema import querystring_schema
+from common.event_parser import parse_aws_event
 from common.response import handle_response
 from geocoder.geocoder import Geocoder
 from geocoder.gmaps_geocoder import GMapsGeocoder
-from jsonschema import validate
 from readgeodata.interfaces import GeoDataReader
 from readgeodata.rasterioreader import RasterIOReader
 from schema import OutputSchema
@@ -16,6 +13,11 @@ riogeoreader = RasterIOReader()
 
 
 class FloodKeys:
+    """Name of the fields to read from the geotiff.
+    These are all band names except 'NATIONAL_AAL'
+    which is a metadata field.
+    """
+
     WH_20 = "20 layer, band 1"
     WH_100 = "100 layer, band 2"
     WH_200 = "200 layer, band 3"
@@ -35,10 +37,42 @@ def main(
     geocoder: Geocoder,
     geodatareader: GeoDataReader,
 ) -> dict:
+    """Compute the flood risk assessment for a location.
+
+    The data is retrieved from a file (usually a .tif file) by the
+    geodatareader,which samples the file in the specified set of
+    coordinates (lat, lon).
+
+    If an address is provided instead, retrieve the corresponding
+    coordinates first using the geocoder object.
+
+    Parameters
+    ----------
+    filename : str
+        Path of the file to read data from.
+    address : str
+        Address to query.
+    lon : float
+        Longitude to query. If supplied, the 'lat' param must be supplied as well.
+    lat : float
+        Latitude to query. If supplied, the 'lat' param must be supplied as well.
+    geocoder : Geocoder
+        Object use for the geocoding. If address is supplied, it must not be None.
+    geodatareader : GeoDataReader
+        Object use for reading the data.
+
+    Returns
+    -------
+    dict
+        Dictionary containing info about the location and the flood risk assessment.
+    """
     if address:
+        logger.info(f"Geocoding address: '{address}'")
         (lon, lat), address = geocoder.geocode(address)
 
-    logger.info(f"MAIN: {filename}")
+    logger.info(
+        f"Starting flood risk assessment with filename: '{filename}', address: '{address}', lat: '{lat}', lon: '{lon}'"
+    )
     values = geodatareader.sample_data_points(
         filename=filename, coordinates=[(lon, lat)], metadata=["STATISTICS_MEAN"]
     )
@@ -73,25 +107,8 @@ def main(
 
 @handle_response(validate_schema=OutputSchema)
 @logger.inject_lambda_context
-def handler(event, context=None):
-    filename = os.environ.get("GEOTIFF_PATH")
-
-    if filename is None:
-        raise ValueError("Missing env var GEOTIFF_PATH")
-
-    query_params = event.get("queryStringParameters", None)
-
-    validate(instance=query_params, schema=querystring_schema)
-
-    address = query_params.get("address")
-
-    lat = query_params.get("lat")
-    if lat is not None:
-        lat = float(lat)
-
-    lon = query_params.get("lon")
-    if lon is not None:
-        lon = float(lon)
+def handler(event: dict, context: dict = None) -> dict:
+    filename, address, lat, lon = parse_aws_event(event)
 
     response = main(
         filename=filename,

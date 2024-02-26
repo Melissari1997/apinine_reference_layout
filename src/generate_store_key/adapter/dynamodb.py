@@ -26,7 +26,22 @@ class DynamoDBKey(KeyRepository):
             "RequestLimitExceeded": "Throughput exceeds the current throughput limit for your account, increase account level throughput before retrying",
         }
 
-    def save_key_and_permission(self, hashed_key, permissions, organization, user):
+    def save_key_and_permission(
+        self, user: str, hashed_key: str, permissions: list[str], organization: str
+    ) -> None:
+        """Store provided values as an item in DynamoDB.
+
+        Parameters
+        ----------
+        user : str
+            'User' part of the key. Stored as Partition Key.
+        hashed_key : str
+            'Secret' part of the key. Stored as Sort Key.
+        permissions : list[str]
+            List of key permissions.
+        organization : str
+            Organization the string belongs to.
+        """
         now = datetime.datetime.now()
         expiration_interval = datetime.timedelta(days=1000)
         expiration_date = now + expiration_interval
@@ -74,7 +89,14 @@ class DynamoDBKey(KeyRepository):
 
         self.execute_batch_write_items(batch_items=batch_items)
 
-    def execute_put_item(self, item):
+    def execute_put_item(self, item: dict) -> None:
+        """Write single item in DynamoDB.
+
+        Parameters
+        ----------
+        item : dict
+            Dictionary representing the item to be put.
+        """
         try:
             self.dynamodb_client.put_item(**item)
             print("Successfully put item.")
@@ -84,7 +106,14 @@ class DynamoDBKey(KeyRepository):
         except BaseException as error:
             print(f"Unknown error while putting item: {error}")
 
-    def execute_batch_write_items(self, batch_items):
+    def execute_batch_write_items(self, batch_items: dict) -> None:
+        """Write items in batch in DynamoDB.
+
+        Parameters
+        ----------
+        batch_items : dict
+            Dictionary of items to write.
+        """
         try:
             self.dynamodb_client.batch_write_item(RequestItems=batch_items)
             print("Successfully put items.")
@@ -94,7 +123,14 @@ class DynamoDBKey(KeyRepository):
         except BaseException as error:
             print(f"Unknown error while putting items: {error}")
 
-    def handle_error(self, error):
+    def handle_error(self, error: Exception) -> None:
+        """Handle common DynamoDB errors.
+
+        Parameters
+        ----------
+        error : Exception
+            The exception to analyze and print information about.
+        """
         error_code = error.response["Error"]["Code"]
         error_message = error.response["Error"]["Message"]
 
