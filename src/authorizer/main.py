@@ -74,8 +74,8 @@ def authenticate_api_key(table_name: str, key: str, method_arn: str) -> dict:
 
     Returns
     -------
-    policy
-        IAM policy as dictionary, allowing or denying the access to the endpoint.
+    policy: dict
+        IAM policy allowing or denying the access to the endpoint.
     """
     dynamo_keydb: KeyDB = DynamoKeyDB(table_name=table_name)
     authenticator: Authenticator = DBAuthenticator(key_db=dynamo_keydb)
