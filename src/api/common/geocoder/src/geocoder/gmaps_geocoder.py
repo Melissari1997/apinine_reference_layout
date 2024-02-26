@@ -3,6 +3,7 @@ import os
 
 import boto3
 import googlemaps
+from aws_lambda_powertools import Tracer
 from botocore.exceptions import ClientError
 
 from geocoder.geocoder import (
@@ -11,6 +12,8 @@ from geocoder.geocoder import (
     MultipleMatchesForAddressError,
     OutOfBoundsError,
 )
+
+tracer = Tracer()
 
 
 class GMapsGeocoder(Geocoder):
@@ -57,6 +60,7 @@ class GMapsGeocoder(Geocoder):
         )["long_name"]
         return country in valid_countries
 
+    @tracer.capture_method
     def geocode(self, address: str) -> tuple[tuple[float, float], str]:
         """Call Google Maps to look up the provided address and retrieve
         the corresponding (lon, lat) coordinates.

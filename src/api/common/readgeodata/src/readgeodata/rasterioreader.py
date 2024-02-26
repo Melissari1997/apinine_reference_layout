@@ -1,15 +1,19 @@
 import numpy as np
 import rasterio
 import rasterio.warp
+from aws_lambda_powertools import Tracer
 from rasterio.crs import CRS
 
 from readgeodata.interfaces import BandsNameNotFoundError, GeoDataReader
+
+tracer = Tracer()
 
 
 class RasterIOReader(GeoDataReader):
     def __init__(self):
         pass
 
+    @tracer.capture_method
     def sample_data_points(
         self,
         filename: str,
