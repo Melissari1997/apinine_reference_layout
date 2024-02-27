@@ -1,5 +1,5 @@
 import pytest
-from api.common.input_schema import querystring_schema
+from input_schema import querystring_schema
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
