@@ -2,12 +2,12 @@ openapi: 3.0.1
 x-original-swagger-version: "2.0"
 info:
   title: Eoliann API v1
-  description: API description in Markdown.
+  description: Eoliann risks API
   version: 1.0.0
 servers:
-  - url: https://api.eoliann.solutions/
+  - url: https://${domain_name}/
 paths:
-  /drought:
+  /drought/v1:
     get:
       summary: Returns a drought assessment for an address.
       description: Optional extended description in Markdown.
@@ -35,7 +35,7 @@ paths:
         "403":
           $ref: "#/components/responses/403Forbidden"
 
-  /flood:
+  /flood/v1:
     get:
       summary: Returns a flood assessment for an address.
       description: Optional extended description in Markdown.
@@ -62,7 +62,7 @@ paths:
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
-  /flood/rcp85:
+  /flood/rcp85/v1:
     get:
       summary: Returns a flood RCP 8.5 assessment for an address.
       description: Optional extended description in Markdown.
@@ -90,7 +90,7 @@ paths:
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
-  /wildfire:
+  /wildfire/v1:
     get:
       summary: Returns a wildfire assessment for an address.
       description: Optional extended description in Markdown.
@@ -387,6 +387,6 @@ components:
         type: request
         authorizerUri: ${authorizer_lambda}
         authorizerCredentials: ${authorizer_credentials}
-        authorizerResultTtlInSeconds: 2
+        authorizerResultTtlInSeconds: 10
         authorizerPayloadFormatVersion: "1.0"
         identitySource: "method.request.header.x-api-key"

@@ -4,7 +4,8 @@ resource "aws_api_gateway_rest_api" "apininev2" {
 
   // I strongly sugget to use OpenAPI with Lambda
   body = templatefile("${path.root}/../openapi.yml.tpl", {
-    invoke_arn             = "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:600920596656:function:test/invocations"
+    domain_name = var.custom_domain_name
+
     authorizer_credentials = module.apinine_resource_authorizer_role.role.arn
     authorizer_lambda      = module.apinine_authorizer.lambda_function_invoke_arn
 

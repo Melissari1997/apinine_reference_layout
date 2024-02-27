@@ -19,3 +19,7 @@ variable "authorizer_hasher_config" {
   description = "Argon2id hasher configuration"
   default     = {}
 }
+
+variable "custom_domain_name" {
+  type = string
+}
