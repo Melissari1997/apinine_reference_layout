@@ -15,6 +15,9 @@ wildfire:
 	docker build -t apinine-wildfire \
 	--target production --build-arg GEOTIFF_PATH=$$GEOTIFF_PATH -f wildfire/Dockerfile .
 
+schema_test:
+	cd common; pip install -r requirements-dev.txt; pytest
+
 .ONESHELL:
 tests:
 	pytest drought

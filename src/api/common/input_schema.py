@@ -6,7 +6,10 @@ querystring_schema = {
     "dependentRequired": {"lat": ["lon"], "lon": ["lat"]},
     "properties": {
         # This accepts decimal numbers from 27 to 72
-        "lat": {"type": "string", "pattern": "^(?:2[7-9]|[3-6]\\d|7[0-2])(\\.\\d+)?$"},
+        "lat": {
+            "type": "string",
+            "pattern": "^((?:2[7-9]|[3-6]\\d|7[0-1])(\\.\\d+)?|72(\\.0*)?)$",
+        },
         "lon": {
             "oneOf": [
                 # This accepts decimal numbers from -22 to 0
