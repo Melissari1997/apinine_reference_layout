@@ -1,5 +1,4 @@
 import json
-import traceback
 from typing import Callable
 
 from aws_lambda_powertools import Logger, Tracer
@@ -14,7 +13,7 @@ from pydantic import BaseModel
 from .errors import MissingDataError, QuerystringInputError
 from .status_codes import StatusCodes
 
-logger = Logger()
+logger = Logger(serialize_stacktrace=True)
 tracer = Tracer()
 
 
@@ -75,15 +74,15 @@ def handle_response(validate_schema: BaseModel) -> Callable:
                     status_code, err_message = StatusCodes.UNKNOWN_ADDRESS
                 except MissingDataError:
                     status_code, err_message = StatusCodes.MISSING_DATA
-                except ValidationError:
+                except ValidationError as ve:
                     # coming from jsonschema validate
-                    logger.info(traceback.format_exc())
+                    logger.exception(ve)
                     status_code, err_message = StatusCodes.QUERYSTRING_ERROR
                 except QuerystringInputError:
                     status_code, err_message = StatusCodes.QUERYSTRING_ERROR
-                except Exception:
+                except Exception as e:
+                    logger.exception(e)
                     status_code, err_message = StatusCodes.INTERNAL_SERVER_ERROR
-                    logger.error(traceback.format_exc())
 
                 return body, (status_code, err_message)
 
