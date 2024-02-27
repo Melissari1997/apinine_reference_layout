@@ -37,7 +37,7 @@ jobs:
 
       - name: Test Common
         run: |
-          cd src/api/common
+          cd src/api
           make schema_test
 
       - name: Parse and get geotiff path
