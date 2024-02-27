@@ -37,8 +37,8 @@ jobs:
 
       - name: Test Common
         run: |
-          cd src/common
-          pytest
+          cd src/api/common
+          make schema_test
 
       - name: Parse and get geotiff path
         id: parse-geotiff-path
