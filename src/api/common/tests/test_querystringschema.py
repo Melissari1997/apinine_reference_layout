@@ -51,9 +51,9 @@ class TestQuerystringSchema:
         [
             ("27", "-22.0"),
             ("32", "45.0"),
-            ("72.0", "44.9"),
-            ("32", "-0.5"),
-            ("32", "0.0"),
+            ("72.0", "44.9999"),
+            ("32.125", "-0.5"),
+            ("32.0005", "0.005"),
         ],
     )
     def test_valid_lat_lon_schema(self, lat, lon):
@@ -80,7 +80,7 @@ class TestQuerystringSchema:
 
     @pytest.mark.parametrize(
         "lon",
-        [("-22.1"), ("-30"), ("-23")],
+        [("-22.1"), ("-30.125"), ("-23.00")],
     )
     def test_lon_too_low(self, lon):
         instance = {"lon": lon, "lat": "27"}
