@@ -3,6 +3,7 @@
 querystring_schema = {
     "type": "object",
     "oneOf": [{"required": ["lat", "lon"]}, {"required": ["address"]}],
+    "dependentRequired": {"lat": ["lon"], "lon": ["lat"]},
     "properties": {
         # This accepts decimal numbers from 27 to 72
         "lat": {"type": "string", "pattern": "^(?:2[7-9]|[3-6]\\d|7[0-2])(\\.\\d+)?$"},
