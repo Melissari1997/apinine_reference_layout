@@ -387,6 +387,6 @@ components:
         type: request
         authorizerUri: ${authorizer_lambda}
         authorizerCredentials: ${authorizer_credentials}
-        authorizerResultTtlInSeconds: 10
+        authorizerResultTtlInSeconds: 0
         authorizerPayloadFormatVersion: "1.0"
         identitySource: "method.request.header.x-api-key"
