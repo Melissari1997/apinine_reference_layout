@@ -75,33 +75,63 @@ class TestFloodUnit:
 
         assert want_status_code == got["statusCode"]
 
+    @pytest.mark.parametrize(
+        "address,lat,lon",
+        [
+            ("addr", "27", "-22.0"),
+            ("addr", "45.0", None),
+            ("addr", None, "44.9999"),
+            (None, "32.125", None),
+            (None, None, "40"),
+        ],
+    )
     def test_handler_conflicting(
         self,
+        address,
+        lat,
+        lon,
         geotiff_path_s3,
         monkeypatch,
         lambda_powertools_ctx,
-        event_conflict_lat_lon_addr,
     ):
         gmaps = MockGeocoder()
         rioreader = MockGeoDataReaderFlood()
         monkeypatch.setattr(main, "gmapsgeocoder", gmaps)
         monkeypatch.setattr(main, "riogeoreader", rioreader)
 
-        got = handler(event=event_conflict_lat_lon_addr, context=lambda_powertools_ctx)
+        got = handler(
+            event={
+                "queryStringParameters": {"address": address, "lon": lon, "lat": lat}
+            },
+            context=lambda_powertools_ctx,
+        )
 
         want_status_code, wanted_body = StatusCodes.QUERYSTRING_ERROR
 
         assert want_status_code == got["statusCode"]
         assert wanted_body == got["body"]
 
+    @pytest.mark.parametrize(
+        "lat,lon",
+        [
+            ("30", "72.0001"),
+            ("26.9999", "30"),
+            ("-54", "30"),
+            ("30", "11123"),
+            ("32323", "11123"),
+        ],
+    )
     def test_invalid_lat_lon(
         self,
+        lat,
+        lon,
         geotiff_path_s3,
-        # monkeypatch,
         lambda_powertools_ctx,
-        event_invalid_lat_lon_values,
     ):
-        got = handler(event=event_invalid_lat_lon_values, context=lambda_powertools_ctx)
+        got = handler(
+            event={"queryStringParameters": {"lon": lon, "lat": lat}},
+            context=lambda_powertools_ctx,
+        )
 
         want_status_code, wanted_body = StatusCodes.QUERYSTRING_ERROR
 
