@@ -9,6 +9,10 @@ env:
   aws-account-id: 600920596656
   aws-region: eu-central-1
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   show:
     runs-on: ubuntu-22.04
