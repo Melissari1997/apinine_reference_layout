@@ -1,0 +1,16 @@
+# Docker
+**/Dockerfile
+.dockerignore
+
+# Python-specific
+**/__pycache__/
+**/.pytest_cache/
+
+# Virtual environment
+**/env/
+**/.env
+**/venv/
+**/.venv/
+
+# Project-specific
+**/build-env-variables
