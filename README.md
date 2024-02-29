@@ -46,7 +46,7 @@ We set it to update the PYTHONPATH, so that the code inside every risk folder ca
 In order to use the integrated test VSCode utility, it's necessary to set the *python.testing.pytestArgs* value to the directory whose tests have to be run (e.g. "src/api/flood")
 
 ## .github/actions
-Contains the single folder *build-push-layout* that automates the docker building, tagging and pushing of images to ECR. 
+Contains the single folder *build-push-layout* that automates the docker building, tagging and pushing of images to ECR.
 
 ## .github/workflows
 Each application folder trigger a build only when the code inside that specific folder **or in common**  is updated.
@@ -88,3 +88,5 @@ In case of fixable erros, pre-commit will fix the appropriate files but is still
 Ruff works alongside Black to format the codebase in a clean fashion.
 
 It runs every time a *.py* file is saved and performs, among other things, linting, import sorting, etc. The list of rules we use is present in the pyproject.toml file, under **[tool.ruff.select]** voice.
+
+add random stuff
