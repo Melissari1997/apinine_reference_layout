@@ -88,5 +88,3 @@ In case of fixable erros, pre-commit will fix the appropriate files but is still
 Ruff works alongside Black to format the codebase in a clean fashion.
 
 It runs every time a *.py* file is saved and performs, among other things, linting, import sorting, etc. The list of rules we use is present in the pyproject.toml file, under **[tool.ruff.select]** voice.
-
-add random stuff
