@@ -31,3 +31,8 @@ jobs:
         run: |
           cd src
           make testall
+
+      - name: Run dockerized risks tests
+        run: |
+          cd src
+          make docker_risks

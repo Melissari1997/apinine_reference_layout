@@ -18,3 +18,6 @@ testauthorizer:
 testall: testapi testauthorizer
 
 testall_unit: testapi_unit testauthorizer
+
+docker_risks:
+	@$(MAKE) -C api docker_risks
