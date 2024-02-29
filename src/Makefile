@@ -6,6 +6,7 @@ fix-format:
 
 testapi:
 	@$(MAKE) -C api tests
+	@$(MAKE) -C api schema_test
 
 testapi_unit:
 	@$(MAKE) -C api tests_unit
