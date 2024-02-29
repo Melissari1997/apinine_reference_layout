@@ -26,6 +26,6 @@ tests:
 
 .ONESHELL:
 tests_unit:
-	pytest drought -m unit
-	pytest flood -m unit
-	pytest wildfire -m unit
+	pip install -r drought/requirements-dev.txt; pytest drought -m unit
+	pip install -r flood/requirements-dev.txt; pytest flood -m unit
+	pip install -r wildfire/requirements-dev.txt; pytest wildfire -m unit
