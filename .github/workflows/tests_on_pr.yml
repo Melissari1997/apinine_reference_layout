@@ -27,7 +27,7 @@ jobs:
           role-to-assume: arn:aws:iam::${{ env.aws-account-id }}:role/${{ env.aws-role-name }}
           role-session-name: ${{ env.aws-role-name }}-session
 
-      - name: Run unit tests
+      - name: Run tests
         run: |
           cd src
           make testall
