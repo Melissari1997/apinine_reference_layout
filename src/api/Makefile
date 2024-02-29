@@ -23,3 +23,9 @@ tests:
 	pytest drought
 	pytest flood
 	pytest wildfire
+
+.ONESHELL:
+tests_unit:
+	pytest drought -m unit
+	pytest flood -m unit
+	pytest wildfire -m unit
