@@ -12,6 +12,8 @@ testapi_unit:
 	@$(MAKE) -C api schema_test
 
 testauthorizer:
-	pytest authorizer
+	cd authorizer; pip install -r requirements-dev.txt; pytest
 
 testall: testapi testauthorizer
+
+testall_unit: testapi_unit testauthorizer
