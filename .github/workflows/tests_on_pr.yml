@@ -1,11 +1,11 @@
-name: "Run unit tests on PR"
+name: "Run tests on PR"
 
 on:
   pull_request:
     branches: ["main"]
 
 env:
-  aws-role-name: gh_drought
+  aws-role-name: github_actions_role
   aws-account-id: 600920596656
   aws-region: eu-central-1
 
@@ -31,7 +31,6 @@ jobs:
           aws-region: ${{ env.aws-region }}
           role-to-assume: arn:aws:iam::${{ env.aws-account-id }}:role/${{ env.aws-role-name }}
           role-session-name: ${{ env.aws-role-name }}-session
-
 
       - name: Run unit tests
         run: |
