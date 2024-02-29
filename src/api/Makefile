@@ -26,6 +26,8 @@ tests:
 
 .ONESHELL:
 tests_unit:
+	pip install -e common/geocoder
+	pip install -e common/readgeodata
 	pip install -r drought/requirements-dev.txt; pytest drought -m unit
 	pip install -r flood/requirements-dev.txt; pytest flood -m unit
 	pip install -r wildfire/requirements-dev.txt; pytest wildfire -m unit
