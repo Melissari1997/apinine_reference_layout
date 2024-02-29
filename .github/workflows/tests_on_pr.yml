@@ -1,0 +1,17 @@
+name: "Run unit tests on PR"
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  show:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run unit tests
+        run: |
+          cd src
+          make testall_unit
