@@ -1,8 +1,6 @@
 import os
 
-from jsonschema import validate
-
-from .input_schema import querystring_schema
+from .input_schema import validate_query_params
 
 
 def parse_aws_event(event: dict) -> tuple[str, str, float, float]:
@@ -28,9 +26,9 @@ def parse_aws_event(event: dict) -> tuple[str, str, float, float]:
     if filename is None:
         raise ValueError("Missing env var GEOTIFF_PATH")
 
-    query_params = event.get("queryStringParameters")
+    query_params = event.get("queryStringParameters", {})
 
-    validate(instance=query_params, schema=querystring_schema)
+    validate_query_params(query_params)
 
     address = query_params.get("address")
 

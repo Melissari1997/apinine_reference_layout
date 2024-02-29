@@ -7,10 +7,9 @@ from geocoder.geocoder import (
     MultipleMatchesForAddressError,
     OutOfBoundsError,
 )
-from jsonschema.exceptions import ValidationError
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
-from .errors import MissingDataError, QuerystringInputError
+from .errors import MissingDataError
 from .status_codes import StatusCodes
 
 logger = Logger(serialize_stacktrace=True)
@@ -65,24 +64,28 @@ def handle_response(validate_schema: BaseModel) -> Callable:
                 body, status_code, err_message = {}, 200, None
                 try:
                     raw_body = func(*args, **kwargs)
-                    body = validate_schema(**raw_body).model_dump()
                 except FailedGeocodeError:
                     status_code, err_message = StatusCodes.UNKNOWN_ADDRESS
                 except OutOfBoundsError:
                     status_code, err_message = StatusCodes.OUT_OF_BOUNDS
                 except MultipleMatchesForAddressError:
                     status_code, err_message = StatusCodes.UNKNOWN_ADDRESS
-                except MissingDataError:
-                    status_code, err_message = StatusCodes.MISSING_DATA
                 except ValidationError as ve:
-                    # coming from jsonschema validate
                     logger.exception(ve)
-                    status_code, err_message = StatusCodes.QUERYSTRING_ERROR
-                except QuerystringInputError:
                     status_code, err_message = StatusCodes.QUERYSTRING_ERROR
                 except Exception as e:
                     logger.exception(e)
                     status_code, err_message = StatusCodes.INTERNAL_SERVER_ERROR
+                # When there is no error, validate output
+                else:
+                    try:
+                        body = validate_schema(**raw_body).model_dump()
+                    except MissingDataError:
+                        status_code, err_message = StatusCodes.MISSING_DATA
+                    # Raise error if schema is not what I expect
+                    except Exception as ve:
+                        logger.exception(ve)
+                        status_code, err_message = StatusCodes.INTERNAL_SERVER_ERROR
 
                 return body, (status_code, err_message)
 

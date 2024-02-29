@@ -36,7 +36,6 @@ class MockGeoDataReaderFlood(GeoDataReader):
 @pytest.mark.unit
 class TestFloodUnit:
     def test_flood_with_lat_lon(self):
-        # lon, lat = 9.081023090011794, 44.395733386344574
         lon, lat = 12.215283630441727, 44.88393348245498
         gmaps = MockGeocoder()
         rioreader = MockGeoDataReaderFlood()
