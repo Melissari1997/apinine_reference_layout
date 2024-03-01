@@ -6,6 +6,7 @@ fix-format:
 
 testapi:
 	@$(MAKE) -C api tests
+	@$(MAKE) -C api schema_test
 
 testapi_unit:
 	@$(MAKE) -C api tests_unit
@@ -17,3 +18,6 @@ testauthorizer:
 testall: testapi testauthorizer
 
 testall_unit: testapi_unit testauthorizer
+
+docker_risks:
+	@$(MAKE) -C api docker_risks

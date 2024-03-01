@@ -20,9 +20,11 @@ schema_test:
 
 .ONESHELL:
 tests:
-	pytest drought
-	pytest flood
-	pytest wildfire
+	pip install -e common/geocoder
+	pip install -e common/readgeodata
+	pip install -r drought/requirements-dev.txt; pytest drought
+	pip install -r flood/requirements-dev.txt; pytest flood
+	pip install -r wildfire/requirements-dev.txt; pytest wildfire
 
 .ONESHELL:
 tests_unit:
@@ -31,3 +33,8 @@ tests_unit:
 	pip install -r drought/requirements-dev.txt; pytest drought -m unit
 	pip install -r flood/requirements-dev.txt; pytest flood -m unit
 	pip install -r wildfire/requirements-dev.txt; pytest wildfire -m unit
+
+docker_risks:
+	docker build --target test -f flood/Dockerfile .
+	docker build --target test -f drought/Dockerfile .
+	docker build --target test -f wildfire/Dockerfile .
