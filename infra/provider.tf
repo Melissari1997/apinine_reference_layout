@@ -12,9 +12,7 @@ terraform {
 # Configure the AWS Provider
 provider "aws" {
   region = "eu-central-1"
-  assume_role {
-    role_arn = var.account_role
-  }
+
   default_tags {
     tags = {
       Project = "Apinine"
