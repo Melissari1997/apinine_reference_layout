@@ -1,2 +1,2 @@
-GEOTIFF_PATH=s3://mlflow-monitoring/93/cf7509a33fe543a9a87aa7658e551659/artifacts/inference/aal_baseline_8bands.tif
-GEOTIFF_PATH_RCP85=s3://mlflow-monitoring/93/eb3f7cbd06e0459a9244d73f747eae6a/artifacts/inference/aal_rcp85_8bands.tif
+GEOTIFF_PATH=s3://mlflow-monitoring/93/4a1149ccce3f448e8c9a2119995d8c2b/artifacts/inference/R3_flood_baseline_lookup.tif
+GEOTIFF_PATH_RCP85=s3://mlflow-monitoring/93/e07c3cf7735140b984a60aeeb04cf1fc/artifacts/inference/R3_flood_rcp85_lookup.tif
