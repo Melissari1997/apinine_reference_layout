@@ -8,6 +8,12 @@ env:
   aws-role-name: github_actions_role
   aws-account-id: 600920596656
   aws-region: eu-central-1
+  TF_LOG: INFO
+  terraform_version: "1.7.4"
+  terraform_role_name: github_actions_terraform_apinine
+  backend_bucket: terraform-be-bucket
+  backend_key: apinine/terraform.tfstate
+  lock_table: terraform-be-locktable
 
 permissions:
   id-token: write
@@ -36,3 +42,51 @@ jobs:
         run: |
           cd src
           make docker_risks
+
+  tf_plan:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./infra
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.aws-region }}
+          role-to-assume: arn:aws:iam::${{ env.aws-account-id }}:role/${{ env.terraform_role_name }}
+          role-session-name: ${{ env.terraform_role_name }}-session
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.terraform_version }}
+
+
+      - name: Terraform format
+        id: fmt
+        run: terraform fmt -check
+
+
+      - name: Terraform init
+        id: init
+        # setup bucket and lock table
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ env.backend_bucket }}" \
+            -backend-config="key=${{ env.backend_key }}" \
+            -backend-config="dynamodb_table=${{ env.lock_table }}"
+
+
+      - name: Terraform validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color
+        #continue-on-error: true
