@@ -6,8 +6,5 @@ terraform {
     encrypt        = true
     dynamodb_table = "terraform-be-locktable"
 
-    assume_role = {
-      role_arn = "arn:aws:iam::600920596656:role/admin_role"
-    }
   }
 }
