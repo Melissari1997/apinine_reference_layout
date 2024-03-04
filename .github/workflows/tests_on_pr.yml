@@ -45,6 +45,7 @@ jobs:
           make docker_risks
 
   tf_plan:
+    permissions: write-all
     runs-on: ubuntu-22.04
     defaults:
       run:
