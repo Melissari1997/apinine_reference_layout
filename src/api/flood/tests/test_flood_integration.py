@@ -91,12 +91,14 @@ class TestFloodIntegration:
         assert want_status_code == got["statusCode"]
         assert wanted_body == got["body"]
 
-    def test_integ_too_generic_address(
-        self, geotiff_path_s3, event_too_generic_address, lambda_powertools_ctx
-    ):
-        got = handler(event=event_too_generic_address, context=lambda_powertools_ctx)
-
-        want_status_code, wanted_body = StatusCodes.UNKNOWN_ADDRESS
-
-        assert want_status_code == got["statusCode"]
-        assert wanted_body == got["body"]
+    #  2024-03-04: commented because google maps does not
+    #   reply anymore with multiple addresses in this scenario
+    # def test_integ_too_generic_address(
+    #    self, geotiff_path_s3, event_too_generic_address, lambda_powertools_ctx
+    # ):
+    #    got = handler(event=event_too_generic_address, context=lambda_powertools_ctx)
+    #
+    #    want_status_code, wanted_body = StatusCodes.UNKNOWN_ADDRESS
+    #
+    #    assert want_status_code == got["statusCode"]
+    #    assert wanted_body == got["body"]
