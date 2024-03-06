@@ -80,5 +80,5 @@ jobs:
           minimum-approvals: 1
           approvers: ggrangia
           issue-title: "Approve Terraform Plan to be applied"
-          issue-body: "Review the terraform plan, then approve or deny the deployment to prod\n${{ steps.plan.outputs.plan }}"
+          issue-body: "Review the terraform plan, then approve or deny the deployment to prod\n\n${{ steps.plan.outputs.stdout }}"
           exclude-workflow-initiator-as-approver: false
