@@ -5,7 +5,7 @@ on:
     paths:
       - "infra/**"
       - ".github/workflows/terraform_apply.yml"
-    branches: ["tf_apply_workflow"]
+    branches: ["main"]
 permissions:
   id-token: write
   contents: read
