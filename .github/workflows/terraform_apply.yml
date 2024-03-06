@@ -77,7 +77,7 @@ jobs:
         with:
           secret: ${{ github.TOKEN }}
           minimum-approvals: 1
-          approvers: ggrangia
+          approvers: ggrangia,fromgold,gionnid
           issue-title: "Approve Terraform Plan to be applied"
           issue-body: "Review the terraform plan, then approve or deny the deployment to prod\n\n${{ steps.show_plan.outputs.stdout }}"
           exclude-workflow-initiator-as-approver: false
