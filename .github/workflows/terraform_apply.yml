@@ -70,6 +70,7 @@ jobs:
           {
             echo 'plan<<EOF'
             terraform plan -no-color -out=tfplan
+            echo EOF
           } >> $GITHUB_OUTPUT
 
       - name: Approve Plan to Apply
