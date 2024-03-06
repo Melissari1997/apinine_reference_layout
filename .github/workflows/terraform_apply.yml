@@ -5,11 +5,12 @@ on:
     paths:
       - "infra/**"
       - ".github/workflows/terraform_apply.yml"
-    branches: ["main"]
+    branches: ["tf_apply_workflow"] # FIXME: restore main
 
 permissions:
   id-token: write
   contents: read
+  issues: write
 
 env:
   aws-account-id: 600920596656
@@ -65,6 +66,18 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -no-color
+        run: |
+          {
+            echo 'plan<<EOF'
+            terraform plan -no-color -out=tfplan
+          } >> $GITHUB_OUTPUT
 
-      # TODO: save plan output and pass it to the wait for... action
+      - name: Approve Plan to Apply
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          minimum-approvals: 1
+          approvers: ggrangia
+          issue-title: "Approve Terraform Plan to be applied"
+          issue-body: "Review the terraform plan, then approve or deny the deployment to prod\n${{ steps.plan.outputs.plan }}"
+          exclude-workflow-initiator-as-approver: false
