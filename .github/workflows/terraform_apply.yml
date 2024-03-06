@@ -5,8 +5,7 @@ on:
     paths:
       - "infra/**"
       - ".github/workflows/terraform_apply.yml"
-    branches: ["tf_apply_workflow"] # FIXME: restore main
-
+    branches: ["tf_apply_workflow"]
 permissions:
   id-token: write
   contents: read
@@ -74,6 +73,7 @@ jobs:
 
       - name: Approve Plan to Apply
         uses: trstringer/manual-approval@v1
+        timeout-minutes: 10
         with:
           secret: ${{ github.TOKEN }}
           minimum-approvals: 1
