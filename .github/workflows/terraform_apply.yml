@@ -16,6 +16,7 @@ env:
   aws-account-id: 600920596656
   aws-region: eu-central-1
   #TF_LOG: INFO
+  TF_IN_AUTOMATION: 1
   terraform_version: "1.7.4"
   terraform_role_name: github_actions_terraform_apinine
   backend_bucket: terraform-be-bucket
@@ -65,8 +66,11 @@ jobs:
         run: terraform validate -no-color
 
       - name: Terraform Plan
-        id: plan
-        run: terraform plan -no-color
+        run: terraform plan -input=false -no-color -out=tfplan
+
+      - name: Show Plan
+        id: show_plan
+        run: terraform show -no-color tfplan
 
       - name: Approve Plan to Apply
         uses: trstringer/manual-approval@v1
@@ -75,5 +79,9 @@ jobs:
           minimum-approvals: 1
           approvers: ggrangia
           issue-title: "Approve Terraform Plan to be applied"
-          issue-body: "Review the terraform plan, then approve or deny the deployment to prod\n\n${{ steps.plan.outputs.stdout }}"
+          issue-body: "Review the terraform plan, then approve or deny the deployment to prod\n\n${{ steps.show_plan.outputs.stdout }}"
           exclude-workflow-initiator-as-approver: false
+
+      - name: Apply plan
+        id: apply
+        run: terraform apply -input=false tfplan
