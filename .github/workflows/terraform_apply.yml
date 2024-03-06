@@ -66,12 +66,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: |
-          {
-            echo 'plan<<EOF'
-            terraform plan -no-color -out=tfplan
-            echo EOF
-          } >> $GITHUB_OUTPUT
+        run: terraform plan -no-color
 
       - name: Approve Plan to Apply
         uses: trstringer/manual-approval@v1
