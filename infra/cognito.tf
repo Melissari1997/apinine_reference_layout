@@ -1,11 +1,3 @@
-/*
-    # FIXME:
-        - sugnin exp: email only (see testpoolmarch)
-        - sing-up exp: Cognito assisted (see testpoolmarch)
-        - scope: only email
-
-*/
-
 resource "aws_cognito_user_pool" "apinine_pool" {
   name = "apinine_pool"
 
@@ -24,6 +16,15 @@ resource "aws_cognito_user_pool" "apinine_pool" {
       "email",
     ]
   }
+
+  username_attributes = [
+    "email",
+  ]
+
+  email_configuration {
+    email_sending_account = "COGNITO_DEFAULT"
+  }
+
   admin_create_user_config {
     # Set to True if only the administrator is allowed to create user profiles.
     # Set to False if users can sign themselves up via an app
