@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "src/api/get_token/**"
+      - ".github/workflows/get_token.yml"
     branches: ["main"]
 
 permissions:
