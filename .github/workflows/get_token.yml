@@ -15,8 +15,8 @@ env:
   aws-role-name: gh_get_token
   aws-account-id: 600920596656
   aws-region: eu-central-1
-  image-name: get_token
-  lambda-name: get_token
+  image-name: apinine_get_token
+  lambda-name: apinine_get_token
 
 jobs:
   build-and-push:
