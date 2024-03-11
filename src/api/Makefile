@@ -38,3 +38,15 @@ docker_risks:
 	docker build --target test -f flood/Dockerfile .
 	docker build --target test -f drought/Dockerfile .
 	docker build --target test -f wildfire/Dockerfile .
+
+.ONESHELL:
+test_cognito:
+	pip install -r get_token/requirements-dev.txt; pytest get_token
+
+
+.ONESHELL:
+test_cognito_unit:
+	pip install -r get_token/requirements-dev.txt; pytest get_token -m unit
+
+docker_cognito:
+	cd get_token; docker build --target test .
