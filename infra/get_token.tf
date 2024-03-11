@@ -41,6 +41,9 @@ module "apinine_get_token" {
 
   environment_variables = {
     "POWERTOOLS_LOG_LEVEL" : "INFO",
-    "POWERTOOLS_SERVICE_NAME" : "APININE_GET_TOKEN"
+    "POWERTOOLS_SERVICE_NAME" : "APININE_GET_TOKEN",
+    "CALLBACK_URI" : "https://example.com",
+    "APP_CLIENT_ID" : aws_cognito_user_pool_client.apinine_fe_client.id,
+    "URL" : "https://${aws_cognito_user_pool_domain.apinine_march.domain}.auth.eu-central-1.amazoncognito.com/oauth2/token"
   }
 }

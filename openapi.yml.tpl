@@ -144,6 +144,28 @@ paths:
         "403":
           $ref: "#/components/responses/403Forbidden"
 
+  /ui/tokens:
+    get:
+      summary: "Consume the OAuth2 code to obtain the JWTs"
+      parameters:
+        - $ref: "#/components/parameters/code"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${get_token_lambda_uri}
+        credentials: ${apinine_resource_get_token_role}
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getToken"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+
 components:
   #-------------------------------
   # Reusable schemas
@@ -167,6 +189,11 @@ components:
       minimum: -22
       maximum: 45
       example: 12.65629
+
+    code:
+      type: string
+      description: Code obtained from OAuth2 login redirect
+      example: a1b2c245-aaaa-bbbb-11cc-123b45c678c9
 
     # FLOOD resources
     floodRiskAssessment:
@@ -345,6 +372,30 @@ components:
         wildfireRiskAssessment:
           $ref: "#/components/schemas/wildfireRiskAssessment"
 
+    # AUTH resources
+    getToken:
+      type: object
+      required:
+        - id_token
+        - access_token
+        - refresh_token
+        - expires
+        - token_type
+      properties:
+        id_token:
+          type: string
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expires:
+          type: integer
+          minimum: 0
+          example: 3600
+        token_type:
+          type: string
+          example: Bearer
+
   #-------------------------------
   # Reusable operation parameters
   #-------------------------------
@@ -367,6 +418,13 @@ components:
       schema:
         $ref: "#/components/schemas/lat"
       description: Latitude of the point
+      required: true
+    code:
+      in: query
+      name: code
+      schema:
+        $ref: "#/components/schemas/code"
+      description: Code obtained from OAuth2
       required: true
 
   #-------------------------------
