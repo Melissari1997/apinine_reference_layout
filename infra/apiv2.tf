@@ -20,6 +20,8 @@ resource "aws_api_gateway_rest_api" "apininev2" {
 
     apinine_resource_wildfire_role = module.apinine_resource_wildfire_role.role.arn
     wildfire_lambda_uri            = module.apinine_wildfire.lambda_function_invoke_arn
+
+    apinine_user_pool = aws_cognito_user_pool.apinine_pool.arn
   })
 
   endpoint_configuration {

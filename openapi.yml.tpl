@@ -62,6 +62,36 @@ paths:
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+
+  /ui/flood/v1:
+    get:
+      summary: Returns a flood assessment for an address.
+      description: Optional extended description in Markdown.
+      parameters:
+        - $ref: "#/components/parameters/lat"
+        - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/x-api-key"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${flood_lambda_uri}
+        credentials: ${apinine_resource_flood_role}
+      security:
+        # Empty array will attempt to validate as an ID token,
+        # whereas if you have one or more values in it it will validate the bearer as an access token
+        - apinineCognitoAuthorizer: ["email"]
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/flood"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+
   /flood/rcp85/v1:
     get:
       summary: Returns a flood RCP 8.5 assessment for an address.
@@ -390,3 +420,12 @@ components:
         authorizerResultTtlInSeconds: 0
         authorizerPayloadFormatVersion: "1.0"
         identitySource: "method.request.header.x-api-key"
+    apinineCognitoAuthorizer:
+      name: apinineCognitoAuthorizer
+      type: apiKey
+      in: header
+      x-amazon-apigateway-authtype: cognito_user_pools
+      x-amazon-apigateway-authorizer:
+        type: cognito_user_pools
+        providerARNs:
+          - ${apinine_user_pool}

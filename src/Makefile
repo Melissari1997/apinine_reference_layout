@@ -15,9 +15,18 @@ testapi_unit:
 testauthorizer:
 	cd authorizer; pip install -r requirements-dev.txt; pytest
 
-testall: testapi testauthorizer
+testcognito_unit:
+	@$(MAKE) -C api test_cognito_unit
 
-testall_unit: testapi_unit testauthorizer
+testcognito:
+	@$(MAKE) -C api test_cognito
+
+testall: testapi testauthorizer testcognito
+
+testall_unit: testapi_unit testauthorizer testcognito_unit
 
 docker_risks:
 	@$(MAKE) -C api docker_risks
+
+docker_cognito:
+	@$(MAKE) -C api docker_cognito
