@@ -4,9 +4,6 @@ on:
   push:
     paths:
       - "src/api/get_token/**"
-      - ".github/workflows/flood.yml"
-      - ".github/workflows/build-test-deploy.yml"
-      - ".github/actions/build-push-layout/action.yml"
     branches: ["main"]
 
 permissions:
