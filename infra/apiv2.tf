@@ -21,6 +21,9 @@ resource "aws_api_gateway_rest_api" "apininev2" {
     apinine_resource_wildfire_role = module.apinine_resource_wildfire_role.role.arn
     wildfire_lambda_uri            = module.apinine_wildfire.lambda_function_invoke_arn
 
+    apinine_resource_get_token_role = module.apinine_resource_get_token_role.role.arn
+    get_token_lambda_uri            = module.apinine_get_token.lambda_function_invoke_arn
+
     apinine_user_pool = aws_cognito_user_pool.apinine_pool.arn
   })
 
@@ -86,6 +89,13 @@ module "apinine_resource_flood_rcp85_role" {
 
   role_name   = "apinine_resource_flood_rcp85_role"
   lambda_arns = ["${module.apinine_flood_rcp85.lambda_function_arn}*"]
+}
+
+module "apinine_resource_get_token_role" {
+  source = "./modules/apigw_resource_role"
+
+  role_name   = "apinine_resource_get_token_role"
+  lambda_arns = ["${module.apinine_get_token.lambda_function_arn}*"]
 }
 
 module "apinine_resource_authorizer_role" {
