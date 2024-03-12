@@ -9,7 +9,7 @@ class TestGetLoginUnit:
             lambda_handler({}, {})
 
     def test_handler(self, monkeypatch):
-        url = "https://custom-cognito-domain.auth.eu-central-1.amazoncognito.com/oauth2/login"
+        url = "https://custom-cognito-domain.auth.eu-central-1.amazoncognito.com/login"
 
         monkeypatch.setenv("POWERTOOLS_LOG_LEVEL", "INFO")
         monkeypatch.setenv("URL", url)
@@ -20,7 +20,7 @@ class TestGetLoginUnit:
         want = {
             "statusCode": "302",
             "headers": {
-                "Location": "https://custom-cognito-domain.auth.eu-central-1.amazoncognito.com/oauth2/login?response_type:code&client_id=abcd1234&scope=email+openid&redirect_uri=https%3A%2F%2Fexample.com"
+                "Location": "https://custom-cognito-domain.auth.eu-central-1.amazoncognito.com/login?response_type=code&client_id=abcd1234&scope=email+openid&redirect_uri=https%3A%2F%2Fexample.com"
             },
         }
 
