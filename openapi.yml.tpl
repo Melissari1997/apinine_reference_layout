@@ -144,6 +144,23 @@ paths:
         "403":
           $ref: "#/components/responses/403Forbidden"
 
+  /ui/login:
+    get:
+      summary: "Consume the OAuth2 code to obtain the JWTs"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${cognito_login_lambda_uri}
+        credentials: ${apinine_resource_cognito_login_role}
+      responses:
+        "302":
+          description: "Redirect to Cognito Hosted UI"
+          headers:
+            Location:
+              schema:
+                type: string
+          content: {}
+
   /ui/tokens:
     get:
       summary: "Consume the OAuth2 code to obtain the JWTs"
