@@ -183,6 +183,38 @@ paths:
         "403":
           $ref: "#/components/responses/403Forbidden"
 
+  /ui/refresh:
+    post:
+      summary: "Obtain new Bearer tokens from a refresh token"
+      x-amazon-apigateway-request-validator: body-only
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/refreshTokenRequest"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${refresh_token_lambda_uri}
+        credentials: ${apinine_resource_refresh_token_role}
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/refreshTokenResponse"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+
+x-amazon-apigateway-request-validators:
+  body-only:
+    validateRequestBody: true
+    validateRequestParameters: false
+
 components:
   #-------------------------------
   # Reusable schemas
@@ -413,6 +445,35 @@ components:
           type: string
           example: Bearer
 
+    refreshTokenRequest:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+
+    refreshTokenResponse:
+      type: object
+      required:
+        - id_token
+        - access_token
+        - expires
+        - token_type
+      properties:
+        id_token:
+          type: string
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expires:
+          type: integer
+          minimum: 0
+          example: 3600
+        token_type:
+          type: string
+          example: Bearer
   #-------------------------------
   # Reusable operation parameters
   #-------------------------------
