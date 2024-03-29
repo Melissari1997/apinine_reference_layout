@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "infra/**"
+      - "openapi.yml.tpl"
       - ".github/workflows/terraform_apply.yml"
     branches: ["main"]
 permissions:
