@@ -1,5 +1,4 @@
 openapi: 3.0.1
-x-original-swagger-version: "2.0"
 info:
   title: Eoliann API v1
   description: Eoliann risks API
@@ -557,7 +556,7 @@ components:
         authorizerPayloadFormatVersion: "1.0"
         identitySource: "method.request.header.x-api-key"
     apinineCognitoAuthorizer:
-      name: apinineCognitoAuthorizer
+      name: "Authorization"
       type: apiKey
       in: header
       x-amazon-apigateway-authtype: cognito_user_pools
