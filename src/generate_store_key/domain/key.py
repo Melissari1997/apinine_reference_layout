@@ -76,5 +76,10 @@ class Key:
         user, secret = value.split(":")
         hashed_key = self.password_hasher.hash(secret)
         print(f"Hashed key: {hashed_key}")
-        repository.save_key_and_permission(hashed_key, permissions, organization, user)
+        repository.save_key_and_permission(
+            hashed_key=hashed_key,
+            permissions=permissions,
+            organization=organization,
+            user=user,
+        )
         print("Saved item")
