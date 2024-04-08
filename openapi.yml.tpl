@@ -146,6 +146,8 @@ paths:
   /ui/login:
     get:
       summary: "Consume the OAuth2 code to obtain the JWTs"
+      parameters:
+        - $ref: "#/components/parameters/callback_uri"
       x-amazon-apigateway-integration:
         httpMethod: POST
         type: aws_proxy
@@ -503,7 +505,13 @@ components:
         $ref: "#/components/schemas/code"
       description: Code obtained from OAuth2
       required: true
-
+    callback_uri:
+      in: query
+      name: callback_uri
+      schema:
+        $ref: "#/components/schemas/callback_uri"
+      description: URI to redirect login to
+      required: false
   #-------------------------------
   # Reusable responses
   #-------------------------------
