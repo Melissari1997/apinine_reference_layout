@@ -1,5 +1,6 @@
 import json
 import os
+import urllib
 from typing import Callable
 
 import requests
@@ -27,13 +28,13 @@ def validate_env(
 @validate_env
 def lambda_handler(event: dict, context: dict = None) -> dict:
     app_client_id = os.environ.get("APP_CLIENT_ID", "")
-    callback_uri = os.environ.get("CALLBACK_URI", "")
+    callback_uri = event.get("callback_uri", os.environ.get("CALLBACK_URI", ""))
     url = os.environ.get("URL", "")
 
     code = event.get("queryStringParameters", {}).get("code", "")
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    data = f"grant_type=authorization_code&client_id={app_client_id}&code={code}&redirect_uri={callback_uri}"
+    data = f"grant_type=authorization_code&client_id={app_client_id}&code={code}&redirect_uri={urllib.parse.quote(callback_uri, safe='')}"
 
     r = requests.post(url, headers=headers, data=data, timeout=5)
 

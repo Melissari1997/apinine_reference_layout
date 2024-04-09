@@ -27,7 +27,7 @@ def validate_env(
 def lambda_handler(event: dict, context: dict = None) -> dict:
     url = os.environ.get("URL", "")
     app_client_id = os.environ.get("APP_CLIENT_ID", "")
-    callback_uri = os.environ.get("CALLBACK_URI", "")
+    callback_uri = event.get("callback_uri", os.environ.get("CALLBACK_URI", ""))
 
     cognito_ui_uri = f"{url}?response_type=code&client_id={app_client_id}&scope=email+openid&redirect_uri={urllib.parse.quote(callback_uri, safe='')}"
 
