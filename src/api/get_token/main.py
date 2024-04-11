@@ -13,6 +13,12 @@ from schema import EnvSchema
 logger = Logger()
 tracer = Tracer()
 
+cors_headers = {
+    "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "OPTIONS,GET",
+}
+
 
 @lambda_handler_decorator
 def validate_env(
@@ -44,5 +50,6 @@ def lambda_handler(event: dict, context: dict = None) -> dict:
     response = {
         "body": json.dumps(body),
         "statusCode": status_code,
+        "headers": cors_headers,
     }
     return response
