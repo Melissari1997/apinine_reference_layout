@@ -63,6 +63,36 @@ paths:
           $ref: "#/components/responses/403Forbidden"
 
   /ui/flood/v1:
+    options:
+      summary: CORS support
+      description: Enable CORS by returning correct headers
+      tags:
+      - CORS
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
     get:
       summary: Returns a flood assessment for an address.
       description: Optional extended description in Markdown.
@@ -75,6 +105,11 @@ paths:
         type: aws_proxy
         uri: ${flood_lambda_uri}
         credentials: ${apinine_resource_flood_role}
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
       security:
         # Empty array will attempt to validate as an ID token,
         # whereas if you have one or more values in it it will validate the bearer as an access token
@@ -82,6 +117,16 @@ paths:
       responses:
         "200":
           description: ok
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
           content:
             application/json:
               schema:
@@ -163,6 +208,36 @@ paths:
           content: {}
 
   /ui/tokens:
+    options:
+      summary: CORS support
+      description: Enable CORS by returning correct headers
+      tags:
+      - CORS
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
     get:
       summary: "Consume the OAuth2 code to obtain the JWTs"
       parameters:
@@ -172,9 +247,24 @@ paths:
         type: aws_proxy
         uri: ${get_token_lambda_uri}
         credentials: ${apinine_resource_get_token_role}
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
       responses:
         "200":
           description: ok
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
           content:
             application/json:
               schema:
@@ -185,6 +275,36 @@ paths:
           $ref: "#/components/responses/403Forbidden"
 
   /ui/refresh:
+    options:
+      summary: CORS support
+      description: Enable CORS by returning correct headers
+      tags:
+      - CORS
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
     post:
       summary: "Obtain new Bearer tokens from a refresh token"
       x-amazon-apigateway-request-validator: body-only
@@ -199,9 +319,24 @@ paths:
         type: aws_proxy
         uri: ${refresh_token_lambda_uri}
         credentials: ${apinine_resource_refresh_token_role}
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
       responses:
         "200":
           description: ok
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
           content:
             application/json:
               schema:
