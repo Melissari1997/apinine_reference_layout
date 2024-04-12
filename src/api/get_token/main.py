@@ -40,7 +40,7 @@ def lambda_handler(event: dict, context: dict = None) -> dict:
     code = event.get("queryStringParameters", {}).get("code", "")
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    data = f"grant_type=authorization_code&client_id={app_client_id}&code={code}&redirect_uri={urllib.parse.quote(callback_uri, safe='')}"
+    data = f"grant_type=authorization_code&client_id={app_client_id}&code={code}&redirect_uri={urllib.parse.quote(callback_uri)}"
 
     r = requests.post(url, headers=headers, data=data, timeout=5)
 
