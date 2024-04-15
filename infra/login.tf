@@ -42,7 +42,7 @@ module "apinine_cognito_login" {
   environment_variables = {
     "POWERTOOLS_LOG_LEVEL" : "INFO",
     "POWERTOOLS_SERVICE_NAME" : "APININE_COGNITO_LOGIN",
-    "CALLBACK_URI" : "https://example.com",
+    "CALLBACK_URI" : "http://localhost:5173/login",
     "APP_CLIENT_ID" : aws_cognito_user_pool_client.apinine_fe_client.id,
     "URL" : "https://${aws_cognito_user_pool_domain.apinine_march.domain}.auth.eu-central-1.amazoncognito.com/login"
   }
