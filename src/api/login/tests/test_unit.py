@@ -39,10 +39,10 @@ class TestGetLoginUnit:
         want = {
             "statusCode": "302",
             "headers": {
-                "Location": "https://custom-cognito-domain.auth.eu-central-1.amazoncognito.com/login?response_type=code&client_id=abcd1234&scope=email+openid&redirect_uri=http%3A%2F%2Flocalhost%3A3000"
+                "Location": "https://custom-cognito-domain.auth.eu-central-1.amazoncognito.com/login?response_type=code&client_id=abcd1234&scope=email+openid&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin"
             },
         }
 
-        callback_uri = "http://localhost:3000"
+        callback_uri = "http://localhost:3000/login"
         r = lambda_handler({"callback_uri": callback_uri}, {})
         assert want == r
