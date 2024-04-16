@@ -1,3 +1,8 @@
+import {
+  to = aws_ecr_repository.apinine_user
+  id = "apinine_user"
+}
+
 resource "aws_ecr_repository" "apinine_user" {
   name                 = "apinine_user"
   image_tag_mutability = "MUTABLE"
@@ -34,8 +39,7 @@ data "aws_iam_policy_document" "apinine_user" {
   statement {
     effect = "Allow"
     actions = [
-      "ssm:GetParameter",
-      "ssm:PutParameter"
+      "ssm:GetParameter"
     ]
     resources = [aws_ssm_parameter.user_db.arn]
   }
