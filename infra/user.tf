@@ -1,8 +1,3 @@
-import {
-  to = aws_ecr_repository.apinine_user
-  id = "apinine_user"
-}
-
 resource "aws_ecr_repository" "apinine_user" {
   name                 = "apinine_user"
   image_tag_mutability = "MUTABLE"
@@ -29,7 +24,7 @@ module "gh_apinine_user" {
 
   role_name            = "gh_apinine_user"
   github_oidc_provider = var.github_oidc_provider
-  lambda_functions_arn = [module.apinine_user.lambda_function_arn]
+  lambda_functions_arn = ["arn:aws:lambda:eu-central-1:600920596656:function:apinine_user"]
   ecr_repositories     = [aws_ecr_repository.apinine_user.arn]
 }
 
