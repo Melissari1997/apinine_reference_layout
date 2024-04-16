@@ -1,3 +1,12 @@
+resource "aws_ecr_repository" "apinine_user" {
+  name                 = "apinine_user"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
 resource "aws_ssm_parameter" "user_db" {
   name  = "user_db"
   type  = "String"
@@ -10,7 +19,6 @@ resource "aws_ssm_parameter" "user_db" {
   }
 }
 
-
 module "gh_apinine_user" {
   source = "./modules/github_risks_role"
 
@@ -21,20 +29,13 @@ module "gh_apinine_user" {
 }
 
 
-resource "aws_ecr_repository" "apinine_user" {
-  name                 = "apinine_user"
-  image_tag_mutability = "MUTABLE"
-
-  image_scanning_configuration {
-    scan_on_push = true
-  }
-}
 
 data "aws_iam_policy_document" "apinine_user" {
   statement {
     effect = "Allow"
     actions = [
-      "ssm:GetParameter"
+      "ssm:GetParameter",
+      "ssm:PutParameter"
     ]
     resources = [aws_ssm_parameter.user_db.arn]
   }
