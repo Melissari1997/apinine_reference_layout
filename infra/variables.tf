@@ -18,3 +18,14 @@ variable "authorizer_hasher_config" {
 variable "custom_domain_name" {
   type = string
 }
+
+variable "user_db_data" {
+  type = list(object({
+    name   = string,
+    email = string,
+    organization = string,
+    available_risks    = list(string),
+  }))
+  description = "Temporary database collecting user information"
+  default     = []
+}
