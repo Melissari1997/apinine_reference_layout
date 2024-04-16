@@ -21,10 +21,10 @@ variable "custom_domain_name" {
 
 variable "user_db_data" {
   type = list(object({
-    name   = string,
-    email = string,
-    organization = string,
-    available_risks    = list(string),
+    name            = string,
+    email           = string,
+    organization    = string,
+    available_risks = list(string),
   }))
   description = "Temporary database collecting user information"
   default     = []

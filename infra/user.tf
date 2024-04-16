@@ -4,9 +4,9 @@ resource "aws_ssm_parameter" "user_db" {
   value = jsonencode(var.user_db_data)
 
   lifecycle {
-      ignore_changes = [
-        value
-      ]
+    ignore_changes = [
+      value
+    ]
   }
 }
 
@@ -33,10 +33,10 @@ resource "aws_ecr_repository" "apinine_user" {
 data "aws_iam_policy_document" "apinine_user" {
   statement {
     effect = "Allow"
-    actions = [ 
+    actions = [
       "ssm:GetParameter"
-     ]
-     resources = [aws_ssm_parameter.user_db.arn]
+    ]
+    resources = [aws_ssm_parameter.user_db.arn]
   }
 }
 
@@ -61,12 +61,12 @@ module "apinine_user" {
   image_uri = "${aws_ecr_repository.apinine_user.repository_url}:latest"
 
   attach_policy_json = true
-  policy_json = data.aws_iam_policy_document.apinine_user.json
+  policy_json        = data.aws_iam_policy_document.apinine_user.json
 
   environment_variables = {
     "POWERTOOLS_LOG_LEVEL" : "INFO",
     "POWERTOOLS_SERVICE_NAME" : "APININE_USER",
-    "USER_DB_PARAMETER_NAME": "user_db"
-    "URL_USERINFO": "https://${aws_cognito_user_pool_domain.apinine_march.domain}.auth.eu-central-1.amazoncognito.com/oauth2/userinfo"
+    "USER_DB_PARAMETER_NAME" : "user_db"
+    "URL_USERINFO" : "https://${aws_cognito_user_pool_domain.apinine_march.domain}.auth.eu-central-1.amazoncognito.com/oauth2/userinfo"
   }
 }
