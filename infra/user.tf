@@ -54,7 +54,6 @@ module "apinine_user" {
   memory_size = 256
   #ephemeral_storage_size = 1024
 
-
   attach_tracing_policy = true
   tracing_mode          = "Active"
   package_type          = "Image"
@@ -68,5 +67,6 @@ module "apinine_user" {
     "POWERTOOLS_LOG_LEVEL" : "INFO",
     "POWERTOOLS_SERVICE_NAME" : "APININE_USER",
     "USER_DB_PARAMETER_NAME": "user_db"
+    "URL_USERINFO": "https://${aws_cognito_user_pool_domain.apinine_march.domain}.auth.eu-central-1.amazoncognito.com/oauth2/userinfo"
   }
 }
