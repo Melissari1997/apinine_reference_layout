@@ -30,6 +30,9 @@ resource "aws_api_gateway_rest_api" "apininev2" {
     apinine_resource_refresh_token_role = module.apinine_resource_refresh_token_role.role.arn
     refresh_token_lambda_uri            = module.apinine_refresh_token.lambda_function_invoke_arn
 
+    apinine_resource_user_role = module.apinine_resource_user_role.role.arn
+    user_lambda_uri            = module.apinine_user.lambda_function_invoke_arn
+
     apinine_user_pool = aws_cognito_user_pool.apinine_pool.arn
   })
 
@@ -123,4 +126,11 @@ module "apinine_resource_authorizer_role" {
 
   role_name   = "apinine_resource_authorizer_role"
   lambda_arns = ["${module.apinine_authorizer.lambda_function_arn}*"]
+}
+
+module "apinine_resource_user_role" {
+  source = "./modules/apigw_resource_role"
+
+  role_name   = "apinine_resource_user_role"
+  lambda_arns = ["${module.apinine_user.lambda_function_arn}*"]
 }

@@ -1,0 +1,59 @@
+name: /user api
+
+on:
+  push:
+    paths:
+      - "src/api/user/**"
+      - ".github/workflows/user.yml"
+    branches: ["main"]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  aws-role-name: gh_apinine_user
+  aws-account-id: 600920596656
+  aws-region: eu-central-1
+  image-name: apinine_user
+  lambda-name: apinine_user
+  folder: user
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.aws-region }}
+          role-to-assume: arn:aws:iam::${{ env.aws-account-id }}:role/${{ env.aws-role-name }}
+          role-session-name: ${{ env.aws-role-name }}-session
+
+      - name: Authenticate Docker to Amazon ECR
+        shell: bash
+        run: aws ecr get-login-password --region ${{ env.aws-region }} | docker login --username AWS --password-stdin ${{ env.aws-account-id }}.dkr.ecr.${{ env.aws-region }}.amazonaws.com
+
+      - name: Build Docker Image and run tests
+        shell: bash
+        run: |
+          cd src/api/
+          docker build --target test -f ${{ env.folder }}/Dockerfile .
+          docker build --tag ${{ env.image-name }}:latest --target production -f ${{ env.folder }}/Dockerfile .
+
+      - name: Tag Docker Image
+        shell: bash
+        run: |
+          docker tag ${{ env.image-name }}:latest ${{ env.aws-account-id }}.dkr.ecr.${{ env.aws-region }}.amazonaws.com/${{ env.image-name }}:${GITHUB_SHA}
+          docker tag ${{ env.image-name }}:latest ${{ env.aws-account-id }}.dkr.ecr.${{ env.aws-region }}.amazonaws.com/${{ env.image-name }}:latest
+
+      - name: Push Docker Image to ECR
+        shell: bash
+        run: docker push --all-tags ${{ env.aws-account-id }}.dkr.ecr.${{ env.aws-region }}.amazonaws.com/${{ env.image-name }}
+
+      - name: Update lambda function
+        shell: bash
+        run: aws lambda update-function-code --function-name ${{ env.lambda-name }} --image-uri ${{ env.aws-account-id }}.dkr.ecr.${{ env.aws-region }}.amazonaws.com/${{ env.image-name }}:latest

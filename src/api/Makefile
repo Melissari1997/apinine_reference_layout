@@ -25,6 +25,7 @@ tests:
 	pip install -r drought/requirements-dev.txt; pytest drought
 	pip install -r flood/requirements-dev.txt; pytest flood
 	pip install -r wildfire/requirements-dev.txt; pytest wildfire
+	pip install -r user/requirements-dev.txt; pytest user
 
 .ONESHELL:
 tests_unit:
@@ -33,11 +34,13 @@ tests_unit:
 	pip install -r drought/requirements-dev.txt; pytest drought -m unit
 	pip install -r flood/requirements-dev.txt; pytest flood -m unit
 	pip install -r wildfire/requirements-dev.txt; pytest wildfire -m unit
+	pip install -r user/requirements-dev.txt; pytest user -m unit
 
 docker_risks:
 	docker build --target test -f flood/Dockerfile .
 	docker build --target test -f drought/Dockerfile .
 	docker build --target test -f wildfire/Dockerfile .
+	docker build --target test -f user/Dockerfile .
 
 .ONESHELL:
 test_cognito:
