@@ -7,6 +7,37 @@ resource "aws_ecr_repository" "apinine_user" {
   }
 }
 
+
+data "aws_iam_policy_document" "apinine_user_ecr" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+
+    actions = [
+      "ecr:BatchGetImage",
+      "ecr:DeleteRepositoryPolicy",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:GetRepositoryPolicy",
+      "ecr:SetRepositoryPolicy"
+    ]
+
+    condition {
+      test     = "StringLike"
+      variable = "aws:sourceArn"
+      values   = ["arn:aws:lambda:eu-central-1:600920596656:function:apinine_user*"]
+    }
+  }
+}
+
+resource "aws_ecr_repository_policy" "apinine_user" {
+  repository = aws_ecr_repository.apinine_user.name
+  policy     = data.aws_iam_policy_document.apinine_user_ecr.json
+}
+
 resource "aws_ssm_parameter" "user_db" {
   name  = "user_db"
   type  = "String"
