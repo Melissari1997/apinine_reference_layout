@@ -42,7 +42,9 @@ def get_userinfo_from_db(
     try:
         id = get_user_email(endpoint=userinfo_endpoint, auth_header=auth_header)
     except requests.HTTPError as e:
-        logger.info(f"Status code: {e.response.status_code}")
+        logger.info(
+            f"Error while calling '{userinfo_endpoint}' endpoint: {e.response.json()}"
+        )
         return (e.response.status_code, {})
 
     user = db.query_user(id=id)
@@ -61,7 +63,7 @@ def lambda_handler(event: dict, context: dict = None) -> dict:
     # SSM Parameter Store
     client_parameter_store = boto3.client("ssm", region_name=region_name)
     db = ParamStoreDB(client=client_parameter_store, parameter_name=user_db_param)
-    access_token = event["headers"]["Authorization"].removeprefix("Bearer ")
+    access_token = event["headers"]["Authorization"]
 
     status_code, body = get_userinfo_from_db(
         userinfo_endpoint=userinfo_endpoint, access_token=access_token, db=db
