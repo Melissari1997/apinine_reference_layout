@@ -15,8 +15,12 @@ class ParamStoreDB(UserDB):
             Parameter to fetch, containing the user db
         """
         self.client = client
-        self.parameter_value = json.loads(
-            client.get_parameter(Name=parameter_name)["Parameter"]["Value"]
+        self.parameter_name = parameter_name
+
+    @property
+    def parameter_value(self) -> str:
+        return json.loads(
+            self.client.get_parameter(Name=self.parameter_name)["Parameter"]["Value"]
         )
 
     def query_user(self, id: str) -> dict:
