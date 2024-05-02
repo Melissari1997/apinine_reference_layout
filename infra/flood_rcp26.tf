@@ -86,10 +86,10 @@ module "apinine_flood_rcp26" {
   create_package = false
 
   function_name = "apinine_flood_rcp26"
-  description   = "This function returns the flood risk analysis on the provided location for rcp 8.5 (address or lat and lon)."
+  description   = "This function returns the flood risk analysis on the provided location for rcp 2.6 (address or lat and lon)."
 
-  timeout     = 15
-  memory_size = 256
+  timeout     = 30
+  memory_size = 2048
   #ephemeral_storage_size = 1024
 
   attach_tracing_policy = true
@@ -103,7 +103,7 @@ module "apinine_flood_rcp26" {
 
   environment_variables = {
     "POWERTOOLS_LOG_LEVEL" : "INFO",
-    "POWERTOOLS_SERVICE_NAME" : "APININE_FLOOD_RCP85",
+    "POWERTOOLS_SERVICE_NAME" : "APININE_FLOOD_RCP26",
     "GMAPS_SECRET_NAME" : "apinine/gmaps_apikey"
   }
 }
