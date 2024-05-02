@@ -4,6 +4,6 @@ module "gh_flood" {
 
   role_name            = "gh_flood"
   github_oidc_provider = var.github_oidc_provider
-  lambda_functions_arn = [module.apinine_flood.lambda_function_arn, module.apinine_flood_rcp85.lambda_function_arn]
-  ecr_repositories     = [aws_ecr_repository.apinine_flood.arn, aws_ecr_repository.apinine_flood_rcp85.arn]
+  lambda_functions_arn = [module.apinine_flood.lambda_function_arn, module.apinine_flood_rcp85.lambda_function_arn, module.apinine_flood_rcp26.lambda_function_arn, module.apinine_flood_rcp45.lambda_function_arn]
+  ecr_repositories     = [aws_ecr_repository.apinine_flood.arn, aws_ecr_repository.apinine_flood_rcp85.arn, aws_ecr_repository.apinine_flood_rcp26.arn, aws_ecr_repository.apinine_flood_rcp45.arn]
 }
