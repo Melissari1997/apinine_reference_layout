@@ -10,6 +10,7 @@ from geocoder.geocoder import (
 from pydantic import BaseModel, ValidationError
 
 from .errors import MissingDataError
+from .http_headers import response_headers
 from .status_codes import StatusCodes
 
 logger = Logger(serialize_stacktrace=True)
@@ -94,6 +95,7 @@ def handle_response(validate_schema: BaseModel) -> Callable:
             response = {
                 "body": err_message or json.dumps(body),
                 "statusCode": status_code,
+                "headers": response_headers,
             }
             return response
 
