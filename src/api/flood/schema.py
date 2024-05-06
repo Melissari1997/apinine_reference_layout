@@ -30,6 +30,7 @@ class OutputSchema(BaseModel):
     address: str | None
     lat: Annotated[float, Field(ge=-90, le=90)]
     lon: Annotated[float, Field(ge=-180, le=180)]
+    land_use: str
     flood_risk_assessment: FloodRiskAssessment
     risk_index: PositiveInt
     average_annual_loss: AverageAnnualLoss

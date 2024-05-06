@@ -11,12 +11,15 @@ inputs:
   aws-region:
     required: true
     type: string
-  geotiff-path:
+  geotiff-json:
     required: true
     type: string
-  geotiff-tag:
+    description: Argument containing json with all .tiff paths
+  docker-tags:
     required: true
-    description: "String used to tag the container to univocally refer to a Mlflow run"
+    description: |-
+      Space-separated list of strings to tag the Docker image with. Example:
+      RCP45 TAG1 TAG2 TAG3
     type: string
   image-name:
     required: true
@@ -46,12 +49,16 @@ runs:
       run: |
         cd src/api
         docker build --target test -f ${{ inputs.risk-folder }}/Dockerfile .
-        docker build --tag ${{ inputs.image-name }}:latest --target production --build-arg GEOTIFF_PATH=${{ inputs.geotiff-path }} -f ${{ inputs.risk-folder }}/Dockerfile .
+        docker build --tag ${{ inputs.image-name }}:latest --target production --build-arg=GEOTIFF_JSON=${{ inputs.geotiff-json }} -f ${{ inputs.risk-folder }}/Dockerfile .
     - name: Tag Docker Image
       shell: bash
       run: |
+        # Tag the image with input tags
+        read -ra tags <<< ${{ inputs.docker-tags }}
+        for tag in "${tags[@]}"; do
+            docker tag ${{ inputs.image-name }}:latest ${{ inputs.aws-account-id }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com/${{ inputs.image-name }}:$tag
+        done
         docker tag ${{ inputs.image-name }}:latest ${{ inputs.aws-account-id }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com/${{ inputs.image-name }}:${GITHUB_SHA}
-        docker tag ${{ inputs.image-name }}:latest ${{ inputs.aws-account-id }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com/${{ inputs.image-name }}:${{ inputs.geotiff-tag }}
         docker tag ${{ inputs.image-name }}:latest ${{ inputs.aws-account-id }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com/${{ inputs.image-name }}:latest
     - name: Push Docker Image to ECR
       shell: bash

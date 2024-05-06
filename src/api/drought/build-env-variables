@@ -1,1 +1,0 @@
-GEOTIFF_PATH=s3://mlflow-monitoring/101/6d721f826af34c88bbc0e3f70b09e729/artifacts/inference/drought_intensity_rp_20_100_200.tif

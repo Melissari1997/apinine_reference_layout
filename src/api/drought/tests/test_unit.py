@@ -39,7 +39,7 @@ class MockGeoDataReaderDrought(GeoDataReader):
 @pytest.mark.unit
 class TestDroughtUnit:
     def test_drought_address(
-        self, geotiff_path_s3, event_address, lambda_powertools_ctx, monkeypatch
+        self, geotiff_json_mock, event_address, lambda_powertools_ctx, monkeypatch
     ):
         gmaps = MockGeocoder()
         rioreader = MockGeoDataReaderDrought()
@@ -52,7 +52,7 @@ class TestDroughtUnit:
         assert want_status_code == got["statusCode"]
 
     def test_drought_lat_lon(
-        self, geotiff_path_s3, event_lat_lon, lambda_powertools_ctx, monkeypatch
+        self, geotiff_json_mock, event_lat_lon, lambda_powertools_ctx, monkeypatch
     ):
         gmaps = MockGeocoder()
         rioreader = MockGeoDataReaderDrought()
@@ -65,7 +65,11 @@ class TestDroughtUnit:
         assert want_status_code == got["statusCode"]
 
     def test_drought_invalid_address(
-        self, geotiff_path_s3, event_invalid_address, lambda_powertools_ctx, monkeypatch
+        self,
+        geotiff_json_mock,
+        event_invalid_address,
+        lambda_powertools_ctx,
+        monkeypatch,
     ):
         gmaps = MockGeocoder()
         rioreader = MockGeoDataReaderDrought()
@@ -81,7 +85,7 @@ class TestDroughtUnit:
 
     def test_drought_conflicting(
         self,
-        geotiff_path_s3,
+        geotiff_json_mock,
         event_conflict_lat_lon_addr,
         lambda_powertools_ctx,
         monkeypatch,
@@ -99,7 +103,7 @@ class TestDroughtUnit:
         assert wanted_body == got["body"]
 
     def test_handler_no_queryparams(
-        self, geotiff_path_s3, lambda_powertools_ctx, monkeypatch
+        self, geotiff_json_mock, lambda_powertools_ctx, monkeypatch
     ):
         got = handler(event={}, context=lambda_powertools_ctx)
 

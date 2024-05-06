@@ -21,7 +21,7 @@ jobs:
       aws-role-name: gh_drought
       aws-account-id: 600920596656
       aws-region: eu-central-1
-      geotiff-keyword: GEOTIFF_PATH
+      climate-scenario: baseline
       risk-folder: drought
       image-name: apinine_drought
       lambda-name: apinine_drought

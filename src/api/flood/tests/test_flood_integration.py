@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from common.status_codes import StatusCodes
 from geocoder.gmaps_geocoder import GMapsGeocoder
@@ -12,8 +14,9 @@ class TestFloodIntegration:
         lon, lat = 12.215283630441727, 44.88393348245498
         gmaps = GMapsGeocoder()
         rioreader = RasterIOReader()
+        filename = json.loads(geotiff_path_s3["GEOTIFF_JSON"])[0]["path"]
         got = main(
-            filename=geotiff_path_s3["GEOTIFF_PATH"],
+            filename=filename,
             address=None,
             lon=lon,
             lat=lat,

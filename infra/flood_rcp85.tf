@@ -47,7 +47,7 @@ module "apinine_flood_rcp85" {
   create_package = false
 
   function_name = "apinine_flood_rcp85"
-  description   = "This function returns the flood risk analysis on the provided location (address or lat and lon)."
+  description   = "This function returns the flood risk analysis on the provided location for rcp 8.5 (address or lat and lon)."
 
   timeout     = 30
   memory_size = 2048

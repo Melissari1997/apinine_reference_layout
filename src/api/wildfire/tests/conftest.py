@@ -1,19 +1,31 @@
+import json
 import os
 
 import pytest
 
 
-@pytest.fixture(scope="function")
-def geotiff_path_s3():
-    geotiff_path = "s3://mlflow-monitoring/98/14e74db763c74bebaf35d997343f381f/artifacts/inference/wildfire_intensity_rp_2_10_30.tif"
+@pytest.fixture()
+def geotiff_json_baseline():
+    yield json.dumps(
+        [
+            {
+                "climate_scenario": "baseline",
+                "path": "s3://mlflow-monitoring/98/14e74db763c74bebaf35d997343f381f/artifacts/inference/wildfire_intensity_rp_2_10_30.tif",
+            }
+        ]
+    )
 
-    os.environ["GEOTIFF_PATH"] = geotiff_path
+
+@pytest.fixture(scope="function")
+def geotiff_path_s3(geotiff_json_baseline):
+
+    os.environ["GEOTIFF_JSON"] = geotiff_json_baseline
     os.environ["GMAPS_SECRET_NAME"] = "apinine/gmaps_apikey"
     os.environ["GMAPS_SECRET_REGION"] = "eu-central-1"
 
-    yield {"GEOTIFF_PATH": geotiff_path}
+    yield {"GEOTIFF_JSON": geotiff_json_baseline}
 
-    del os.environ["GEOTIFF_PATH"]
+    del os.environ["GEOTIFF_JSON"]
 
 
 @pytest.fixture(scope="function")

@@ -3,6 +3,7 @@ from common.event_parser import parse_aws_event
 from common.response import handle_response
 from geocoder.geocoder import Geocoder
 from geocoder.gmaps_geocoder import GMapsGeocoder
+from land_use.util_CLC_conversion import CLC_MAPPING
 from readgeodata.interfaces import GeoDataReader
 from readgeodata.rasterioreader import RasterIOReader
 from schema import OutputSchema
@@ -19,15 +20,23 @@ class FloodKeys:
     which is a metadata field.
     """
 
-    WH_20 = "20 layer, band 1"
-    WH_100 = "100 layer, band 2"
-    WH_200 = "200 layer, band 3"
-    VULN_20 = "vuln_20 layer, band 4"
-    VULN_100 = "vuln_100 layer, band 5"
-    VULN_200 = "vuln_200 layer, band 6"
-    AAL = "aal layer, band 7"
-    RISK_INDEX = "risk_ind layer, band 8"
+    LAND_USE = "land_use"
+    WH_20 = "water_intensity_rp20"
+    WH_100 = "water_intensity_rp100"
+    WH_200 = "water_intensity_rp200"
+    VULN_20 = "vulnerability_rp20"
+    VULN_100 = "vulnerability_rp100"
+    VULN_200 = "vulnerability_rp200"
+    AAL = "aal"
+    RISK_INDEX = "risk_index"
+
     NATIONAL_AAL = "STATISTICS_MEAN"
+    AGRICULTURE_AAL = "Average_Agriculture_AAL"
+    COMMERCIAL_AAL = "Average_Commercial_AAL"
+    INDUSTRIAL_AAL = "Average_Industrial_AAL"
+    INFRASTRUCTURE_AAL = "Average_Infrastructure_AAL"
+    RESIDENTIAL_AAL = "Average_Residential_AAL"
+    NONE_AAL = "Average_None_AAL"
 
 
 @tracer.capture_method
@@ -76,13 +85,24 @@ def main(
         f"Starting flood risk assessment with filename: '{filename}', address: '{address}', lat: '{lat}', lon: '{lon}'"
     )
     values = geodatareader.sample_data_points(
-        filename=filename, coordinates=[(lon, lat)], metadata=["STATISTICS_MEAN"]
+        filename=filename,
+        coordinates=[(lon, lat)],
+        metadata=[
+            FloodKeys.AGRICULTURE_AAL,
+            FloodKeys.COMMERCIAL_AAL,
+            FloodKeys.INDUSTRIAL_AAL,
+            FloodKeys.INFRASTRUCTURE_AAL,
+            FloodKeys.RESIDENTIAL_AAL,
+            FloodKeys.NONE_AAL,
+        ],
     )
+    land_use = CLC_MAPPING[values[FloodKeys.LAND_USE][0]]
 
     output = {
         "address": address,
         "lat": lat,
         "lon": lon,
+        "land_use": land_use,
         "flood_risk_assessment": {
             "return_period_20y": {
                 "intensity": {"water_height": values[FloodKeys.WH_20][0]},
@@ -97,11 +117,11 @@ def main(
                 "vulnerability": values[FloodKeys.VULN_200][0],
             },
         },
-        "risk_index": values[FloodKeys.RISK_INDEX][0],
         "average_annual_loss": {
             "value": values[FloodKeys.AAL][0],
-            "national_average": values["metadata"][FloodKeys.NATIONAL_AAL],
+            "national_average": values["metadata"][f"Average_{land_use}_AAL"],
         },
+        "risk_index": values[FloodKeys.RISK_INDEX][0],
     }
 
     return output

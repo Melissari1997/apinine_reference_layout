@@ -1,44 +1,70 @@
 import pytest
-from common.input_schema import QueryStringSchema, validate_query_params
+from common.input_schema import QueryStringRCPSchema, validate_query_params
 from pydantic import ValidationError
 
 
 @pytest.mark.unit
-class TestQuerystringSchema:
+class TestQuerystringRCPSchema:
     def test_empty_schema(self):
         with pytest.raises(ValidationError):
-            validate_query_params(QueryStringSchema, {})
+            validate_query_params(QueryStringRCPSchema, {})
 
-    def test_valid_address_schema(self):
-        instance = {"address": "via verruca 1 trento"}
-        result = validate_query_params(QueryStringSchema, instance)
+    def test_valid_schema(self):
+        instance = {
+            "address": "via verruca 1 trento",
+            "year": "2030",
+            "valid_years": [2030, 2050, 2070],
+        }
+        result = validate_query_params(QueryStringRCPSchema, instance)
         assert isinstance(result, dict)
         assert isinstance(result["address"], str)
+
+    @pytest.mark.parametrize(
+        "year,valid_years",
+        [
+            ("2040", [2030, 2050, 2070]),
+            ("", [2030]),
+            ("2030", []),
+        ],
+    )
+    def test_invalid_years(self, year, valid_years):
+        instance = {
+            "address": "via verruca 1 trento",
+            "year": year,
+            "valid_years": valid_years,
+        }
+        with pytest.raises(ValidationError):
+            validate_query_params(QueryStringRCPSchema, instance)
+
+    def test_missing_year(self):
+        instance = {"address": "via verruca 1 trento", "valid_years": [2030, 2050]}
+        with pytest.raises(ValidationError):
+            validate_query_params(QueryStringRCPSchema, instance)
 
     def test_invalid_address_lat_schema(self):
         instance = {"address": "via verruca 1 trento", "lat": "29"}
         with pytest.raises(ValidationError):
-            validate_query_params(QueryStringSchema, instance)
+            validate_query_params(QueryStringRCPSchema, instance)
 
     def test_invalid_address_lon_schema(self):
         instance = {"address": "via verruca 1 trento", "lon": "33"}
         with pytest.raises(ValidationError):
-            validate_query_params(QueryStringSchema, instance)
+            validate_query_params(QueryStringRCPSchema, instance)
 
     def test_invalid_address_lat_lon_schema(self):
         instance = {"address": "via verruca 1 trento", "lon": "33", "lat": "29"}
         with pytest.raises(ValidationError):
-            validate_query_params(QueryStringSchema, instance)
+            validate_query_params(QueryStringRCPSchema, instance)
 
     def test_invalid_lon_only(self):
         instance = {"lon": "33"}
         with pytest.raises(ValidationError):
-            validate_query_params(QueryStringSchema, instance)
+            validate_query_params(QueryStringRCPSchema, instance)
 
     def test_invalid_lat_only(self):
         instance = {"lat": "33"}
         with pytest.raises(ValidationError):
-            validate_query_params(QueryStringSchema, instance)
+            validate_query_params(QueryStringRCPSchema, instance)
 
     @pytest.mark.parametrize(
         "lat,lon",
@@ -51,8 +77,8 @@ class TestQuerystringSchema:
         ],
     )
     def test_valid_lat_lon_schema(self, lat, lon):
-        instance = {"lon": lon, "lat": lat}
-        result = validate_query_params(QueryStringSchema, instance)
+        instance = {"lon": lon, "lat": lat, "year": "2030", "valid_years": [2030, 2050]}
+        result = validate_query_params(QueryStringRCPSchema, instance)
         assert isinstance(result, dict)
         assert isinstance(result["lon"], float)
         assert isinstance(result["lat"], float)
@@ -64,7 +90,7 @@ class TestQuerystringSchema:
     def test_lat_too_high(self, lat):
         instance = {"lon": "33", "lat": lat}
         with pytest.raises(ValidationError):
-            validate_query_params(QueryStringSchema, instance)
+            validate_query_params(QueryStringRCPSchema, instance)
 
     @pytest.mark.parametrize(
         "lat",
@@ -73,7 +99,7 @@ class TestQuerystringSchema:
     def test_lat_too_low(self, lat):
         instance = {"lon": "33", "lat": lat}
         with pytest.raises(ValidationError):
-            validate_query_params(QueryStringSchema, instance)
+            validate_query_params(QueryStringRCPSchema, instance)
 
     @pytest.mark.parametrize(
         "lon",
@@ -82,7 +108,7 @@ class TestQuerystringSchema:
     def test_lon_too_low(self, lon):
         instance = {"lon": lon, "lat": "27"}
         with pytest.raises(ValidationError):
-            validate_query_params(QueryStringSchema, instance)
+            validate_query_params(QueryStringRCPSchema, instance)
 
     @pytest.mark.parametrize(
         "lon",
@@ -91,4 +117,4 @@ class TestQuerystringSchema:
     def test_lon_too_high(self, lon):
         instance = {"lon": lon, "lat": "27"}
         with pytest.raises(ValidationError):
-            validate_query_params(QueryStringSchema, instance)
+            validate_query_params(QueryStringRCPSchema, instance)

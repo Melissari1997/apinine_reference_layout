@@ -18,6 +18,12 @@ resource "aws_api_gateway_rest_api" "apininev2" {
     apinine_resource_flood_rcp85_role = module.apinine_resource_flood_rcp85_role.role.arn
     flood_rcp85_lambda_uri            = module.apinine_flood_rcp85.lambda_function_invoke_arn
 
+    apinine_resource_flood_rcp45_role = module.apinine_resource_flood_rcp45_role.role.arn
+    flood_rcp45_lambda_uri            = module.apinine_flood_rcp45.lambda_function_invoke_arn
+
+    apinine_resource_flood_rcp26_role = module.apinine_resource_flood_rcp26_role.role.arn
+    flood_rcp26_lambda_uri            = module.apinine_flood_rcp26.lambda_function_invoke_arn
+
     apinine_resource_wildfire_role = module.apinine_resource_wildfire_role.role.arn
     wildfire_lambda_uri            = module.apinine_wildfire.lambda_function_invoke_arn
 
@@ -98,6 +104,20 @@ module "apinine_resource_flood_rcp85_role" {
 
   role_name   = "apinine_resource_flood_rcp85_role"
   lambda_arns = ["${module.apinine_flood_rcp85.lambda_function_arn}*"]
+}
+
+module "apinine_resource_flood_rcp45_role" {
+  source = "./modules/apigw_resource_role"
+
+  role_name   = "apinine_resource_flood_rcp45_role"
+  lambda_arns = ["${module.apinine_flood_rcp45.lambda_function_arn}*"]
+}
+
+module "apinine_resource_flood_rcp26_role" {
+  source = "./modules/apigw_resource_role"
+
+  role_name   = "apinine_resource_flood_rcp26_role"
+  lambda_arns = ["${module.apinine_flood_rcp26.lambda_function_arn}*"]
 }
 
 module "apinine_resource_get_token_role" {

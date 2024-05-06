@@ -1,19 +1,34 @@
+import json
 import os
 
 import pytest
+from geocoder.geocoder import Geocoder
+from main import FloodKeys
+from readgeodata.interfaces import GeoDataReader
+
+
+@pytest.fixture()
+def geotiff_json_baseline():
+    yield json.dumps(
+        [
+            {
+                "climate_scenario": "baseline",
+                "path": "s3://mlflow-monitoring/112/b66c45f2f2ad4757bff0ba886cbc724d/artifacts/inference/baseline_with_risk_index.tif",
+            }
+        ]
+    )
 
 
 @pytest.fixture(scope="function")
-def geotiff_path_s3():
-    geotiff_path = "s3://mlflow-monitoring/93/cf7509a33fe543a9a87aa7658e551659/artifacts/inference/aal_baseline_8bands.tif"
+def geotiff_path_s3(geotiff_json_baseline):
 
-    os.environ["GEOTIFF_PATH"] = geotiff_path
+    os.environ["GEOTIFF_JSON"] = geotiff_json_baseline
     os.environ["GMAPS_SECRET_NAME"] = "apinine/gmaps_apikey"
     os.environ["GMAPS_SECRET_REGION"] = "eu-central-1"
 
-    yield {"GEOTIFF_PATH": geotiff_path}
+    yield {"GEOTIFF_JSON": geotiff_json_baseline}
 
-    del os.environ["GEOTIFF_PATH"]
+    del os.environ["GEOTIFF_JSON"]
 
 
 @pytest.fixture(scope="function")
@@ -78,3 +93,47 @@ class ContextMock:
 @pytest.fixture(scope="function")
 def lambda_powertools_ctx():
     yield ContextMock()
+
+
+class MockGeocoder(Geocoder):
+    def __init__(self) -> None:
+        pass
+
+    def geocode(self, address: str) -> tuple[tuple[float, float], str]:
+        return ((12.215283630441727, 44.88393348245498), "via verruca 1 trento")
+
+
+@pytest.fixture()
+def mockgeocoder():
+    yield MockGeocoder()
+
+
+class MockGeoDataReaderFlood(GeoDataReader):
+    def sample_data_points(
+        self,
+        filename: str,
+        coordinates: list[tuple],
+        metadata: list[str],
+        coordinates_crs: int = 4326,
+    ):
+        return {
+            FloodKeys.LAND_USE: [112],
+            FloodKeys.WH_20: [0.0],
+            FloodKeys.WH_100: [0.01],
+            FloodKeys.WH_200: [0.3],
+            FloodKeys.VULN_20: [0.0],
+            FloodKeys.VULN_100: [0.0001],
+            FloodKeys.VULN_200: [0.56],
+            FloodKeys.RISK_INDEX: [2],
+            FloodKeys.AAL: [0.032],
+            "metadata": {
+                FloodKeys.NATIONAL_AAL: 0.0035,
+                FloodKeys.AGRICULTURE_AAL: 0.0036,
+                FloodKeys.RESIDENTIAL_AAL: 0.0034,
+            },
+        }
+
+
+@pytest.fixture()
+def mockgeodatareaderflood():
+    yield MockGeoDataReaderFlood()

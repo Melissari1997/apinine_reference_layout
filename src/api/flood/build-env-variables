@@ -1,2 +1,0 @@
-GEOTIFF_PATH=s3://mlflow-monitoring/93/4a1149ccce3f448e8c9a2119995d8c2b/artifacts/inference/R3_flood_baseline_lookup.tif
-GEOTIFF_PATH_RCP85=s3://mlflow-monitoring/93/e07c3cf7735140b984a60aeeb04cf1fc/artifacts/inference/R3_flood_rcp85_lookup.tif

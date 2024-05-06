@@ -1,8 +1,8 @@
 # This file is supposed to be built through Makefile or GitHub Actions
 FROM public.ecr.aws/lambda/python:3.12 as base
 
-ARG GEOTIFF_PATH
-ENV GEOTIFF_PATH=${GEOTIFF_PATH}
+ARG GEOTIFF_JSON
+ENV GEOTIFF_JSON=${GEOTIFF_JSON}
 
 COPY common/ ${LAMBDA_TASK_ROOT}/common/
 

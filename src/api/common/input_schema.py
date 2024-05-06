@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from pydantic import BaseModel, Field, model_validator
 from typing_extensions import Self
 
@@ -22,5 +24,18 @@ class QueryStringSchema(BaseModel):
         return self
 
 
-def validate_query_params(params: dict) -> dict:
-    return QueryStringSchema(**params).model_dump()
+class QueryStringRCPSchema(QueryStringSchema):
+    year: Optional[int]
+    valid_years: List[int] = Field(exclude=True)
+
+    @model_validator(mode="after")
+    def check_year(self) -> Self:
+        if self.year is not None and self.year not in self.valid_years:
+            raise ValueError()
+        return self
+
+
+def validate_query_params(
+    model: QueryStringSchema | QueryStringRCPSchema, params: dict
+) -> dict:
+    return model(**params).model_dump()

@@ -13,10 +13,10 @@ on:
       aws-region:
         required: true
         type: string
-      geotiff-keyword:
+      climate-scenario:
         required: true
         type: string
-        description: "Keywork used to idenfiy which variable to extract"
+        description: "Keywords used to identify which items to select from the json file"
       image-name:
         required: true
         type: string
@@ -40,21 +40,22 @@ jobs:
           cd src/api
           make schema_test
 
-      - name: Parse and get geotiff path
+      - name: Parse build args and docker tags
         id: parse-geotiff-path
         run: |
-          # Retrieve geotiff path from file
-          GEOTIFF_PATH=$(grep "${{ inputs.geotiff-keyword }}=" src/api/${{ inputs.risk-folder }}/build-env-variables | cut -d '=' -f2)
+          GEOTIFF_JSON=$(
+            cat src/api/${{ inputs.risk-folder }}/build-env-variables.json |
+            jq --compact-output 'map(select(.climate_scenario == "${{ inputs.climate-scenario }}"))'
+          )
 
-          # Remove "s3://" prefix
-          GEOTIFF_PATH_TAG=${GEOTIFF_PATH#s3://}
+          YEARS=$(echo $GEOTIFF_JSON | jq --compact-output 'map(.year) | join(" ")' | sed 's/"//g')
+          S3_PATHS=$(echo $GEOTIFF_JSON | jq --compact-output 'map(.path) | join(" ")' | sed 's/"//g' | sed 's/s3:\/\///g' | tr '/' '-')
 
-          # Substitute "/" with "-"
-          GEOTIFF_PATH_TAG=$(echo $GEOTIFF_PATH_TAG | tr '/' '-')
+          DOCKER_TAGS="${{ inputs.climate-scenario }} ${YEARS} ${S3_PATHS}"
 
           # Put it inside the GitHub env
-          echo "GEOTIFF_PATH=$GEOTIFF_PATH" >> $GITHUB_OUTPUT
-          echo "GEOTIFF_PATH_TAG=$GEOTIFF_PATH_TAG" >> $GITHUB_OUTPUT
+          echo "GEOTIFF_JSON='$GEOTIFF_JSON'" >> $GITHUB_OUTPUT
+          echo "DOCKER_TAGS=\"$DOCKER_TAGS\"" >> $GITHUB_OUTPUT
 
       - name: Build and push specific image
         id: build-push-layout
@@ -63,8 +64,8 @@ jobs:
           aws-role-name: ${{ inputs.aws-role-name }}
           aws-account-id: ${{ inputs.aws-account-id }}
           aws-region: ${{ inputs.aws-region }}
-          geotiff-path: ${{ steps.parse-geotiff-path.outputs.GEOTIFF_PATH }}
-          geotiff-tag: ${{ steps.parse-geotiff-path.outputs.GEOTIFF_PATH_TAG }}
+          geotiff-json: ${{ steps.parse-geotiff-path.outputs.GEOTIFF_JSON }}
+          docker-tags: ${{ steps.parse-geotiff-path.outputs.DOCKER_TAGS }}
           risk-folder: ${{ inputs.risk-folder }}
           image-name: ${{ inputs.image-name }}
           lambda-name: ${{ inputs.lambda-name }}

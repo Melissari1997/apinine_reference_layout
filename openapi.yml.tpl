@@ -152,7 +152,60 @@ paths:
       security:
         - apinineApiKey: []
         - apinineAuthorizerv2: []
-
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/flood"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+  /flood/rcp45/v1:
+    get:
+      summary: Returns a flood RCP 4.5 assessment for an address.
+      description: Optional extended description in Markdown.
+      parameters:
+        - $ref: "#/components/parameters/lat"
+        - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/x-api-key"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${flood_rcp45_lambda_uri}
+        credentials: ${apinine_resource_flood_rcp45_role}
+      security:
+        - apinineApiKey: []
+        - apinineAuthorizerv2: []
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/flood"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+  /flood/rcp26/v1:
+    get:
+      summary: Returns a flood RCP 2.6 assessment for an address.
+      description: Optional extended description in Markdown.
+      parameters:
+        - $ref: "#/components/parameters/lat"
+        - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/x-api-key"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${flood_rcp26_lambda_uri}
+        credentials: ${apinine_resource_flood_rcp26_role}
+      security:
+        - apinineApiKey: []
+        - apinineAuthorizerv2: []
       responses:
         "200":
           description: ok
@@ -505,6 +558,7 @@ components:
         - lon
         - average_annual_loss
         - risk_index
+        - land_use
         - floodRiskAssessment
       properties:
         address:
@@ -528,6 +582,10 @@ components:
           type: integer
           description: very risky!
           example: 2
+        land_use:
+          type: string
+          description: asset identifier
+          example: Agriculture
         elapsed:
           type: number
           description: some time has elapsed!
