@@ -44,5 +44,7 @@ class TestGetLoginUnit:
         }
 
         callback_uri = "http://localhost:3000/login"
-        r = lambda_handler({"callback_uri": callback_uri}, {})
+        r = lambda_handler(
+            event={"queryStringParameters": {"callback_uri": callback_uri}}, context={}
+        )
         assert want == r

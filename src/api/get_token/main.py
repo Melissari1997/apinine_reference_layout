@@ -34,8 +34,9 @@ def validate_env(
 @validate_env
 def lambda_handler(event: dict, context: dict = None) -> dict:
     app_client_id = os.environ.get("APP_CLIENT_ID", "")
-    callback_uri = event.get("callback_uri", os.environ.get("CALLBACK_URI", ""))
     url = os.environ.get("URL", "")
+    query_params = event.get("queryStringParameters", {})
+    callback_uri = query_params.get("callback_uri", os.environ.get("CALLBACK_URI", ""))
 
     code = event.get("queryStringParameters", {}).get("code", "")
 
