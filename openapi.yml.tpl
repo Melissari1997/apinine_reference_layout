@@ -6,6 +6,11 @@ info:
 servers:
   - url: https://${domain_name}/
 paths:
+
+  #####################################
+  #   Drought
+  #####################################
+
   /drought/v1:
     get:
       summary: Returns a drought assessment for an address.
@@ -33,6 +38,82 @@ paths:
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+  /ui/drought/v1:
+    options:
+      summary: CORS support
+      description: Enable CORS by allowing all origins
+      tags:
+      - CORS
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+    get:
+      summary: Returns a drought assessment for an address.
+      description: Optional extended description in Markdown.
+      parameters:
+        - $ref: "#/components/parameters/lat"
+        - $ref: "#/components/parameters/lon"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${drought_lambda_uri}
+        credentials: ${apinine_resource_drought_role}
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      security:
+        # Empty array will attempt to validate as an ID token,
+        # whereas if you have one or more values in it it will validate the bearer as an access token
+        - apinineCognitoAuthorizer: ["email"]
+      responses:
+        "200":
+          description: ok
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/drought"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+
+  #####################################
+  #   Flood
+  #####################################
 
   /flood/v1:
     get:
@@ -65,7 +146,7 @@ paths:
   /ui/flood/v1:
     options:
       summary: CORS support
-      description: Enable CORS by returning correct headers
+      description: Enable CORS by allowing all origins
       tags:
       - CORS
       responses:
@@ -99,7 +180,6 @@ paths:
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
-        - $ref: "#/components/parameters/x-api-key"
       x-amazon-apigateway-integration:
         httpMethod: POST
         type: aws_proxy
@@ -143,6 +223,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/year"
         - $ref: "#/components/parameters/x-api-key"
       x-amazon-apigateway-integration:
         httpMethod: POST
@@ -163,6 +244,79 @@ paths:
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+  /ui/flood/rcp85/v1:
+    options:
+      summary: CORS support
+      description: Enable CORS by allowing all origins
+      tags:
+      - CORS
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+    get:
+      summary: Returns a flood RCP 8.5 assessment for an address.
+      description: Optional extended description in Markdown.
+      parameters:
+        - $ref: "#/components/parameters/lat"
+        - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/year"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${flood_rcp85_lambda_uri}
+        credentials: ${apinine_resource_flood_rcp85_role}
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      security:
+        # Empty array will attempt to validate as an ID token,
+        # whereas if you have one or more values in it it will validate the bearer as an access token
+        - apinineCognitoAuthorizer: ["email"]
+      responses:
+        "200":
+          description: ok
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/flood"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
   /flood/rcp45/v1:
     get:
       summary: Returns a flood RCP 4.5 assessment for an address.
@@ -170,6 +324,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
+        - $ref: '#/components/parameters/year'
         - $ref: "#/components/parameters/x-api-key"
       x-amazon-apigateway-integration:
         httpMethod: POST
@@ -190,6 +345,79 @@ paths:
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+  /ui/flood/rcp45/v1:
+    options:
+      summary: CORS support
+      description: Enable CORS by allowing all origins
+      tags:
+      - CORS
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+    get:
+      summary: Returns a flood RCP 4.5 assessment for an address.
+      description: Optional extended description in Markdown.
+      parameters:
+        - $ref: "#/components/parameters/lat"
+        - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/year"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${flood_rcp45_lambda_uri}
+        credentials: ${apinine_resource_flood_rcp45_role}
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      security:
+        # Empty array will attempt to validate as an ID token,
+        # whereas if you have one or more values in it it will validate the bearer as an access token
+        - apinineCognitoAuthorizer: ["email"]
+      responses:
+        "200":
+          description: ok
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/flood"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
   /flood/rcp26/v1:
     get:
       summary: Returns a flood RCP 2.6 assessment for an address.
@@ -197,6 +425,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/year"
         - $ref: "#/components/parameters/x-api-key"
       x-amazon-apigateway-integration:
         httpMethod: POST
@@ -217,6 +446,84 @@ paths:
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+  /ui/flood/rcp26/v1:
+    options:
+      summary: CORS support
+      description: Enable CORS by allowing all origins
+      tags:
+      - CORS
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+    get:
+      summary: Returns a flood RCP 2.6 assessment for an address.
+      description: Optional extended description in Markdown.
+      parameters:
+        - $ref: "#/components/parameters/lat"
+        - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/year"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${flood_rcp26_lambda_uri}
+        credentials: ${apinine_resource_flood_rcp26_role}
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      security:
+        # Empty array will attempt to validate as an ID token,
+        # whereas if you have one or more values in it it will validate the bearer as an access token
+        - apinineCognitoAuthorizer: ["email"]
+      responses:
+        "200":
+          description: ok
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/flood"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+
+  #################################
+  #   Wildfire   
+  #################################
+
   /wildfire/v1:
     get:
       summary: Returns a wildfire assessment for an address.
@@ -240,7 +547,78 @@ paths:
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
-
+  /ui/wildfire/v1:
+    options:
+      summary: CORS support
+      description: Enable CORS by allowing all origins
+      tags:
+      - CORS
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+    get:
+      summary: Returns a wildfire assessment for an address.
+      description: Optional extended description in Markdown.
+      parameters:
+        - $ref: "#/components/parameters/lat"
+        - $ref: "#/components/parameters/lon"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${wildfire_lambda_uri}
+        credentials: ${apinine_resource_wildfire_role}
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      security:
+        # Empty array will attempt to validate as an ID token,
+        # whereas if you have one or more values in it it will validate the bearer as an access token
+        - apinineCognitoAuthorizer: ["email"]
+      responses:
+        "200":
+          description: ok
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/wildfire"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
   /ui/login:
     get:
       summary: "Consume the OAuth2 code to obtain the JWTs"
@@ -263,7 +641,7 @@ paths:
   /ui/tokens:
     options:
       summary: CORS support
-      description: Enable CORS by returning correct headers
+      description: Enable CORS by allowing all origins
       tags:
       - CORS
       responses:
@@ -330,7 +708,7 @@ paths:
   /ui/refresh:
     options:
       summary: CORS support
-      description: Enable CORS by returning correct headers
+      description: Enable CORS by allowing all origins
       tags:
       - CORS
       responses:
@@ -402,7 +780,7 @@ paths:
   /ui/user:
     options:
       summary: CORS support
-      description: Enable CORS by returning correct headers
+      description: Enable CORS by allowing all origins
       tags:
       - CORS
       responses:
@@ -498,10 +876,21 @@ components:
       maximum: 45
       example: 12.65629
 
+    year:
+      type: number
+      description: Future year to consider for the RCP assessment
+      enum: [2030, 2040, 2050]
+      example: 2030
+
     code:
       type: string
       description: Code obtained from OAuth2 login redirect
       example: a1b2c245-aaaa-bbbb-11cc-123b45c678c9
+
+    callback_uri:
+      type: string
+      description: URI for OAuth2 login redirect
+      example: https://example.com
 
     # FLOOD resources
     floodRiskAssessment:
@@ -654,7 +1043,7 @@ components:
 
     wildfireRiskAssessment:
       type: object
-      description: wildifire is bad
+      description: wildfire is bad
       additionalProperties:
         $ref: "#/components/schemas/wildfireRiskSingleRp"
       example:
@@ -760,6 +1149,13 @@ components:
       schema:
         $ref: "#/components/schemas/lat"
       description: Latitude of the point
+      required: true
+    year:
+      in: query
+      name: year
+      schema:
+        $ref: "#/components/schemas/year"
+      description: Future year to consider for the RCP assessment
       required: true
     code:
       in: query
