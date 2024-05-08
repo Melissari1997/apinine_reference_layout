@@ -949,6 +949,7 @@ components:
         - risk_index
         - land_use
         - floodRiskAssessment
+        - hazard_index
       properties:
         address:
           $ref: "#/components/schemas/address"
@@ -967,6 +968,10 @@ components:
               type: number
               description: something national
               example: 0.00127819
+            regional_average:
+              type: string
+              description: something regional
+              enum: ["Not implemented"]
         risk_index:
           type: integer
           description: very risky!
@@ -975,6 +980,10 @@ components:
           type: string
           description: asset identifier
           example: Agriculture
+        hazard_index:
+          type: string
+          description: very hazardous!
+          enum: ["Not implemented"]
         elapsed:
           type: number
           description: some time has elapsed!
@@ -987,12 +996,44 @@ components:
       type: object
       required:
         - address
+        - lat
+        - lon
         - droughtRiskAssessment
+        - risk_index
+        - average_annual_loss
+        - hazard_index
       properties:
         address:
           $ref: "#/components/schemas/address"
+        lat:
+          $ref: "#/components/schemas/lat"
+        lon:
+          $ref: "#/components/schemas/lon"
         droughtRiskAssessment:
           $ref: "#/components/schemas/droughtRiskAssessment"
+        risk_index:
+          type: string
+          description: very risky!
+          enum: ["Not implemented"]
+        average_annual_loss:
+          type: object
+          properties:
+            value:
+              type: string
+              description: something lose something
+              enum: ["Not implemented"]
+            national_average:
+              type: string
+              description: something national
+              enum: ["Not implemented"]
+            regional_average:
+              type: string
+              description: something regional
+              enum: ["Not implemented"]
+        hazard_index:
+          type: string
+          description: very hazardous!
+          enum: ["Not implemented"]
 
     droughtRiskAssessment:
       type: object
@@ -1064,6 +1105,9 @@ components:
         - lat
         - lon
         - wildfireRiskAssessment
+        - risk_index
+        - average_annual_loss
+        - hazard_index
       properties:
         address:
           $ref: "#/components/schemas/address"
@@ -1073,7 +1117,29 @@ components:
           $ref: "#/components/schemas/lon"
         wildfireRiskAssessment:
           $ref: "#/components/schemas/wildfireRiskAssessment"
-
+        risk_index:
+          type: string
+          description: very risky!
+          enum: ["Not implemented"]
+        average_annual_loss:
+          type: object
+          properties:
+            value:
+              type: string
+              description: something lose something
+              enum: ["Not implemented"]
+            national_average:
+              type: string
+              description: something national
+              enum: ["Not implemented"]
+            regional_average:
+              type: string
+              description: something regional
+              enum: ["Not implemented"]
+        hazard_index:
+          type: string
+          description: very hazardous!
+          enum: ["Not implemented"]
     # AUTH resources
     getToken:
       type: object
