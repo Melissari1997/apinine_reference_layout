@@ -1,4 +1,5 @@
 import pytest
+from common.schema import NOT_IMPLEMENTED_PLACEHOLDER
 from main import main
 
 
@@ -42,7 +43,12 @@ class TestFloodUnit:
                 },
             },
             "risk_index": 2,
-            "average_annual_loss": {"value": 0.032, "national_average": 0.0034},
+            "hazard_index": NOT_IMPLEMENTED_PLACEHOLDER,
+            "average_annual_loss": {
+                "value": 0.032,
+                "national_average": 0.0034,
+                "regional_average": NOT_IMPLEMENTED_PLACEHOLDER,
+            },
         }
 
         got = main(

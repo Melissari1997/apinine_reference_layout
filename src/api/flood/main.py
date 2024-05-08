@@ -1,6 +1,7 @@
 from aws_lambda_powertools import Logger, Tracer
 from common.event_parser import parse_aws_event
 from common.response import handle_response
+from common.schema import NOT_IMPLEMENTED_PLACEHOLDER
 from geocoder.geocoder import Geocoder
 from geocoder.gmaps_geocoder import GMapsGeocoder
 from land_use.util_CLC_conversion import CLC_MAPPING
@@ -120,8 +121,10 @@ def main(
         "average_annual_loss": {
             "value": values[FloodKeys.AAL][0],
             "national_average": values["metadata"][f"Average_{land_use}_AAL"],
+            "regional_average": NOT_IMPLEMENTED_PLACEHOLDER,
         },
         "risk_index": values[FloodKeys.RISK_INDEX][0],
+        "hazard_index": NOT_IMPLEMENTED_PLACEHOLDER,
     }
 
     return output
