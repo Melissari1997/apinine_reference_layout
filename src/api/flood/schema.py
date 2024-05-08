@@ -1,6 +1,11 @@
 from typing import Annotated
 
-from common.schema import Intensity, PositiveRoundedFloat, Probability
+from common.schema import (
+    NOT_IMPLEMENTED_PLACEHOLDER,
+    Intensity,
+    PositiveRoundedFloat,
+    Probability,
+)
 from pydantic import BaseModel, Field
 
 PositiveInt = Annotated[int, Field(ge=0)]
@@ -24,6 +29,7 @@ class FloodRiskAssessment(BaseModel):
 class AverageAnnualLoss(BaseModel):
     value: PositiveRoundedFloat
     national_average: PositiveRoundedFloat
+    regional_average: type(NOT_IMPLEMENTED_PLACEHOLDER)
 
 
 class OutputSchema(BaseModel):
@@ -34,3 +40,4 @@ class OutputSchema(BaseModel):
     flood_risk_assessment: FloodRiskAssessment
     risk_index: PositiveInt
     average_annual_loss: AverageAnnualLoss
+    hazard_index: type(NOT_IMPLEMENTED_PLACEHOLDER)

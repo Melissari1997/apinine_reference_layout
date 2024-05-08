@@ -1,6 +1,7 @@
 from aws_lambda_powertools import Logger, Tracer
 from common.event_parser import parse_aws_event
 from common.response import handle_response
+from common.schema import NOT_IMPLEMENTED_PLACEHOLDER
 from geocoder.geocoder import Geocoder
 from geocoder.gmaps_geocoder import GMapsGeocoder
 from readgeodata.interfaces import GeoDataReader
@@ -83,23 +84,30 @@ def main(
                     "duration_months": values[DroughtKeys.DURATION_RP20][0],
                     "severity": values[DroughtKeys.SEVERITY_RP20][0],
                 },
-                "vulnerability": "Not implemented",
+                "vulnerability": NOT_IMPLEMENTED_PLACEHOLDER,
             },
             "return_period_100y": {
                 "intensity": {
                     "duration_months": values[DroughtKeys.DURATION_RP100][0],
                     "severity": values[DroughtKeys.SEVERITY_RP100][0],
                 },
-                "vulnerability": "Not implemented",
+                "vulnerability": NOT_IMPLEMENTED_PLACEHOLDER,
             },
             "return_period_200y": {
                 "intensity": {
                     "duration_months": values[DroughtKeys.DURATION_RP200][0],
                     "severity": values[DroughtKeys.SEVERITY_RP200][0],
                 },
-                "vulnerability": "Not implemented",
+                "vulnerability": NOT_IMPLEMENTED_PLACEHOLDER,
             },
         },
+        "risk_index": NOT_IMPLEMENTED_PLACEHOLDER,
+        "average_annual_loss": {
+            "value": NOT_IMPLEMENTED_PLACEHOLDER,
+            "national_average": NOT_IMPLEMENTED_PLACEHOLDER,
+            "regional_average": NOT_IMPLEMENTED_PLACEHOLDER,
+        },
+        "hazard_index": NOT_IMPLEMENTED_PLACEHOLDER,
     }
 
     return output

@@ -56,7 +56,7 @@ resource "aws_cognito_user_pool_client" "apinine_fe_client" {
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_scopes                          = ["email", "openid"]
   auth_session_validity                         = 5
-  callback_urls                                 = ["https://example.com", "http://localhost:5173/login", "https://eoliann.glueglue.dev/login"]
+  callback_urls                                 = ["https://example.com", "http://localhost:5173/login", "https://${var.ui_domain_name}/login"]
   enable_token_revocation                       = true
   enable_propagate_additional_user_context_data = false
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_SRP_AUTH"]

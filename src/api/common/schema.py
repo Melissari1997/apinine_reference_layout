@@ -7,6 +7,7 @@ from .errors import MissingDataError
 
 # TODO: move rounding logic to the components producing the lookup
 DECIMAL_PLACES = 4
+NOT_IMPLEMENTED_PLACEHOLDER = "Not implemented"
 
 
 def check_positive(f: float) -> float:

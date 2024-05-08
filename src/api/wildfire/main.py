@@ -1,6 +1,7 @@
 from aws_lambda_powertools import Logger, Tracer
 from common.event_parser import parse_aws_event
 from common.response import handle_response
+from common.schema import NOT_IMPLEMENTED_PLACEHOLDER
 from geocoder.geocoder import Geocoder
 from geocoder.gmaps_geocoder import GMapsGeocoder
 from readgeodata.interfaces import GeoDataReader
@@ -79,21 +80,28 @@ def main(
                 "intensity": {
                     "fwi": values[WildfireKeys.FWI_2][0],
                 },
-                "vulnerability": "Not implemented",
+                "vulnerability": NOT_IMPLEMENTED_PLACEHOLDER,
             },
             "return_period_10y": {
                 "intensity": {
                     "fwi": values[WildfireKeys.FWI_10][0],
                 },
-                "vulnerability": "Not implemented",
+                "vulnerability": NOT_IMPLEMENTED_PLACEHOLDER,
             },
             "return_period_30y": {
                 "intensity": {
                     "fwi": values[WildfireKeys.FWI_30][0],
                 },
-                "vulnerability": "Not implemented",
+                "vulnerability": NOT_IMPLEMENTED_PLACEHOLDER,
             },
         },
+        "risk_index": NOT_IMPLEMENTED_PLACEHOLDER,
+        "average_annual_loss": {
+            "value": NOT_IMPLEMENTED_PLACEHOLDER,
+            "national_average": NOT_IMPLEMENTED_PLACEHOLDER,
+            "regional_average": NOT_IMPLEMENTED_PLACEHOLDER,
+        },
+        "hazard_index": NOT_IMPLEMENTED_PLACEHOLDER,
     }
 
     return output
