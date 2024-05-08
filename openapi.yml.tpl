@@ -528,6 +528,10 @@ paths:
     get:
       summary: Returns a wildfire assessment for an address.
       description: Optional extended description in Markdown.
+      parameters:
+        - $ref: "#/components/parameters/lat"
+        - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/x-api-key"
       x-amazon-apigateway-integration:
         httpMethod: POST
         type: aws_proxy
@@ -1232,7 +1236,7 @@ components:
       required: true
     callback_uri:
       in: query
-      name: callback_uri
+      name: callbackUri
       schema:
         $ref: "#/components/schemas/callback_uri"
       description: URI to redirect login to
