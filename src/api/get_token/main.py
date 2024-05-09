@@ -36,9 +36,12 @@ def lambda_handler(event: dict, context: dict = None) -> dict:
     app_client_id = os.environ.get("APP_CLIENT_ID", "")
     url = os.environ.get("URL", "")
     query_params = event.get("queryStringParameters", {})
+    # If no query parameters are supplied, 'queryStringParameters' is None and .get() returns None
+    if query_params is None:
+        query_params = {}
     callback_uri = query_params.get("callback_uri", os.environ.get("CALLBACK_URI", ""))
 
-    code = event.get("queryStringParameters", {}).get("code", "")
+    code = query_params.get("code", "")
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = f"grant_type=authorization_code&client_id={app_client_id}&code={code}&redirect_uri={urllib.parse.quote_plus(callback_uri)}"

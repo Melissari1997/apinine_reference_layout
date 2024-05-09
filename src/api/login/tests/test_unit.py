@@ -8,7 +8,11 @@ class TestGetLoginUnit:
         with pytest.raises(ValueError):
             lambda_handler({}, {})
 
-    def test_handler(self, monkeypatch):
+    @pytest.mark.parametrize(
+        "event",
+        [{}, {"queryStringParameters": None}],
+    )
+    def test_handler(self, event, monkeypatch):
         url = "https://custom-cognito-domain.auth.eu-central-1.amazoncognito.com/login"
 
         monkeypatch.setenv("POWERTOOLS_LOG_LEVEL", "INFO")
@@ -24,7 +28,7 @@ class TestGetLoginUnit:
             },
         }
 
-        r = lambda_handler({}, {})
+        r = lambda_handler(event, {})
         assert want == r
 
     def test_handler_with_callback_uri(self, monkeypatch):

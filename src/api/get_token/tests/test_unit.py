@@ -12,8 +12,12 @@ class TestGetTokenUnit:
             lambda_handler({}, {})
 
     # TODO: Parametrize  statusCode and body
+    @pytest.mark.parametrize(
+        "event",
+        [{}, {"queryStringParameters": None}],
+    )
     @responses.activate
-    def test_handler(self, monkeypatch):
+    def test_handler(self, event, monkeypatch):
         url = "https://custom-cognito-domain.auth.eu-central-1.amazoncognito.com/oauth2/token"
         body = {"ok": 1}
 
@@ -30,6 +34,6 @@ class TestGetTokenUnit:
             status=200,
         )
 
-        r = lambda_handler({}, {})
+        r = lambda_handler(event, {})
         want = (200, body)
         assert want == (r["statusCode"], json.loads(r["body"]))
