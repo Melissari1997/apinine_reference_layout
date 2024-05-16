@@ -66,11 +66,11 @@ jobs:
         run: terraform validate -no-color
 
       - name: Terraform Plan
-        run: terraform plan -input=false -no-color -out=tfplan
+        run: terraform plan >/dev/null -input=false -no-color -out=tfplan
 
       - name: Show Plan
         id: show_plan
-        run: terraform show -no-color tfplan
+        run: terraform show tfplan -no-color
 
       - name: Approve Plan to Apply
         uses: trstringer/manual-approval@v1
