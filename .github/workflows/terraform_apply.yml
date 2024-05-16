@@ -68,9 +68,15 @@ jobs:
       - name: Terraform Plan
         run: terraform plan >/dev/null -input=false -no-color -out=tfplan
 
+      - name: Show plan
+        id: show_plan
+        run: terraform show tfplan -no-color
+      
       - name: Show short plan
         id: show_short_plan
-        run: terraform show tfplan -no-color | grep -E '^\s*[#~+-]'
+        env:
+          SHOW_PLAN: ${{ steps.show_plan.outputs.stdout }}
+        run: echo "$SHOW_PLAN" | grep -E '^\s*[#~+-]'
 
       - name: Approve Plan to Apply
         uses: trstringer/manual-approval@v1
