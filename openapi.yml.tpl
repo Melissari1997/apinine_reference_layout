@@ -111,6 +111,80 @@ paths:
         "403":
           $ref: "#/components/responses/403Forbidden"
 
+  /ui/drought/map/v1:
+    options:
+      summary: CORS support
+      description: Enable CORS by allowing all origins
+      tags:
+      - CORS
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+    get:
+      summary: Return a geojson map for drought assessment in a point
+      description: Optional extended description in Markdown.
+      parameters:
+        - $ref: "#/components/parameters/lat"
+        - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/layer"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${map_drought_lambda_uri}
+        credentials: ${apinine_resource_map_drought_role}
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      security:
+        # Empty array will attempt to validate as an ID token,
+        # whereas if you have one or more values in it it will validate the bearer as an access token
+        - apinineCognitoAuthorizer: ["email"]
+      responses:
+        "200":
+          description: ok
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/drought"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+
   #####################################
   #   Flood
   #####################################
@@ -211,6 +285,80 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/flood"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+
+  /ui/flood/map/v1:
+    options:
+      summary: CORS support
+      description: Enable CORS by allowing all origins
+      tags:
+      - CORS
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+    get:
+      summary: Return a geojson map for flood assessment in a point
+      description: Optional extended description in Markdown.
+      parameters:
+        - $ref: "#/components/parameters/lat"
+        - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/layer"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${map_flood_lambda_uri}
+        credentials: ${apinine_resource_map_flood_role}
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      security:
+        # Empty array will attempt to validate as an ID token,
+        # whereas if you have one or more values in it it will validate the bearer as an access token
+        - apinineCognitoAuthorizer: ["email"]
+      responses:
+        "200":
+          description: ok
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/drought"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
@@ -317,6 +465,82 @@ paths:
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+
+  /ui/flood/rcp85/map/v1:
+    options:
+      summary: CORS support
+      description: Enable CORS by allowing all origins
+      tags:
+      - CORS
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+    get:
+      summary: Return a geojson map for flood RCP 8.5 assessment in a point
+      description: Optional extended description in Markdown.
+      parameters:
+        - $ref: "#/components/parameters/lat"
+        - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/layer"
+        - $ref: "#/components/parameters/year"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${map_flood_rcp85_lambda_uri}
+        credentials: ${apinine_resource_map_flood_rcp85_role}
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      security:
+        # Empty array will attempt to validate as an ID token,
+        # whereas if you have one or more values in it it will validate the bearer as an access token
+        - apinineCognitoAuthorizer: ["email"]
+      responses:
+        "200":
+          description: ok
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/drought"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+
   /flood/rcp45/v1:
     get:
       summary: Returns a flood RCP 4.5 assessment for an address.
@@ -418,6 +642,82 @@ paths:
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+
+  /ui/flood/rcp45/map/v1:
+    options:
+      summary: CORS support
+      description: Enable CORS by allowing all origins
+      tags:
+      - CORS
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+    get:
+      summary: Return a geojson map for flood RCP 4.5 assessment in a point
+      description: Optional extended description in Markdown.
+      parameters:
+        - $ref: "#/components/parameters/lat"
+        - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/layer"
+        - $ref: "#/components/parameters/year"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${map_flood_rcp45_lambda_uri}
+        credentials: ${apinine_resource_map_flood_rcp45_role}
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      security:
+        # Empty array will attempt to validate as an ID token,
+        # whereas if you have one or more values in it it will validate the bearer as an access token
+        - apinineCognitoAuthorizer: ["email"]
+      responses:
+        "200":
+          description: ok
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/drought"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+
   /flood/rcp26/v1:
     get:
       summary: Returns a flood RCP 2.6 assessment for an address.
@@ -515,6 +815,81 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/flood"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+
+  /ui/flood/rcp26/map/v1:
+    options:
+      summary: CORS support
+      description: Enable CORS by allowing all origins
+      tags:
+      - CORS
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+    get:
+      summary: Return a geojson map for flood RCP 2.6 assessment in a point
+      description: Optional extended description in Markdown.
+      parameters:
+        - $ref: "#/components/parameters/lat"
+        - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/layer"
+        - $ref: "#/components/parameters/year"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${map_flood_rcp26_lambda_uri}
+        credentials: ${apinine_resource_map_flood_rcp26_role}
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      security:
+        # Empty array will attempt to validate as an ID token,
+        # whereas if you have one or more values in it it will validate the bearer as an access token
+        - apinineCognitoAuthorizer: ["email"]
+      responses:
+        "200":
+          description: ok
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/drought"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
@@ -623,6 +998,81 @@ paths:
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+
+  /ui/wildfire/map/v1:
+    options:
+      summary: CORS support
+      description: Enable CORS by allowing all origins
+      tags:
+      - CORS
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+    get:
+      summary: Return a geojson map for wildfire assessment in a point
+      description: Optional extended description in Markdown.
+      parameters:
+        - $ref: "#/components/parameters/lat"
+        - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/layer"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        type: aws_proxy
+        uri: ${map_wildfire_lambda_uri}
+        credentials: ${apinine_resource_map_wildfire_role}
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      security:
+        # Empty array will attempt to validate as an ID token,
+        # whereas if you have one or more values in it it will validate the bearer as an access token
+        - apinineCognitoAuthorizer: ["email"]
+      responses:
+        "200":
+          description: ok
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/drought"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+
   /ui/login:
     get:
       summary: "Consume the OAuth2 code to obtain the JWTs"
@@ -885,6 +1335,11 @@ components:
       description: Future year to consider for the RCP assessment
       enum: [2030, 2040, 2050]
       example: 2030
+
+    layer:
+      type: string
+      description: Name of the map layer to select
+      example: water_intensity_rp20y
 
     code:
       type: string
@@ -1219,6 +1674,13 @@ components:
       schema:
         $ref: "#/components/schemas/lat"
       description: Latitude of the point
+      required: true
+    layer:
+      in: query
+      name: layer
+      schema:
+        $ref: "#/components/schemas/layer"
+      description: Name of the map layer to select
       required: true
     year:
       in: query

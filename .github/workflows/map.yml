@@ -1,0 +1,82 @@
+name: Build, push and update lambda images for UI map
+
+on:
+  push:
+    paths:
+      - 'src/api/map/**'
+      - 'src/api/common/**'
+      - '.github/workflows/map.yml'
+      - '.github/workflows/build-test-deploy-map.yml'
+      - '.github/actions/build-push-layout-map/action.yml'
+    branches: [ "main" ]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  floodbase-map-build-push:
+    uses: ./.github/workflows/build-test-deploy-map.yml
+    with:
+      aws-role-name: gh_apinine_map_flood
+      aws-account-id: 600920596656
+      aws-region: eu-central-1
+      climate-scenario: baseline
+      risk-folder: flood
+      image-name: apinine_map_flood
+      lambda-name: apinine_map_flood
+
+  flood26-map-build-push:
+    uses: ./.github/workflows/build-test-deploy-map.yml
+    with:
+      aws-role-name: gh_apinine_map_flood_rcp26
+      aws-account-id: 600920596656
+      aws-region: eu-central-1
+      climate-scenario: rcp26
+      risk-folder: flood
+      image-name: apinine_map_flood_rcp26
+      lambda-name: apinine_map_flood_rcp26
+
+  flood45-map-build-push:
+    uses: ./.github/workflows/build-test-deploy-map.yml
+    with:
+      aws-role-name: gh_apinine_map_flood_rcp45
+      aws-account-id: 600920596656
+      aws-region: eu-central-1
+      climate-scenario: rcp45
+      risk-folder: flood
+      image-name: apinine_map_flood_rcp45
+      lambda-name: apinine_map_flood_rcp45
+
+  flood85-map-build-push:
+    uses: ./.github/workflows/build-test-deploy-map.yml
+    with:
+      aws-role-name: gh_apinine_map_flood_rcp85
+      aws-account-id: 600920596656
+      aws-region: eu-central-1
+      climate-scenario: rcp85
+      risk-folder: flood
+      image-name: apinine_map_flood_rcp85
+      lambda-name: apinine_map_flood_rcp85
+
+  drought-map-build-push:
+    uses: ./.github/workflows/build-test-deploy-map.yml
+    with:
+      aws-role-name: gh_apinine_map_drought
+      aws-account-id: 600920596656
+      aws-region: eu-central-1
+      climate-scenario: baseline
+      risk-folder: drought
+      image-name: apinine_map_drought
+      lambda-name: apinine_map_drought
+
+  wildfire-map-build-push:
+    uses: ./.github/workflows/build-test-deploy-map.yml
+    with:
+      aws-role-name: gh_apinine_map_wildfire
+      aws-account-id: 600920596656
+      aws-region: eu-central-1
+      climate-scenario: baseline
+      risk-folder: wildfire
+      image-name: apinine_map_wildfire
+      lambda-name: apinine_map_wildfire

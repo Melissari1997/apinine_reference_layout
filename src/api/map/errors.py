@@ -1,0 +1,2 @@
+class BandNotFoundError(Exception):
+    pass

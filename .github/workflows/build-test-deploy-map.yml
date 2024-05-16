@@ -45,7 +45,7 @@ jobs:
         id: parse-geotiff-path
         run: |
           GEOTIFF_JSON=$(
-            cat src/api/${{ inputs.risk-folder }}/build-env-variables.json |
+            cat src/api/map/${{ inputs.risk-folder }}/build-env-variables.json |
             jq --compact-output 'map(select(.climate_scenario == "${{ inputs.climate-scenario }}"))'
           )
 
@@ -59,8 +59,8 @@ jobs:
           echo "DOCKER_TAGS=\"$DOCKER_TAGS\"" >> $GITHUB_OUTPUT
 
       - name: Build and push specific image
-        id: build-push-layout
-        uses: ./.github/actions/build-push-layout
+        id: build-push-layout-map
+        uses: ./.github/actions/build-push-layout-map
         with:
           aws-role-name: ${{ inputs.aws-role-name }}
           aws-account-id: ${{ inputs.aws-account-id }}

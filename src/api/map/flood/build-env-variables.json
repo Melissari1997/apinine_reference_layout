@@ -1,0 +1,51 @@
+[
+    {
+        "climate_scenario": "baseline",
+        "path": "s3://mlflow-monitoring/112/2caafa97230a4ec19c928e400b6fcd32/artifacts/inference/baseline_IT.tif"
+    },
+    {
+        "climate_scenario": "rcp26",
+        "year": "2030",
+        "path": "s3://mlflow-monitoring/112/2caafa97230a4ec19c928e400b6fcd32/artifacts/inference/rcp2.6_2030_IT.tif"
+    },
+    {
+        "climate_scenario": "rcp26",
+        "year": "2040",
+        "path": "s3://mlflow-monitoring/112/2caafa97230a4ec19c928e400b6fcd32/artifacts/inference/rcp2.6_2040_IT.tif"
+    },
+    {
+        "climate_scenario": "rcp26",
+        "year": "2050",
+        "path": "s3://mlflow-monitoring/112/2caafa97230a4ec19c928e400b6fcd32/artifacts/inference/rcp2.6_2050_IT.tif"
+    },
+    {
+        "climate_scenario": "rcp45",
+        "year": "2030",
+        "path": "s3://mlflow-monitoring/112/2caafa97230a4ec19c928e400b6fcd32/artifacts/inference/rcp4.5_2030_IT.tif"
+    },
+    {
+        "climate_scenario": "rcp45",
+        "year": "2040",
+        "path": "s3://mlflow-monitoring/112/2caafa97230a4ec19c928e400b6fcd32/artifacts/inference/rcp4.5_2040_IT.tif"
+    },
+    {
+        "climate_scenario": "rcp45",
+        "year": "2050",
+        "path": "s3://mlflow-monitoring/112/2caafa97230a4ec19c928e400b6fcd32/artifacts/inference/rcp4.5_2050_IT.tif"
+    },
+    {
+        "climate_scenario": "rcp85",
+        "year": "2030",
+        "path": "s3://mlflow-monitoring/112/2caafa97230a4ec19c928e400b6fcd32/artifacts/inference/rcp8.5_2030_IT.tif"
+    },
+    {
+        "climate_scenario": "rcp85",
+        "year": "2040",
+        "path": "s3://mlflow-monitoring/112/2caafa97230a4ec19c928e400b6fcd32/artifacts/inference/rcp8.5_2040_IT.tif"
+    },
+    {
+        "climate_scenario": "rcp85",
+        "year": "2050",
+        "path": "s3://mlflow-monitoring/112/2caafa97230a4ec19c928e400b6fcd32/artifacts/inference/rcp8.5_2050_IT.tif"
+    }
+]

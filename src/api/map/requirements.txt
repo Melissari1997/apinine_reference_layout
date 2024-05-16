@@ -1,0 +1,4 @@
+git+https://oauth2:${GITHUB_TOKEN}@github.com/eoliann-dev/bream.git#egg=bream&subdirectory=src/bream
+
+aws-lambda-powertools==2.33.1
+aws_xray_sdk==2.12.1
