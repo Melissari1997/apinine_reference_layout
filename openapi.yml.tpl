@@ -1,7 +1,21 @@
 openapi: 3.0.1
 info:
-  title: Eoliann API v1
-  description: Eoliann risks API
+  title: Eoliann Climate Suite API
+  description: |
+    Eoliann Climate Suite API gives users a quantitative estimate of each climate risk (currently drought, flood and wildfire) for any asset or geographical location within the covered areas. 
+    This documentation describes all of the available API calls and properties of the returned objects.
+    ***
+    For any assistance request, it is possible to contact Eoliann Customer Support through the following channels:
+
+    - **Request Form:** Contact support through the [following form](https://share-eu1.hsforms.com/1yMh0hU88TjutYoNZHeIo2A2dptkp)
+    - **Email:** [support@eoliann.com](mailto:support@eoliann.com)
+
+    Customer support will be available Monday to Friday, 9:00 AM to 6:00 PM (GMT+1)
+
+    Please note that our customer support services will not be available during company-recognized holidays.
+
+    Support requests will be considered by customer support within 2 working days from submission.
+    ***
   version: 1.0.0
 servers:
   - url: https://${domain_name}/
@@ -13,11 +27,12 @@ paths:
 
   /drought/v1:
     get:
-      summary: Returns a drought assessment for an address.
-      description: Optional extended description in Markdown.
+      summary: drought/v1
+      description: Returns a drought risk assessment for an address. The input can be either an `address` or both `lat` and `lon` parameters.
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/address"
         - $ref: "#/components/parameters/x-api-key"
       x-amazon-apigateway-integration:
         httpMethod: POST
@@ -43,6 +58,7 @@ paths:
       summary: CORS support
       description: Enable CORS by allowing all origins
       tags:
+      - UI
       - CORS
       responses:
         200:
@@ -72,6 +88,8 @@ paths:
     get:
       summary: Returns a drought assessment for an address.
       description: Optional extended description in Markdown.
+      tags:
+        - UI
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
@@ -116,6 +134,7 @@ paths:
       summary: CORS support
       description: Enable CORS by allowing all origins
       tags:
+      - UI
       - CORS
       responses:
         200:
@@ -145,6 +164,8 @@ paths:
     get:
       summary: Return a geojson map for drought assessment in a point
       description: Optional extended description in Markdown.
+      tags:
+        - UI
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
@@ -191,11 +212,12 @@ paths:
 
   /flood/v1:
     get:
-      summary: Returns a flood assessment for an address.
-      description: Optional extended description in Markdown.
+      summary: flood/v1
+      description: Returns a flood risk assessment for an address. The input can be either an `address` or both `lat` and `lon` parameters.
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/address"
         - $ref: "#/components/parameters/x-api-key"
       x-amazon-apigateway-integration:
         httpMethod: POST
@@ -222,6 +244,7 @@ paths:
       summary: CORS support
       description: Enable CORS by allowing all origins
       tags:
+      - UI
       - CORS
       responses:
         200:
@@ -249,8 +272,10 @@ paths:
               method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
     get:
-      summary: Returns a flood assessment for an address.
-      description: Optional extended description in Markdown.
+      summary: /ui/flood/v1
+      description: Returns a flood risk assessment for an address. The input can be either an `address` or both `lat` and `lon` parameters.
+      tags:
+        - UI
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
@@ -295,6 +320,7 @@ paths:
       summary: CORS support
       description: Enable CORS by allowing all origins
       tags:
+      - UI
       - CORS
       responses:
         200:
@@ -324,6 +350,8 @@ paths:
     get:
       summary: Return a geojson map for flood assessment in a point
       description: Optional extended description in Markdown.
+      tags:
+        - UI
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
@@ -366,11 +394,12 @@ paths:
 
   /flood/rcp85/v1:
     get:
-      summary: Returns a flood RCP 8.5 assessment for an address.
-      description: Optional extended description in Markdown.
+      summary: flood/rcp85/v1
+      description: Returns a flood RCP 8.5 risk assessment for an address. The input can be either an `address` or both `lat` and `lon` parameters.
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/address"
         - $ref: "#/components/parameters/year"
         - $ref: "#/components/parameters/x-api-key"
       x-amazon-apigateway-integration:
@@ -397,6 +426,7 @@ paths:
       summary: CORS support
       description: Enable CORS by allowing all origins
       tags:
+      - UI
       - CORS
       responses:
         200:
@@ -426,6 +456,8 @@ paths:
     get:
       summary: Returns a flood RCP 8.5 assessment for an address.
       description: Optional extended description in Markdown.
+      tags:
+        - UI
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
@@ -471,6 +503,7 @@ paths:
       summary: CORS support
       description: Enable CORS by allowing all origins
       tags:
+      - UI
       - CORS
       responses:
         200:
@@ -500,6 +533,8 @@ paths:
     get:
       summary: Return a geojson map for flood RCP 8.5 assessment in a point
       description: Optional extended description in Markdown.
+      tags:
+        - UI
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
@@ -543,11 +578,12 @@ paths:
 
   /flood/rcp45/v1:
     get:
-      summary: Returns a flood RCP 4.5 assessment for an address.
-      description: Optional extended description in Markdown.
+      summary: flood/rcp45/v1
+      description: Returns a flood RCP 4.5 risk assessment for an address. The input can be either an `address` or both `lat` and `lon` parameters.
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
+        - $ref: "#/components/parameters/address"
         - $ref: '#/components/parameters/year'
         - $ref: "#/components/parameters/x-api-key"
       x-amazon-apigateway-integration:
@@ -574,6 +610,7 @@ paths:
       summary: CORS support
       description: Enable CORS by allowing all origins
       tags:
+      - UI
       - CORS
       responses:
         200:
@@ -603,6 +640,8 @@ paths:
     get:
       summary: Returns a flood RCP 4.5 assessment for an address.
       description: Optional extended description in Markdown.
+      tags:
+        - UI
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
@@ -648,6 +687,7 @@ paths:
       summary: CORS support
       description: Enable CORS by allowing all origins
       tags:
+      - UI
       - CORS
       responses:
         200:
@@ -677,6 +717,8 @@ paths:
     get:
       summary: Return a geojson map for flood RCP 4.5 assessment in a point
       description: Optional extended description in Markdown.
+      tags:
+        - UI
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
@@ -720,12 +762,13 @@ paths:
 
   /flood/rcp26/v1:
     get:
-      summary: Returns a flood RCP 2.6 assessment for an address.
-      description: Optional extended description in Markdown.
+      summary: flood/rcp26/v1
+      description: Returns a flood RCP 2.6 risk assessment for an address. The input can be either an `address` or both `lat` and `lon` parameters.
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
-        - $ref: "#/components/parameters/year"
+        - $ref: "#/components/parameters/address"
+        - $ref: '#/components/parameters/year'
         - $ref: "#/components/parameters/x-api-key"
       x-amazon-apigateway-integration:
         httpMethod: POST
@@ -751,6 +794,7 @@ paths:
       summary: CORS support
       description: Enable CORS by allowing all origins
       tags:
+      - UI
       - CORS
       responses:
         200:
@@ -780,6 +824,8 @@ paths:
     get:
       summary: Returns a flood RCP 2.6 assessment for an address.
       description: Optional extended description in Markdown.
+      tags:
+        - UI
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
@@ -825,6 +871,7 @@ paths:
       summary: CORS support
       description: Enable CORS by allowing all origins
       tags:
+      - UI
       - CORS
       responses:
         200:
@@ -854,6 +901,8 @@ paths:
     get:
       summary: Return a geojson map for flood RCP 2.6 assessment in a point
       description: Optional extended description in Markdown.
+      tags:
+        - UI
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
@@ -901,12 +950,13 @@ paths:
 
   /wildfire/v1:
     get:
-      summary: Returns a wildfire assessment for an address.
-      description: Optional extended description in Markdown.
+      summary: wildfire/v1
+      description: Returns a wildfire risk assessment for an address. The input can be either an `address` or both `lat` and `lon` parameters.
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
-        - $ref: "#/components/parameters/x-api-key"
+        - $ref: "#/components/parameters/address"
+        - $ref: "#/components/parameters/x-api-key"      
       x-amazon-apigateway-integration:
         httpMethod: POST
         type: aws_proxy
@@ -931,6 +981,7 @@ paths:
       summary: CORS support
       description: Enable CORS by allowing all origins
       tags:
+      - UI
       - CORS
       responses:
         200:
@@ -960,6 +1011,8 @@ paths:
     get:
       summary: Returns a wildfire assessment for an address.
       description: Optional extended description in Markdown.
+      tags:
+        - UI
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
@@ -1004,6 +1057,7 @@ paths:
       summary: CORS support
       description: Enable CORS by allowing all origins
       tags:
+      - UI
       - CORS
       responses:
         200:
@@ -1033,6 +1087,8 @@ paths:
     get:
       summary: Return a geojson map for wildfire assessment in a point
       description: Optional extended description in Markdown.
+      tags:
+        - UI
       parameters:
         - $ref: "#/components/parameters/lat"
         - $ref: "#/components/parameters/lon"
@@ -1075,7 +1131,10 @@ paths:
 
   /ui/login:
     get:
-      summary: "Consume the OAuth2 code to obtain the JWTs"
+      summary: /ui/login
+      description: Consume the OAuth2 code to obtain the JWTs
+      tags:
+       - UI
       parameters:
         - $ref: "#/components/parameters/callbackUri"
       x-amazon-apigateway-integration:
@@ -1097,6 +1156,7 @@ paths:
       summary: CORS support
       description: Enable CORS by allowing all origins
       tags:
+      - UI
       - CORS
       responses:
         200:
@@ -1124,7 +1184,10 @@ paths:
               method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
     get:
-      summary: "Consume the OAuth2 code to obtain the JWTs"
+      summary: /ui/tokens
+      description: Consume the OAuth2 code to obtain the JWTs
+      tags:
+        - UI
       parameters:
         - $ref: "#/components/parameters/code"
       x-amazon-apigateway-integration:
@@ -1164,6 +1227,7 @@ paths:
       summary: CORS support
       description: Enable CORS by allowing all origins
       tags:
+      - UI
       - CORS
       responses:
         200:
@@ -1191,7 +1255,10 @@ paths:
               method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
     post:
-      summary: "Obtain new Bearer tokens from a refresh token"
+      summary: /ui/refresh
+      description: Obtain new Bearer tokens from a refresh token
+      tags:
+       - UI
       x-amazon-apigateway-request-validator: body-only
       requestBody:
         required: true
@@ -1236,6 +1303,7 @@ paths:
       summary: CORS support
       description: Enable CORS by allowing all origins
       tags:
+      - UI
       - CORS
       responses:
         200:
@@ -1263,8 +1331,10 @@ paths:
               method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
     get:
-      summary: Returns info about the currently authenticated user.
-      description: Optional extended description in Markdown.
+      summary: /ui/user
+      description: Returns info about the currently authenticated user
+      tags:
+      - UI
       x-amazon-apigateway-integration:
         httpMethod: POST
         type: aws_proxy
@@ -1313,22 +1383,22 @@ components:
   schemas:
     address:
       type: string
-      description: Address of ...
-      example: Via E. Bugatti, 55, 30016 Jesolo VE, Italy
+      description: Address of the location, in a format compatible with Google Maps search
+      example: Via Cristoforo Colombo, 44, 00154 Roma RM, Italy
 
     lat:
       type: number
       description: Latitude
       minimum: 27
       maximum: 72
-      example: 45.55314
+      example: 41.86869
 
     lon:
       type: number
       description: Latitude
       minimum: -22
       maximum: 45
-      example: 12.65629
+      example: 12.49536
 
     year:
       type: number
@@ -1404,11 +1474,10 @@ components:
         - address
         - lat
         - lon
-        - average_annual_loss
-        - risk_index
         - land_use
         - floodRiskAssessment
-        - hazard_index
+        - average_annual_loss
+        - risk_index
       properties:
         address:
           $ref: "#/components/schemas/address"
@@ -1416,39 +1485,35 @@ components:
           $ref: "#/components/schemas/lat"
         lon:
           $ref: "#/components/schemas/lon"
+        land_use:
+          type: string
+          description: Use of land in the area identified
+          example: Agriculture
+        floodRiskAssessment:
+          $ref: "#/components/schemas/floodRiskAssessment"
         average_annual_loss:
           type: object
           properties:
             value:
               type: number
-              description: something lose something
+              description: Expected loss per year, expressed as a fraction of the asset value and corresponding to the average vulnerability.
               example: 0.01255
             national_average:
               type: number
-              description: something national
+              description: National average value of AAL computed for the land use.
               example: 0.00127819
             regional_average:
               type: string
-              description: something regional
+              description: Regional average value of AAL computed for the land use.
               enum: ["Not implemented"]
         risk_index:
           type: integer
-          description: very risky!
+          description: Integer class ranging from 0 to 5 and providing a relative estimate of the climate risk under analysis in the area.
           example: 2
-        land_use:
-          type: string
-          description: asset identifier
-          example: Agriculture
         hazard_index:
           type: string
-          description: very hazardous!
+          description: Integer class ranging from 0 to 5 and providing a relative estimate of the intensity of the hazard under analysis in the area.
           enum: ["Not implemented"]
-        elapsed:
-          type: number
-          description: some time has elapsed!
-          example: 4.6357
-        floodRiskAssessment:
-          $ref: "#/components/schemas/floodRiskAssessment"
 
     # DROUGHT resources
     drought:
@@ -1470,28 +1535,28 @@ components:
           $ref: "#/components/schemas/lon"
         droughtRiskAssessment:
           $ref: "#/components/schemas/droughtRiskAssessment"
-        risk_index:
-          type: string
-          description: very risky!
-          enum: ["Not implemented"]
         average_annual_loss:
           type: object
           properties:
             value:
-              type: string
-              description: something lose something
-              enum: ["Not implemented"]
+              type: number
+              description: Expected loss per year, expressed as a fraction of the asset value and corresponding to the average vulnerability.
+              example: 0.01255
             national_average:
-              type: string
-              description: something national
-              enum: ["Not implemented"]
+              type: number
+              description: National average value of AAL computed for the land use.
+              example: 0.00127819
             regional_average:
               type: string
-              description: something regional
+              description: Regional average value of AAL computed for the land use.
               enum: ["Not implemented"]
+        risk_index:
+          type: integer
+          description: Integer class ranging from 0 to 5 and providing a relative estimate of the climate risk under analysis in the area.
+          example: 2
         hazard_index:
           type: string
-          description: very hazardous!
+          description: Integer class ranging from 0 to 5 and providing a relative estimate of the intensity of the hazard under analysis in the area.
           enum: ["Not implemented"]
 
     droughtRiskAssessment:
@@ -1543,7 +1608,7 @@ components:
 
     wildfireRiskAssessment:
       type: object
-      description: wildfire is bad
+      description: wildfire risk assessment
       additionalProperties:
         $ref: "#/components/schemas/wildfireRiskSingleRp"
       example:
@@ -1576,29 +1641,30 @@ components:
           $ref: "#/components/schemas/lon"
         wildfireRiskAssessment:
           $ref: "#/components/schemas/wildfireRiskAssessment"
-        risk_index:
-          type: string
-          description: very risky!
-          enum: ["Not implemented"]
         average_annual_loss:
           type: object
           properties:
             value:
-              type: string
-              description: something lose something
-              enum: ["Not implemented"]
+              type: number
+              description: Expected loss per year, expressed as a fraction of the asset value and corresponding to the average vulnerability.
+              example: 0.01255
             national_average:
-              type: string
-              description: something national
-              enum: ["Not implemented"]
+              type: number
+              description: National average value of AAL computed for the land use.
+              example: 0.00127819
             regional_average:
               type: string
-              description: something regional
+              description: Regional average value of AAL computed for the land use.
               enum: ["Not implemented"]
+        risk_index:
+          type: integer
+          description: Integer class ranging from 0 to 5 and providing a relative estimate of the climate risk under analysis in the area.
+          example: 2
         hazard_index:
           type: string
-          description: very hazardous!
+          description: Integer class ranging from 0 to 5 and providing a relative estimate of the intensity of the hazard under analysis in the area.
           enum: ["Not implemented"]
+    
     # AUTH resources
     getToken:
       type: object
@@ -1661,6 +1727,7 @@ components:
       name: lon
       schema:
         $ref: "#/components/schemas/lon"
+      description: Longitude of the point
       required: true
     x-api-key:
       in: header
@@ -1674,6 +1741,13 @@ components:
       schema:
         $ref: "#/components/schemas/lat"
       description: Latitude of the point
+      required: true
+    address:
+      in: query
+      name: address
+      schema:
+        $ref: "#/components/schemas/address"
+      description: Address of the point
       required: true
     layer:
       in: query

@@ -1,0 +1,19 @@
+apis:
+  filterout:
+    root: openapi_to_html.yaml
+    decorators:
+      filter-out:
+        property: tags
+        value: UI
+
+theme:
+  openapi:
+    theme:
+      colors:
+        primary:
+          main: '#0f2445'
+        # http:
+        #   get: '#c5d02d'
+        #   post: '#00b5d9'
+      rightPanel:
+        backgroundColor: '#0f2445'
