@@ -72,6 +72,31 @@ jobs:
         id: show_plan
         run: terraform show tfplan -no-color
 
+      - name: Comment issue
+        uses: actions/github-script@v6
+        env:
+          SHOW_PLAN_OUTPUT: "${{ steps.show_plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const MAX_LEN = 65000;
+            const plan = process.env.SHOW_PLAN_OUTPUT;
+            for (let i = 0; i < plan.length; i += MAX_LEN) {
+              const partial_plan = plan.substring(i, i + MAX_LEN);
+              const output = `<details><summary>Plan output</summary>
+                \`\`\`\n
+                ${partial_plan}
+                \`\`\`
+                </details>
+              `;
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              });
+            }
+
       - name: Approve Plan to Apply
         uses: trstringer/manual-approval@v1
         timeout-minutes: 10
@@ -80,7 +105,7 @@ jobs:
           minimum-approvals: 1
           approvers: ggrangia,fromgold,gionnid
           issue-title: "Approve Terraform Plan to be applied"
-          issue-body: "Review the terraform plan, then approve or deny the deployment to prod\n\n${{ steps.show_plan.outputs.stdout }}"
+          issue-body: "Review the terraform plan, then approve or deny the deployment to prod"
           exclude-workflow-initiator-as-approver: false
 
       - name: Apply plan
