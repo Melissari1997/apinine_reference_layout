@@ -105,6 +105,34 @@ class TestParseAwsEvent:
         assert lat is None
         assert lon is None
 
+    def test_parse_aws_event_baseline_returns_400_on_empty_querystringparameters(
+        self, geotiff_json_baseline, monkeypatch
+    ):
+        event = {
+            "queryStringParameters": None
+        }  # having None instead of {} is made by AWS
+        monkeypatch.setenv("GEOTIFF_JSON", geotiff_json_baseline)
+        with pytest.raises(QuerystringInputError) as excinfo:
+            parse_aws_event(event=event)
+
+        want_code, want_msg = StatusCodes.QUERYSTRING_ERROR
+        assert excinfo.value.code == want_code
+        assert excinfo.value.msg == want_msg
+
+    def test_parse_aws_event_rcb_returns_400_on_empty_querystringparameters(
+        self, geotiff_json_rcp, monkeypatch
+    ):
+        event = {
+            "queryStringParameters": None
+        }  # having None instead of {} is made by AWS
+        monkeypatch.setenv("GEOTIFF_JSON", geotiff_json_rcp)
+        with pytest.raises(QuerystringInputError) as excinfo:
+            parse_aws_event(event=event)
+
+        want_code, want_msg = StatusCodes.QUERYSTRING_ERROR_RCP
+        assert excinfo.value.code == want_code
+        # avoid testing the error message as we don't want to format it with valid years
+
 
 class TestBaselineParser:
     def test_parse_address_ok(self, geotiff_baseline, monkeypatch):

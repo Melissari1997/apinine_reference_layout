@@ -37,7 +37,10 @@ class BaselineParser:
 
     def parse(self, event: dict) -> tuple[str, str, float, float]:
         logger.info("Parsing event for baseline scenario")
-        query_params = event.get("queryStringParameters", {})
+        query_params = event.get("queryStringParameters")
+        # AWS sets the value to None when no parameter is passed
+        if query_params is None:
+            query_params = {}
 
         filename = self.geotiff["path"]
         try:
@@ -75,7 +78,10 @@ class RCPParser:
     def parse(self, event: dict) -> tuple[str, str, float, float]:
         logger.info("Parsing event for rcp scenario")
 
-        query_params = event.get("queryStringParameters", {})
+        query_params = event.get("queryStringParameters")
+        # AWS sets the value to None when no parameter is passed
+        if query_params is None:
+            query_params = {}
         query_params["valid_years"] = self.years
         try:
             validated_params = validate_query_params(
