@@ -71,12 +71,6 @@ jobs:
       - name: Show plan
         id: show_plan
         run: terraform show tfplan -no-color
-      
-      - name: Show short plan
-        id: show_short_plan
-        env:
-          SHOW_PLAN: ${{ steps.show_plan.outputs.stdout }}
-        run: echo "$SHOW_PLAN" | grep -E '^\s*[#~+-]'
 
       - name: Approve Plan to Apply
         uses: trstringer/manual-approval@v1
@@ -86,7 +80,7 @@ jobs:
           minimum-approvals: 1
           approvers: ggrangia,fromgold,gionnid
           issue-title: "Approve Terraform Plan to be applied"
-          issue-body: "Review the terraform plan, then approve or deny the deployment to prod\n\n${{ steps.show_short_plan.outputs.stdout }}"
+          issue-body: "Review the terraform plan from the github action, then approve or deny the deployment to prod\n\n"
           exclude-workflow-initiator-as-approver: false
 
       - name: Apply plan
