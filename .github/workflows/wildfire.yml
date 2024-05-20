@@ -22,6 +22,6 @@ jobs:
       aws-account-id: 600920596656
       aws-region: eu-central-1
       climate-scenario: baseline
-      risk-folder: wildfire
+      risk-folder: wildfire/baseline
       image-name: apinine_wildfire
       lambda-name: apinine_wildfire

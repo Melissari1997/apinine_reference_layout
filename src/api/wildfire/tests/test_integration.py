@@ -1,7 +1,7 @@
 import json
 
 import pytest
-from main import handler
+from baseline.handler import handler
 
 
 @pytest.mark.integration

@@ -1,9 +1,9 @@
-import main
 import pytest
+from baseline import handler as handler_module
 from common.response import FailedGeocodeError
 from common.status_codes import StatusCodes
 from geocoder.geocoder import Geocoder
-from main import DroughtKeys, handler
+from main import DroughtKeys
 from readgeodata.interfaces import GeoDataReader
 
 
@@ -43,11 +43,11 @@ class TestDroughtUnit:
     ):
         gmaps = MockGeocoder()
         rioreader = MockGeoDataReaderDrought()
-        monkeypatch.setattr(main, "gmapsgeocoder", gmaps)
-        monkeypatch.setattr(main, "riogeoreader", rioreader)
+        monkeypatch.setattr(handler_module, "gmapsgeocoder", gmaps)
+        monkeypatch.setattr(handler_module, "riogeoreader", rioreader)
 
         want_status_code = 200
-        got = handler(event=event_address, context=lambda_powertools_ctx)
+        got = handler_module.handler(event=event_address, context=lambda_powertools_ctx)
 
         assert want_status_code == got["statusCode"]
 
@@ -56,11 +56,11 @@ class TestDroughtUnit:
     ):
         gmaps = MockGeocoder()
         rioreader = MockGeoDataReaderDrought()
-        monkeypatch.setattr(main, "gmapsgeocoder", gmaps)
-        monkeypatch.setattr(main, "riogeoreader", rioreader)
+        monkeypatch.setattr(handler_module, "gmapsgeocoder", gmaps)
+        monkeypatch.setattr(handler_module, "riogeoreader", rioreader)
 
         want_status_code = 200
-        got = handler(event=event_lat_lon, context=lambda_powertools_ctx)
+        got = handler_module.handler(event=event_lat_lon, context=lambda_powertools_ctx)
 
         assert want_status_code == got["statusCode"]
 
@@ -73,12 +73,14 @@ class TestDroughtUnit:
     ):
         gmaps = MockGeocoder()
         rioreader = MockGeoDataReaderDrought()
-        monkeypatch.setattr(main, "gmapsgeocoder", gmaps)
-        monkeypatch.setattr(main, "riogeoreader", rioreader)
+        monkeypatch.setattr(handler_module, "gmapsgeocoder", gmaps)
+        monkeypatch.setattr(handler_module, "riogeoreader", rioreader)
 
         want_status_code, wanted_body = StatusCodes.UNKNOWN_ADDRESS
 
-        got = handler(event=event_invalid_address, context=lambda_powertools_ctx)
+        got = handler_module.handler(
+            event=event_invalid_address, context=lambda_powertools_ctx
+        )
 
         assert want_status_code == got["statusCode"]
         assert wanted_body == got["body"]
@@ -92,12 +94,14 @@ class TestDroughtUnit:
     ):
         gmaps = MockGeocoder()
         rioreader = MockGeoDataReaderDrought()
-        monkeypatch.setattr(main, "gmapsgeocoder", gmaps)
-        monkeypatch.setattr(main, "riogeoreader", rioreader)
+        monkeypatch.setattr(handler_module, "gmapsgeocoder", gmaps)
+        monkeypatch.setattr(handler_module, "riogeoreader", rioreader)
 
         want_status_code, wanted_body = StatusCodes.QUERYSTRING_ERROR
 
-        got = handler(event=event_conflict_lat_lon_addr, context=lambda_powertools_ctx)
+        got = handler_module.handler(
+            event=event_conflict_lat_lon_addr, context=lambda_powertools_ctx
+        )
 
         assert want_status_code == got["statusCode"]
         assert wanted_body == got["body"]
@@ -105,7 +109,7 @@ class TestDroughtUnit:
     def test_handler_no_queryparams(
         self, geotiff_json_mock, lambda_powertools_ctx, monkeypatch
     ):
-        got = handler(event={}, context=lambda_powertools_ctx)
+        got = handler_module.handler(event={}, context=lambda_powertools_ctx)
 
         want_status_code, wanted_body = StatusCodes.QUERYSTRING_ERROR
 

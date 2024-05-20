@@ -1,15 +1,17 @@
 import json
 
 import pytest
+from baseline.handler import handler as baseline_handler
 from common.status_codes import StatusCodes
 from geocoder.gmaps_geocoder import GMapsGeocoder
-from main import handler, main
+from main import main
+from rcp.handler import handler as rcp_handler
 from readgeodata.rasterioreader import RasterIOReader
 
 
 # Real calls to gmaps and aws
 @pytest.mark.integration
-class TestFloodIntegration:
+class TestFloodIntegrationMain:
     def test_integ_main(self, geotiff_path_s3):
         lon, lat = 12.215283630441727, 44.88393348245498
         gmaps = GMapsGeocoder()
@@ -27,8 +29,15 @@ class TestFloodIntegration:
         # Checking only format and types, not the values
         assert isinstance(got, dict)
 
+
+@pytest.mark.integration
+@pytest.mark.parametrize(
+    "handler",
+    [baseline_handler, rcp_handler],
+)
+class TestFloodIntegrationHandler:
     def test_integ_handler_address(
-        self, geotiff_path_s3, lambda_powertools_ctx, event_address
+        self, handler, geotiff_path_s3, lambda_powertools_ctx, event_address
     ):
         got = handler(event=event_address, context=lambda_powertools_ctx)
 
@@ -37,7 +46,7 @@ class TestFloodIntegration:
         assert want_status_code == got["statusCode"]
 
     def test_integ_handler_output(
-        self, geotiff_path_s3, lambda_powertools_ctx, event_address
+        self, handler, geotiff_path_s3, lambda_powertools_ctx, event_address
     ):
         got = handler(event=event_address, context=lambda_powertools_ctx)
 
@@ -54,7 +63,9 @@ class TestFloodIntegration:
 
         assert set(json.loads(got["body"])) == keys_want
 
-    def test_integ_handler_missing_filename(self, event_address, lambda_powertools_ctx):
+    def test_integ_handler_missing_filename(
+        self, handler, event_address, lambda_powertools_ctx
+    ):
         got = handler(event=event_address, context=lambda_powertools_ctx)
 
         want_status_code = 500
@@ -64,7 +75,7 @@ class TestFloodIntegration:
         assert wanted_body == got["body"]
 
     def test_integ_handler_lat_lon(
-        self, geotiff_path_s3, event_lat_lon, lambda_powertools_ctx
+        self, handler, geotiff_path_s3, event_lat_lon, lambda_powertools_ctx
     ):
         got = handler(event=event_lat_lon, context=lambda_powertools_ctx)
 
@@ -73,7 +84,7 @@ class TestFloodIntegration:
         assert want_status_code == got["statusCode"]
 
     def test_integ_handler_invalid_lat_lon(
-        self, geotiff_path_s3, event_invalid_lat_lon, lambda_powertools_ctx
+        self, handler, geotiff_path_s3, event_invalid_lat_lon, lambda_powertools_ctx
     ):
         got = handler(event=event_invalid_lat_lon, context=lambda_powertools_ctx)
 
@@ -83,7 +94,11 @@ class TestFloodIntegration:
         assert wanted_body == got["body"]
 
     def test_integ_handler_conflict(
-        self, geotiff_path_s3, event_conflict_lat_lon_addr, lambda_powertools_ctx
+        self,
+        handler,
+        geotiff_path_s3,
+        event_conflict_lat_lon_addr,
+        lambda_powertools_ctx,
     ):
         got = handler(event=event_conflict_lat_lon_addr, context=lambda_powertools_ctx)
 
@@ -93,7 +108,7 @@ class TestFloodIntegration:
         assert wanted_body == got["body"]
 
     def test_integ_invalid_address(
-        self, geotiff_path_s3, event_invalid_address, lambda_powertools_ctx
+        self, handler, geotiff_path_s3, event_invalid_address, lambda_powertools_ctx
     ):
         got = handler(event=event_invalid_address, context=lambda_powertools_ctx)
 
@@ -103,7 +118,7 @@ class TestFloodIntegration:
         assert wanted_body == got["body"]
 
     def test_integ_oob_address(
-        self, geotiff_path_s3, event_oob_address, lambda_powertools_ctx
+        self, handler, geotiff_path_s3, event_oob_address, lambda_powertools_ctx
     ):
         got = handler(event=event_oob_address, context=lambda_powertools_ctx)
 

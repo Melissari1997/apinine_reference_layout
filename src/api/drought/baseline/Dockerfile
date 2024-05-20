@@ -17,4 +17,4 @@ RUN pip install -r requirements-dev.txt && pytest -m unit tests
 
 FROM base as production
 RUN pip install -r requirements.txt
-CMD [ "main.handler" ]
+CMD [ "baseline.handler.handler" ]

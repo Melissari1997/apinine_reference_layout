@@ -1,13 +1,18 @@
-import main
 import pytest
+from baseline import handler as baseline_handler
 from common.status_codes import StatusCodes
-from main import handler
+from rcp import handler as rcp_handler
 
 
+@pytest.mark.parametrize(
+    "handler_module",
+    [baseline_handler, rcp_handler],
+)
 @pytest.mark.unit
 class TestFloodUnit:
     def test_handler_address(
         self,
+        handler_module,
         geotiff_path_s3,
         event_address,
         lambda_powertools_ctx,
@@ -15,19 +20,19 @@ class TestFloodUnit:
         mockgeodatareaderflood,
         monkeypatch,
     ):
-        monkeypatch.setattr(main, "gmapsgeocoder", mockgeocoder)
-        monkeypatch.setattr(main, "riogeoreader", mockgeodatareaderflood)
+        monkeypatch.setattr(handler_module, "gmapsgeocoder", mockgeocoder)
+        monkeypatch.setattr(handler_module, "riogeoreader", mockgeodatareaderflood)
 
-        got = handler(event=event_address, context=lambda_powertools_ctx)
+        got = handler_module.handler(event=event_address, context=lambda_powertools_ctx)
 
         want_status_code = 200
 
         assert want_status_code == got["statusCode"]
 
     def test_handler_no_queryparams(
-        self, geotiff_path_s3, lambda_powertools_ctx, monkeypatch
+        self, handler_module, geotiff_path_s3, lambda_powertools_ctx, monkeypatch
     ):
-        got = handler(event={}, context=lambda_powertools_ctx)
+        got = handler_module.handler(event={}, context=lambda_powertools_ctx)
 
         want_status_code, wanted_body = StatusCodes.QUERYSTRING_ERROR
 
@@ -36,6 +41,7 @@ class TestFloodUnit:
 
     def test_handler_lat_lon(
         self,
+        handler_module,
         event_lat_lon,
         geotiff_path_s3,
         lambda_powertools_ctx,
@@ -43,10 +49,10 @@ class TestFloodUnit:
         mockgeodatareaderflood,
         monkeypatch,
     ):
-        monkeypatch.setattr(main, "gmapsgeocoder", mockgeocoder)
-        monkeypatch.setattr(main, "riogeoreader", mockgeodatareaderflood)
+        monkeypatch.setattr(handler_module, "gmapsgeocoder", mockgeocoder)
+        monkeypatch.setattr(handler_module, "riogeoreader", mockgeodatareaderflood)
 
-        got = handler(event=event_lat_lon, context=lambda_powertools_ctx)
+        got = handler_module.handler(event=event_lat_lon, context=lambda_powertools_ctx)
 
         want_status_code = 200
 
@@ -64,6 +70,7 @@ class TestFloodUnit:
     )
     def test_handler_conflicting(
         self,
+        handler_module,
         address,
         lat,
         lon,
@@ -73,10 +80,10 @@ class TestFloodUnit:
         monkeypatch,
         lambda_powertools_ctx,
     ):
-        monkeypatch.setattr(main, "gmapsgeocoder", mockgeocoder)
-        monkeypatch.setattr(main, "riogeoreader", mockgeodatareaderflood)
+        monkeypatch.setattr(handler_module, "gmapsgeocoder", mockgeocoder)
+        monkeypatch.setattr(handler_module, "riogeoreader", mockgeodatareaderflood)
 
-        got = handler(
+        got = handler_module.handler(
             event={
                 "queryStringParameters": {"address": address, "lon": lon, "lat": lat}
             },
@@ -100,12 +107,13 @@ class TestFloodUnit:
     )
     def test_invalid_lat_lon(
         self,
+        handler_module,
         lat,
         lon,
         geotiff_path_s3,
         lambda_powertools_ctx,
     ):
-        got = handler(
+        got = handler_module.handler(
             event={"queryStringParameters": {"lon": lon, "lat": lat}},
             context=lambda_powertools_ctx,
         )
@@ -117,10 +125,11 @@ class TestFloodUnit:
 
     def test_empty_address(
         self,
+        handler_module,
         geotiff_path_s3,
         lambda_powertools_ctx,
     ):
-        got = handler(
+        got = handler_module.handler(
             event={"queryStringParameters": {"address": ""}},
             context=lambda_powertools_ctx,
         )

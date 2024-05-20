@@ -5,15 +5,20 @@
 # Useful for building images locally for debugging purposes
 drought:
 	docker build -t apinine-drought \
-	--target production --build-arg GEOTIFF_PATH=$$GEOTIFF_PATH -f drought/Dockerfile .
+	--target production --build-arg GEOTIFF_PATH=$$GEOTIFF_PATH -f drought/baseline/Dockerfile .
 
 flood:
 	docker build -t apinine-flood \
-	--target production --build-arg GEOTIFF_PATH=$$GEOTIFF_PATH -f flood/Dockerfile .
+	--target production --build-arg GEOTIFF_PATH=$$GEOTIFF_PATH -f flood/baseline/Dockerfile .
+
+flood_rcp:
+	docker build -t apinine-flood-rcp \
+	--target production --build-arg GEOTIFF_PATH=$$GEOTIFF_PATH -f flood/rcp/Dockerfile .
+
 
 wildfire:
 	docker build -t apinine-wildfire \
-	--target production --build-arg GEOTIFF_PATH=$$GEOTIFF_PATH -f wildfire/Dockerfile .
+	--target production --build-arg GEOTIFF_PATH=$$GEOTIFF_PATH -f wildfire/baseline/Dockerfile .
 
 schema_test:
 	cd common; pip install -r requirements-dev.txt; pytest
@@ -41,9 +46,10 @@ tests_unit:
 	pip install -r user/requirements-dev.txt; pytest user -m unit
 
 docker_risks:
-	docker build --target test -f flood/Dockerfile .
-	docker build --target test -f drought/Dockerfile .
-	docker build --target test -f wildfire/Dockerfile .
+	docker build --target test -f flood/baseline/Dockerfile .
+	docker build --target test -f flood/rcp/Dockerfile .
+	docker build --target test -f drought/baseline/Dockerfile .
+	docker build --target test -f wildfire/baseline/Dockerfile .
 	docker build --target test -f user/Dockerfile .
 
 .ONESHELL:

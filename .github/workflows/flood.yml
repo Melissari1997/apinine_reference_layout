@@ -22,7 +22,7 @@ jobs:
       aws-account-id: 600920596656
       aws-region: eu-central-1
       climate-scenario: baseline
-      risk-folder: flood
+      risk-folder: flood/baseline
       image-name: apinine_flood
       lambda-name: apinine_flood
 
@@ -33,7 +33,7 @@ jobs:
       aws-account-id: 600920596656
       aws-region: eu-central-1
       climate-scenario: rcp26
-      risk-folder: flood
+      risk-folder: flood/rcp
       image-name: apinine_flood_rcp26
       lambda-name: apinine_flood_rcp26
 
@@ -44,7 +44,7 @@ jobs:
       aws-account-id: 600920596656
       aws-region: eu-central-1
       climate-scenario: rcp45
-      risk-folder: flood
+      risk-folder: flood/rcp
       image-name: apinine_flood_rcp45
       lambda-name: apinine_flood_rcp45
 
@@ -55,6 +55,6 @@ jobs:
       aws-account-id: 600920596656
       aws-region: eu-central-1
       climate-scenario: rcp85
-      risk-folder: flood
+      risk-folder: flood/rcp
       image-name: apinine_flood_rcp85
       lambda-name: apinine_flood_rcp85

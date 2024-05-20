@@ -22,6 +22,6 @@ jobs:
       aws-account-id: 600920596656
       aws-region: eu-central-1
       climate-scenario: baseline
-      risk-folder: drought
+      risk-folder: drought/baseline
       image-name: apinine_drought
       lambda-name: apinine_drought
