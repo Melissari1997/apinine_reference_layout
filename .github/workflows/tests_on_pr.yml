@@ -50,7 +50,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: ./infra
+        working-directory: ./infra/api
 
     steps:
       - name: Checkout Repository
@@ -130,3 +130,23 @@ jobs:
               repo: context.repo.repo,
               body: output
             })
+
+  apidoc:
+    permissions: write-all
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./infra/apidoc
+
+    steps:
+      - name: Plan apidoc
+        uses: ./.github/actions/terraform-plan
+        with:
+          aws-region: eu-central-1
+          aws-account-id: 600920596656
+          terraform_role_name: github_actions_terraform_apidoc
+          terraform_version: "1.7.4"
+          backend_bucket: terraform-be-bucket
+          backend_key: apidoc/terraform.tfstate
+          lock_table: terraform-be-locktable
