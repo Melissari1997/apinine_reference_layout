@@ -21,7 +21,7 @@ permissions:
   issues: write # to write a comment on the PR
 
 jobs:
-  show:
+  code_testall:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Repository
