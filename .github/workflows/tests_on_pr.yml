@@ -140,6 +140,9 @@ jobs:
         working-directory: ./infra/apidoc
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Plan apidoc
         uses: ./.github/actions/terraform-plan
         with:
