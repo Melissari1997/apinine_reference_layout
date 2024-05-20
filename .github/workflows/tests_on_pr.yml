@@ -153,3 +153,4 @@ jobs:
           backend_bucket: terraform-be-bucket
           backend_key: apidoc/terraform.tfstate
           lock_table: terraform-be-locktable
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
