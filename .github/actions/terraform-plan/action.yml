@@ -25,6 +25,9 @@ inputs:
   GITHUB_TOKEN:
     required: true
     type: string
+  working-directory:
+    required: true
+    type: string
 
 runs:
   using: "composite"
@@ -48,11 +51,13 @@ runs:
       id: fmt
       shell: bash
       run: terraform fmt -check
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Terraform init
       id: init
       shell: bash
       # setup bucket and lock table
+      working-directory: ${{ inputs.working-directory }}
       run: |
         terraform init \
           -backend-config="bucket=${{ inputs.backend_bucket }}" \
@@ -63,17 +68,20 @@ runs:
       id: validate
       shell: bash
       run: terraform validate -no-color
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Terraform Plan
       id: plan
       shell: bash
       run: terraform plan >/dev/null -no-color -out=tfplan
+      working-directory: ${{ inputs.working-directory }}
       continue-on-error: true
 
     - name: Terraform Show
       id: show
       shell: bash
       run: terraform show tfplan -no-color
+      working-directory: ${{ inputs.working-directory }}
 
     - uses: actions/github-script@v6
       if: github.event_name == 'pull_request'

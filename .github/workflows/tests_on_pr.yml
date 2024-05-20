@@ -8,12 +8,6 @@ env:
   aws-role-name: github_actions_role
   aws-account-id: 600920596656
   aws-region: eu-central-1
-  #TF_LOG: INFO
-  terraform_version: "1.7.4"
-  terraform_role_name: github_actions_terraform_apinine
-  backend_bucket: terraform-be-bucket
-  backend_key: apinine/terraform.tfstate
-  lock_table: terraform-be-locktable
 
 permissions:
   id-token: write
@@ -67,6 +61,7 @@ jobs:
           backend_key: apinine/terraform.tfstate
           lock_table: terraform-be-locktable
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: infra/api
 
   apidoc:
     permissions: write-all
@@ -91,3 +86,4 @@ jobs:
           backend_key: apidoc/terraform.tfstate
           lock_table: terraform-be-locktable
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: infra/apidoc
