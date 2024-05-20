@@ -38,4 +38,4 @@ class QueryStringRCPSchema(QueryStringSchema):
 def validate_query_params(
     model: QueryStringSchema | QueryStringRCPSchema, params: dict
 ) -> dict:
-    return model(**params).model_dump()
+    return model(**params)  # .model_dump()

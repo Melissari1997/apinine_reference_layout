@@ -1,6 +1,6 @@
 import pytest
 from common.input_schema import QueryStringSchema, validate_query_params
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
 
 @pytest.mark.unit
@@ -12,8 +12,8 @@ class TestQuerystringSchema:
     def test_valid_address_schema(self):
         instance = {"address": "via verruca 1 trento"}
         result = validate_query_params(QueryStringSchema, instance)
-        assert isinstance(result, dict)
-        assert isinstance(result["address"], str)
+        assert isinstance(result, BaseModel)
+        assert isinstance(result.address, str)
 
     def test_invalid_address_lat_schema(self):
         instance = {"address": "via verruca 1 trento", "lat": "29"}
@@ -53,9 +53,9 @@ class TestQuerystringSchema:
     def test_valid_lat_lon_schema(self, lat, lon):
         instance = {"lon": lon, "lat": lat}
         result = validate_query_params(QueryStringSchema, instance)
-        assert isinstance(result, dict)
-        assert isinstance(result["lon"], float)
-        assert isinstance(result["lat"], float)
+        assert isinstance(result, BaseModel)
+        assert isinstance(result.lon, float)
+        assert isinstance(result.lat, float)
 
     @pytest.mark.parametrize(
         "lat",

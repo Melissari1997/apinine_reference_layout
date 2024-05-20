@@ -81,7 +81,10 @@ class TestParseAwsEvent:
         filename_want = json.loads(geotiff_json_baseline)[0]["path"]
         event = {"queryStringParameters": {"address": address_want}}
         monkeypatch.setenv("GEOTIFF_JSON", geotiff_json_baseline)
-        filename, address, lat, lon = parse_aws_event(event=event)
+        filename, model = parse_aws_event(event=event)
+        address = model.address
+        lat = model.lat
+        lon = model.lon
 
         assert filename == filename_want
         assert address == address_want
@@ -98,7 +101,10 @@ class TestParseAwsEvent:
         ][0]
         event = {"queryStringParameters": {"address": address_want, "year": year}}
         monkeypatch.setenv("GEOTIFF_JSON", geotiff_json_rcp)
-        filename, address, lat, lon = parse_aws_event(event=event)
+        filename, model = parse_aws_event(event=event)
+        address = model.address
+        lat = model.lat
+        lon = model.lon
 
         assert filename == filename_want
         assert address == address_want
@@ -140,13 +146,11 @@ class TestBaselineParser:
         event = {"queryStringParameters": {"address": address_want}}
         filename_want = geotiff_baseline[0]["path"]
 
-        filename, address, lat, lon = BaselineParser(geotiff_baseline).parse(
-            event=event
-        )
+        filename, model = BaselineParser(geotiff_baseline).parse(event=event)
         assert filename == filename_want
-        assert address == address_want
-        assert lat is None
-        assert lon is None
+        assert model.address == address_want
+        assert model.lat is None
+        assert model.lon is None
 
     def test_parse_lat_lon_ok(self, geotiff_baseline, monkeypatch):
         lat_want = "46"
@@ -154,12 +158,10 @@ class TestBaselineParser:
         event = {"queryStringParameters": {"lat": lat_want, "lon": lon_want}}
         filename_want = geotiff_baseline[0]["path"]
 
-        filename, address, lat, lon = BaselineParser(geotiff_baseline).parse(
-            event=event
-        )
+        filename, model = BaselineParser(geotiff_baseline).parse(event=event)
         assert filename == filename_want
-        assert lat == float(lat_want)
-        assert lon == float(lon_want)
+        assert model.lat == float(lat_want)
+        assert model.lon == float(lon_want)
 
     @pytest.mark.parametrize(
         "address,lat,lon",
@@ -206,13 +208,11 @@ class TestRCPParser:
 
         event = {"queryStringParameters": {"address": want_address, "year": year}}
 
-        got_filename, got_address, got_lat, got_lon = RCPParser(geotiff_rcp).parse(
-            event=event
-        )
+        got_filename, got_model = RCPParser(geotiff_rcp).parse(event=event)
         assert got_filename == want_filename
-        assert got_address == want_address
-        assert got_lat is None
-        assert got_lon is None
+        assert got_model.address == want_address
+        assert got_model.lat is None
+        assert got_model.lon is None
 
     def test_parse_year_not_in_query_params(self, geotiff_rcp, monkeypatch):
         event = {"queryStringParameters": {"address": "via verruca 1 trento"}}

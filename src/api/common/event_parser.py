@@ -44,22 +44,24 @@ class BaselineParser:
 
         filename = self.geotiff["path"]
         try:
-            validate_query_params(model=QueryStringSchema, params=query_params)
+            validated_params = validate_query_params(
+                model=QueryStringSchema, params=query_params
+            )
         except ValidationError as ve:
             code, msg = StatusCodes.QUERYSTRING_ERROR
             raise QuerystringInputError(code=code, msg=msg) from ve
 
-        address = query_params.get("address")
+        # address = query_params.get("address")
 
-        lat = query_params.get("lat")
-        if lat is not None:
-            lat = float(lat)
+        # lat = query_params.get("lat")
+        # if lat is not None:
+        #     lat = float(lat)
 
-        lon = query_params.get("lon")
-        if lon is not None:
-            lon = float(lon)
+        # lon = query_params.get("lon")
+        # if lon is not None:
+        #     lon = float(lon)
 
-        return filename, address, lat, lon
+        return filename, validated_params
 
 
 class RCPParser:
@@ -91,20 +93,19 @@ class RCPParser:
             code, msg = StatusCodes.QUERYSTRING_ERROR_RCP
             raise QuerystringInputError(code=code, msg=msg.format(self.years)) from ve
 
-        year = validated_params["year"]
-        filename = self.get_tiff_path_from_year(year)
+        filename = self.get_tiff_path_from_year(validated_params.year)
 
-        address = query_params.get("address")
+        # address = query_params.get("address")
 
-        lat = query_params.get("lat")
-        if lat is not None:
-            lat = float(lat)
+        # lat = query_params.get("lat")
+        # if lat is not None:
+        #     lat = float(lat)
 
-        lon = query_params.get("lon")
-        if lon is not None:
-            lon = float(lon)
+        # lon = query_params.get("lon")
+        # if lon is not None:
+        #     lon = float(lon)
 
-        return filename, address, lat, lon
+        return filename, validated_params
 
 
 def parse_aws_event(event: dict) -> tuple[str, str, float, float]:

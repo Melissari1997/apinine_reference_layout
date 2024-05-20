@@ -1,6 +1,6 @@
 import pytest
 from common.input_schema import QueryStringRCPSchema, validate_query_params
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
 
 @pytest.mark.unit
@@ -16,8 +16,8 @@ class TestQuerystringRCPSchema:
             "valid_years": [2030, 2050, 2070],
         }
         result = validate_query_params(QueryStringRCPSchema, instance)
-        assert isinstance(result, dict)
-        assert isinstance(result["address"], str)
+        assert isinstance(result, BaseModel)
+        assert isinstance(result.address, str)
 
     @pytest.mark.parametrize(
         "year,valid_years",
@@ -79,9 +79,9 @@ class TestQuerystringRCPSchema:
     def test_valid_lat_lon_schema(self, lat, lon):
         instance = {"lon": lon, "lat": lat, "year": "2030", "valid_years": [2030, 2050]}
         result = validate_query_params(QueryStringRCPSchema, instance)
-        assert isinstance(result, dict)
-        assert isinstance(result["lon"], float)
-        assert isinstance(result["lat"], float)
+        assert isinstance(result, BaseModel)
+        assert isinstance(result.lon, float)
+        assert isinstance(result.lat, float)
 
     @pytest.mark.parametrize(
         "lat",
