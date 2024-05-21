@@ -1,40 +1,59 @@
-name: "Terraform apply"
+name: "Api Doc"
 
 on:
   push:
     paths:
-      - "infra/api/**"
+      - "infra/apidoc/**"
       - "openapi.yml.tpl"
-      - ".github/workflows/terraform_apply.yml"
+      - ".github/workflows/apidoc.yml"
     branches: ["main"]
+
+env:
+  aws-account-id: 600920596656
+  aws-region: eu-central-1
+  TF_IN_AUTOMATION: 1
+  terraform_version: "1.7.4"
+  terraform_role_name: github_actions_terraform_apidoc
+  backend_bucket: terraform-be-bucket
+  backend_key: apidoc/terraform.tfstate
+  lock_table: terraform-be-locktable
+  domain_name: eoliann.api
+
 permissions:
   id-token: write
   contents: read
   issues: write
 
-env:
-  aws-account-id: 600920596656
-  aws-region: eu-central-1
-  #TF_LOG: INFO
-  TF_IN_AUTOMATION: 1
-  terraform_version: "1.7.4"
-  terraform_role_name: github_actions_terraform_apinine
-  backend_bucket: terraform-be-bucket
-  backend_key: apinine/terraform.tfstate
-  lock_table: terraform-be-locktable
-
 jobs:
-  tf_plan:
+  tf_action:
     permissions: write-all
     runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
-        working-directory: ./infra/api
+        working-directory: ./infra/apidoc
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Set up node
+        uses: actions/setup-node@v4
+
+      - name: Install Redocly CLI
+        run: npm install -g @redocly/cli@latest
+
+      - name: Copy openapi.yaml
+        run: cp ../../openapi.yml.tpl ./openapi.yaml
+
+      - name: Substitute domain name
+        run: sed -i -e 's/${domain_name}/${{ env.domain_name }}/g' openapi.yaml
+
+      - name: Filter openapi.yaml
+        run: redocly bundle filterout -o filtered.yaml --config ./redocly.yaml
+
+      - name: Build redocly
+        run: redocly build-docs filtered.yaml --config ./redocly.yaml
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
