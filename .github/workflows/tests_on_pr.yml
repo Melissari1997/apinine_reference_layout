@@ -109,3 +109,4 @@ jobs:
           lock_table: terraform-be-locktable
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           working-directory: infra/apidoc
+          clean-checkout: false

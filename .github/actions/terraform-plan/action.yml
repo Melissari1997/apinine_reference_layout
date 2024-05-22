@@ -28,12 +28,17 @@ inputs:
   working-directory:
     required: true
     type: string
+  clean-checkout:
+    required: false
+    default: true
 
 runs:
   using: "composite"
   steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
+      with:
+        clean: ${{ inputs.clean-checkout }}
 
     - name: Debug  inside action
       shell: bash
