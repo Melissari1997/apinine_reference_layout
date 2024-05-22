@@ -4,6 +4,7 @@ resource "aws_s3_bucket" "apidoc" {
 
 data "aws_iam_policy_document" "allow_cloudfront" {
   statement {
+    effect = "Allow"
     principals {
       type        = "Service"
       identifiers = ["cloudfront.amazonaws.com"]
@@ -32,4 +33,20 @@ resource "aws_s3_bucket_website_configuration" "apidoc" {
   index_document {
     suffix = "index.html"
   }
+}
+
+resource "aws_s3_bucket" "apidoc_log_bucket" {
+  bucket = "documentation-eoliann-solutions-log-bucket"
+}
+
+resource "aws_s3_bucket_acl" "apidoc_log_bucket" {
+  bucket = aws_s3_bucket.apidoc_log_bucket.id
+  acl    = "log-delivery-write"
+}
+
+resource "aws_s3_bucket_logging" "apidoc" {
+  bucket = aws_s3_bucket.apidoc.id
+
+  target_bucket = aws_s3_bucket.apidoc_log_bucket.id
+  target_prefix = "log/"
 }
