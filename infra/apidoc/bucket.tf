@@ -27,6 +27,7 @@ resource "aws_s3_object" "index" {
   etag = filemd5("./index.html")
 }
 
+/*
 resource "aws_s3_bucket_website_configuration" "apidoc" {
   bucket = aws_s3_bucket.apidoc.id
 
@@ -34,6 +35,7 @@ resource "aws_s3_bucket_website_configuration" "apidoc" {
     suffix = "index.html"
   }
 }
+*/
 
 resource "aws_s3_bucket" "apidoc_log_bucket" {
   bucket = "documentation-eoliann-solutions-log-bucket"
@@ -53,9 +55,11 @@ resource "aws_s3_bucket_acl" "apidoc_log_bucket" {
   acl    = "log-delivery-write"
 }
 
+/*
 resource "aws_s3_bucket_logging" "apidoc" {
   bucket = aws_s3_bucket.apidoc.id
 
   target_bucket = aws_s3_bucket.apidoc_log_bucket.id
   target_prefix = "log/"
 }
+*/
