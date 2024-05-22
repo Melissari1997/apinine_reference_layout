@@ -7,7 +7,7 @@ resource "aws_s3_object" "index" {
   key    = "index.html"
   source = "index.html"
 
-  etag = filemd5("index.html")
+  etag = filemd5("./index.html")
 }
 
 resource "aws_s3_bucket_website_configuration" "apidoc" {
