@@ -7,7 +7,7 @@ from common.event_parser import parse_aws_event
 from main import main
 from map_converter import GeoJSONConverter
 from map_reader import BreamMapReader
-from schema import MapInputSchema
+from schema import MapBaselineInputSchema, MapRCPInputSchema
 
 logger = Logger()
 tracer = Tracer()
@@ -17,11 +17,12 @@ def handler(
     event: dict,
     context: dict,
     layer_to_range: Dict[str, Tuple[float, float]],
-    envparser: EnvParser,
+    env_parser: EnvParser,
+    model: MapBaselineInputSchema | MapRCPInputSchema,
 ) -> dict:
 
     filename, validated_event = parse_aws_event(
-        event=event, env_parser=envparser, model=MapInputSchema
+        event=event, env_parser=env_parser, model=model
     )
 
     global cache

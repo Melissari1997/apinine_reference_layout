@@ -1,9 +1,5 @@
 [
     {
-        "climate_scenario": "baseline",
-        "path": "s3://mlflow-monitoring/112/2caafa97230a4ec19c928e400b6fcd32/artifacts/inference/baseline_IT.tif"
-    },
-    {
         "climate_scenario": "rcp26",
         "year": "2030",
         "path": "s3://mlflow-monitoring/112/2caafa97230a4ec19c928e400b6fcd32/artifacts/inference/rcp2.6_2030_IT.tif"

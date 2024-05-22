@@ -1,7 +1,11 @@
-import json
 import os
+import pathlib
 
 import pytest
+
+flood_map_path = pathlib.Path(__file__).parent.parent.resolve() / "flood"
+wildfire_map_path = pathlib.Path(__file__).parent.parent.resolve() / "wildfire"
+drought_map_path = pathlib.Path(__file__).parent.parent.resolve() / "drought"
 
 
 class ContextMock:
@@ -17,23 +21,28 @@ def lambda_powertools_ctx():
     yield ContextMock()
 
 
-@pytest.fixture()
-def geotiff_json_baseline():
-    yield json.dumps(
-        [
-            {
-                "climate_scenario": "baseline",
-                "path": "s3://mlflow-monitoring/112/b66c45f2f2ad4757bff0ba886cbc724d/artifacts/inference/baseline_with_risk_index.tif",
-            }
-        ]
-    )
+@pytest.fixture(scope="function")
+def flood_baseline_geotiff_json():
+    json_path = flood_map_path / "baseline" / "build-env-variables.json"
+    geotiff_json = open(json_path).read()
+    os.environ["GEOTIFF_JSON"] = geotiff_json
+    yield geotiff_json
+    del os.environ["GEOTIFF_JSON"]
 
 
 @pytest.fixture(scope="function")
-def geotiff_path_s3(geotiff_json_baseline):
+def wildfire_baseline_geotiff_json():
+    json_path = wildfire_map_path / "baseline" / "build-env-variables.json"
+    geotiff_json = open(json_path).read()
+    os.environ["GEOTIFF_JSON"] = geotiff_json
+    yield geotiff_json
+    del os.environ["GEOTIFF_JSON"]
 
-    os.environ["GEOTIFF_JSON"] = geotiff_json_baseline
 
-    yield {"GEOTIFF_JSON": geotiff_json_baseline}
-
+@pytest.fixture(scope="function")
+def drought_baseline_geotiff_json():
+    json_path = drought_map_path / "baseline" / "build-env-variables.json"
+    geotiff_json = open(json_path).read()
+    os.environ["GEOTIFF_JSON"] = geotiff_json
+    yield geotiff_json
     del os.environ["GEOTIFF_JSON"]
