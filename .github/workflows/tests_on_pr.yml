@@ -8,6 +8,7 @@ env:
   aws-role-name: github_actions_role
   aws-account-id: 600920596656
   aws-region: eu-central-1
+  domain_name: eoliann.api
 
 permissions:
   id-token: write
@@ -74,6 +75,24 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Set up node
+        uses: actions/setup-node@v4
+
+      - name: Install Redocly CLI
+        run: npm install -g @redocly/cli@latest
+
+      - name: Copy openapi.yaml
+        run: cp ../../openapi.yml.tpl ./openapi.yaml
+
+      - name: Substitute domain name
+        run: sed -i -e 's/${domain_name}/${{ env.domain_name }}/g' openapi.yaml
+
+      - name: Filter openapi.yaml
+        run: redocly bundle filterout -o filtered.yaml --config ./redocly.yaml
+
+      - name: Build redocly
+        run: redocly build-docs filtered.yaml --output=index.html --config ./redocly.yaml
 
       - name: Plan apidoc
         uses: ./.github/actions/terraform-plan
