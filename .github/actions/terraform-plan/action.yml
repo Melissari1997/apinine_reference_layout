@@ -40,11 +40,6 @@ runs:
       with:
         clean: ${{ inputs.clean-checkout }}
 
-    - name: Debug  inside action
-      shell: bash
-      run: ls && pwd
-      working-directory: ${{ inputs.working-directory }}
-
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
