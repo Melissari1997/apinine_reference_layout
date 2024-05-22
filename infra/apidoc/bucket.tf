@@ -55,9 +55,11 @@ resource "aws_s3_bucket_acl" "apidoc_log_bucket" {
   acl    = "log-delivery-write"
 }
 
+/*
 resource "aws_s3_bucket_logging" "apidoc" {
   bucket = aws_s3_bucket.apidoc.id
 
   target_bucket = aws_s3_bucket.apidoc_log_bucket.id
   target_prefix = "log/"
 }
+*/
