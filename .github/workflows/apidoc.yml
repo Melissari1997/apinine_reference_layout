@@ -53,7 +53,7 @@ jobs:
         run: redocly bundle filterout -o filtered.yaml --config ./redocly.yaml
 
       - name: Build redocly
-        run: redocly build-docs filtered.yaml --config ./redocly.yaml
+        run: redocly build-docs filtered.yaml --output=index.html --config ./redocly.yaml
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
