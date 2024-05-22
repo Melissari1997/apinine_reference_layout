@@ -6,7 +6,7 @@ class StatusCodes:
     # Returned when client provides an invalid input year
     QUERYSTRING_ERROR_RCP = (
         400,
-        "Either 'address' or both 'lat' and 'lon' parameters must be supplied. 'lon' must be between -22 and 45, 'lat' must be between 27 and 72. Year must be one of {}",
+        "Either 'address' or both 'lat' and 'lon' parameters must be supplied. 'lon' must be between -22 and 45, 'lat' must be between 27 and 72. Year must be a positive integer",
     )
     # Returned when GMaps api fails to geocode provided address
     UNKNOWN_ADDRESS = (

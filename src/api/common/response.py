@@ -7,9 +7,9 @@ from geocoder.geocoder import (
     MultipleMatchesForAddressError,
     OutOfBoundsError,
 )
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
-from .errors import MissingDataError, QuerystringInputError
+from .errors import InvalidYearError, MissingDataError
 from .http_headers import response_headers
 from .status_codes import StatusCodes
 
@@ -65,15 +65,22 @@ def handle_response(validate_schema: BaseModel) -> Callable:
                 body, status_code, err_message = {}, 200, None
                 try:
                     raw_body = func(*args, **kwargs)
+                # Static errors
                 except FailedGeocodeError:
                     status_code, err_message = StatusCodes.UNKNOWN_ADDRESS
                 except OutOfBoundsError:
                     status_code, err_message = StatusCodes.OUT_OF_BOUNDS
                 except MultipleMatchesForAddressError:
                     status_code, err_message = StatusCodes.UNKNOWN_ADDRESS
-                except QuerystringInputError as qie:
-                    logger.exception(qie)
-                    status_code, err_message = qie.code, qie.msg
+                # Errors raising dynamic error message
+                except InvalidYearError as ye:
+                    status_code, _ = StatusCodes.QUERYSTRING_ERROR
+                    err_message = ye.msg
+                # Validation errors with custom error message
+                except ValidationError as ve:
+                    status_code, _ = StatusCodes.QUERYSTRING_ERROR
+                    err_message = ve.title
+                # Unexpected errors
                 except Exception as e:
                     logger.exception(e)
                     status_code, err_message = StatusCodes.INTERNAL_SERVER_ERROR

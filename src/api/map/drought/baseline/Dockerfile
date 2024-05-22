@@ -22,4 +22,4 @@ RUN pip install -r requirements-dev.txt && pytest tests
 
 FROM base as production
 RUN pip install -r requirements.txt
-CMD [ "drought.handler.handler" ]
+CMD [ "drought.baseline.handler.handler" ]

@@ -9,3 +9,15 @@ class QuerystringInputError(Exception):
 
     def __repr__(self):
         return f"QuerystringInputError(code={self.code}, msg={self.msg})"
+
+
+class InvalidYearError(Exception):
+    def __init__(self, years: list):
+        self.msg = self.__format_years_list__(years)
+
+    def __format_years_list__(self, years: list):
+        if not years:
+            return "No years available"
+        if len(years) == 1:
+            return f"year must be {years[0]}"
+        return f"year must be one of {', '.join(map(str, years[:-1]))}, or {years[-1]}"

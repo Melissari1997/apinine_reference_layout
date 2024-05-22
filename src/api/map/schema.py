@@ -1,14 +1,16 @@
-from typing import Dict, List, Optional
+from typing import Dict, List
 
-from common.input_schema import LAT_MAX, LAT_MIN, LON_MAX, LON_MIN
-from pydantic import BaseModel, Field
+from common.input_schema import LatLonSchema
+from pydantic import BaseModel, conint
 
 
-class MapInputSchema(BaseModel):
-    lat: float = Field(ge=LAT_MIN, le=LAT_MAX)
-    lon: float = Field(ge=LON_MIN, le=LON_MAX)
+class MapBaselineInputSchema(LatLonSchema):
     layer: str
-    year: Optional[int] = None
+
+
+class MapRCPInputSchema(LatLonSchema):
+    year: conint(gt=0)
+    layer: str
 
 
 class GeoJSONSchema(BaseModel):

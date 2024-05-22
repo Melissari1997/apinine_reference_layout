@@ -1,15 +1,26 @@
-from typing import List, Optional
+import abc
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, conint, model_validator
 from typing_extensions import Self
+
+from .status_codes import StatusCodes
 
 LAT_MIN, LAT_MAX = 27, 72
 LON_MIN, LON_MAX = -22, 45
 
 
-class QueryStringSchema(BaseModel):
+class QueryParameterSchema(BaseModel):
+    @staticmethod
+    @abc.abstractmethod
+    def get_error_msg() -> str: ...
+
+
+class LatLonSchema(QueryParameterSchema):
     lat: float = Field(ge=LAT_MIN, le=LAT_MAX, default=None)
     lon: float = Field(ge=LON_MIN, le=LON_MAX, default=None)
+
+
+class RiskInputSchema(LatLonSchema):
     address: str = Field(min_length=1, default=None)
 
     @model_validator(mode="after")
@@ -23,19 +34,14 @@ class QueryStringSchema(BaseModel):
             raise ValueError()
         return self
 
-
-class QueryStringRCPSchema(QueryStringSchema):
-    year: Optional[int]
-    valid_years: List[int] = Field(exclude=True)
-
-    @model_validator(mode="after")
-    def check_year(self) -> Self:
-        if self.year is not None and self.year not in self.valid_years:
-            raise ValueError()
-        return self
+    @staticmethod
+    def get_error_msg() -> str:
+        return StatusCodes.QUERYSTRING_ERROR[1]
 
 
-def validate_query_params(
-    model: QueryStringSchema | QueryStringRCPSchema, params: dict
-) -> dict:
-    return model(**params)  # .model_dump()
+class RiskRCPInputSchema(RiskInputSchema):
+    year: conint(gt=0)
+
+    @staticmethod
+    def get_error_msg() -> str:
+        return StatusCodes.QUERYSTRING_ERROR_RCP[1]
