@@ -13,6 +13,11 @@ data "aws_iam_policy_document" "allow_cloudfront" {
   }
 }
 
+resource "aws_s3_bucket_policy" "allow_cloudfront" {
+  bucket = aws_s3_bucket.apidoc.id
+  policy = data.aws_iam_policy_document.allow_cloudfront.json
+}
+
 resource "aws_s3_object" "index" {
   bucket = aws_s3_bucket.apidoc.id
   key    = "index.html"
