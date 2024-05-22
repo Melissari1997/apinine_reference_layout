@@ -94,6 +94,9 @@ jobs:
       - name: Build redocly
         run: redocly build-docs filtered.yaml --output=index.html --config ./redocly.yaml
 
+      - name: Debug ls
+        run: ls && pwd
+
       - name: Plan apidoc
         uses: ./.github/actions/terraform-plan
         with:

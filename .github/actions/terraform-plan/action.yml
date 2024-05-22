@@ -35,6 +35,11 @@ runs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
+    - name: Debug  inside action
+      shell: bash
+      run: ls && pwd
+      working-directory: ${{ inputs.working-directory }}
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
