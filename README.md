@@ -7,7 +7,13 @@ The top level folders are the following:
 - **src**: contains the application code with the necessary requirements and configurations (Makefile, Dockerfile)
 - **infra**: contains the IaC code (terraform)
 - **.vscode**: contains the VSC editor configurations
-- **.github/wokrflows**: contains the definitions of the github workflows (pipelines)
+- **.github/workflows**: contains the definitions of the github workflows (pipelines)
+
+Additionally, it contains:
+- **.gitignore**
+- **.pre-commit-config.yaml**: see [pre-commit](#pre-commit)
+- **openapi.yml.tpl**: openapi api template. It is used by terraform to inject the necessary variables and to create the AWS API Gateway deployment.
+- **redocly.yaml**: configuration for redocly, the *"Generate beautiful API documentation from OpenAPI"* tool 
 
 ## src
 The **src** folder contains:
@@ -29,15 +35,22 @@ Within each directory, one can find:
 
 - ***.py** files: application code
 - **test** folder: contains pytest tests
+- **pytest.ini**: contains pytest configuration
 - **Dockerfile**: used to build the Docker image to be used in Lambda functions
 - **build-env-variables**: file in the form ENV=VALUE. Stores the value of env variables needed at build time, namely geotiff paths
+- **/*climate_scenario***: A directory for each climate scenario currently developed for that risk.
 
 *Makefile* and *Dockerfile* are not present in the *common* folder.
 
 Every Dockerfile uses the parent context (src) instead of the current folder (src/wildfire) to solve import
-issues between folders. The other option was to copy the common folder inside the current directory, build the container image and then delete the copied folder. This solution could lead to unclean situation that lead to unexpected behaviours and committing multiple copies of *common*.
+issues between folders.
+
 The Makefile inside each directory moves to the src parent folder before building the container.
+
 *pytest.ini* is necessary because it updates the PYTHONPATH for pytests, adding *src* (..).
+
+Each climate scenario directory contains:
+- **build-env-variables.json**: a json containing information to be injected into the docker image, like path of the .tiff files, and, in case of RCP scenarios, the reference year of that .tiff.
 
 ## .vscode
 The only important configuration is *terminal.integrated.env.linux* that injects custom environment variable in VSC shell.
@@ -51,7 +64,7 @@ Contains the single folder *build-push-layout* that automates the docker buildin
 ## .github/workflows
 Each application folder trigger a build only when the code inside that specific folder **or in common**  is updated.
 
-Each workflow leverage the reusable workflow *build-test-deploy.yml* that extracts the GEOTIFF_PATH from the *build-env-variables* file before calling the *build-push-layout* action. This way each workflow just has to specify a list of variables, like the name of Docker image and Lambda function to be updated.
+Each workflow leverage the reusable workflow *build-test-deploy.yml* that extracts the GEOTIFF_JSON from the *build-env-variables.json* file before calling the *build-push-layout* action. This way each workflow just has to specify a list of variables, like the name of Docker image and Lambda function to be updated.
 
 # Testing
 
