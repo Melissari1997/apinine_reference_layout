@@ -37,7 +37,9 @@ class TestEnvironmentParser:
         environ = {"GEOTIFF_JSON": json.dumps(geotiff_rcp)}
         year = "1983"
         parser = RCPEnvParser(environ=environ)
-        want_msg = InvalidYearError(years=[entry["year"] for entry in geotiff_rcp]).msg
+        want_msg = InvalidYearError(
+            valid_years=[entry["year"] for entry in geotiff_rcp]
+        ).msg
 
         with pytest.raises(InvalidYearError) as excinfo:
             parser.get_filename(year=year)

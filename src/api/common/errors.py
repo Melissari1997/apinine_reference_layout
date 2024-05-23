@@ -12,8 +12,8 @@ class QuerystringInputError(Exception):
 
 
 class InvalidYearError(Exception):
-    def __init__(self, years: list):
-        self.msg = self.__format_years_list__(years)
+    def __init__(self, valid_years: list):
+        self.msg = self.__format_years_list__(valid_years)
 
     def __format_years_list__(self, years: list):
         if not years:
@@ -21,3 +21,7 @@ class InvalidYearError(Exception):
         if len(years) == 1:
             return f"year must be {years[0]}"
         return f"year must be one of {', '.join(map(str, years[:-1]))}, or {years[-1]}"
+
+
+class BandNotFoundError(Exception):
+    pass

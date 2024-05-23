@@ -1,6 +1,6 @@
 import abc
 import json
-from typing import Iterable
+from typing import Dict, Iterable
 
 import geopandas as gpd
 import rasterio
@@ -21,12 +21,12 @@ class GeoJSONConverter(MapConverter):
         box_3035_to_clip: Box,
         target_crs: int,
         metadata: dict = None,
-    ) -> Iterable:
+    ) -> Dict:
         """Convert input data to GeoJSON forma using provided profile, box and target crs.
 
         Parameters
         ----------
-        data : Iterable
+        data : array, dataset object, Band, or tuple
             GeoJSON data
         profile : dict
             profile containing geodata information
@@ -41,8 +41,8 @@ class GeoJSONConverter(MapConverter):
 
         Returns
         -------
-        Iterable
-            _description_
+        dict
+            Dictionary in geojson format and a "metadata" key
         """
         if metadata is None:
             metadata = {}

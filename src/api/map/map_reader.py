@@ -26,23 +26,24 @@ class BreamMapReader(MapReader):
         filename: str,
         box_3035: Box,
     ) -> Tuple[Iterable, dict]:
-        """Read file in
+        """Read file in specified box and return data associated with it.
 
-        _extended_summary_
+        The bream.raster2.read_portion function is used to read from the box.
+        A cache is used to retrieve recently-accessed data.
 
         Parameters
         ----------
         filename : str
-            _description_
+            Path of the file to read
         box_3035 : Box
-            _description_
+            Box specifying the requested area
 
         Returns
         -------
         Tuple[Iterable, dict]
-            _description_
+            Raster and profile of requested data
         """
-        # An entry is cached if the filename is the same, and the location boxes are the same
+        # An entry is cached if it shares filename and location boxes with a previous entry
         key = (filename, tuple(box_3035.total_bounds))
         # Search the cache
         try:

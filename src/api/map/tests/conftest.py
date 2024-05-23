@@ -2,6 +2,7 @@ import os
 import pathlib
 
 import pytest
+from bream.image import raster2 as brast
 
 flood_map_path = pathlib.Path(__file__).parent.parent.resolve() / "flood"
 wildfire_map_path = pathlib.Path(__file__).parent.parent.resolve() / "wildfire"
@@ -46,3 +47,27 @@ def drought_baseline_geotiff_json():
     os.environ["GEOTIFF_JSON"] = geotiff_json
     yield geotiff_json
     del os.environ["GEOTIFF_JSON"]
+
+
+@pytest.fixture(scope="function")
+def box_3035_verruca():
+    box_size = 50
+    brast.MakeBox.from_point_and_size(
+        coords=(11.1135156, 46.0701698),
+        coords_crs=4326,
+        output_crs=3035,
+        width=box_size,
+        height=box_size,
+    )
+
+
+@pytest.fixture(scope="function")
+def box_3035_lima():
+    box_size = 50
+    brast.MakeBox.from_point_and_size(
+        coords=(-77.07344188385699, -12.0571910705544),
+        coords_crs=4326,
+        output_crs=3035,
+        width=box_size,
+        height=box_size,
+    )

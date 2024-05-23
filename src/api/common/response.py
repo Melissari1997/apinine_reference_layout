@@ -9,7 +9,7 @@ from geocoder.geocoder import (
 )
 from pydantic import BaseModel, ValidationError
 
-from .errors import InvalidYearError, MissingDataError
+from .errors import BandNotFoundError, InvalidYearError, MissingDataError
 from .http_headers import response_headers
 from .status_codes import StatusCodes
 
@@ -72,6 +72,8 @@ def handle_response(validate_schema: BaseModel) -> Callable:
                     status_code, err_message = StatusCodes.OUT_OF_BOUNDS
                 except MultipleMatchesForAddressError:
                     status_code, err_message = StatusCodes.UNKNOWN_ADDRESS
+                except BandNotFoundError:
+                    status_code, err_message = StatusCodes.LAYER_NOT_FOUND
                 # Errors raising dynamic error message
                 except InvalidYearError as ye:
                     status_code, _ = StatusCodes.QUERYSTRING_ERROR

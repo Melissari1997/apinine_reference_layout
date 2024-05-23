@@ -23,4 +23,5 @@ class StatusCodes:
         400,
         "The provided address is out of bounds",
     )
+    LAYER_NOT_FOUND = (400, "The provided layer does not exist")
     INTERNAL_SERVER_ERROR = (500, "Internal Server Error")

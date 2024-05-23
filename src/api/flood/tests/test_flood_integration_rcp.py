@@ -106,7 +106,9 @@ class TestFloodRCPIntegrationHandler:
         got = handler(event=event_invalid_year, context=lambda_powertools_ctx)
 
         geotiff = json.loads(geotiff_env_rcp["GEOTIFF_JSON"])
-        want_body = InvalidYearError(years=[entry["year"] for entry in geotiff]).msg
+        want_body = InvalidYearError(
+            valid_years=[entry["year"] for entry in geotiff]
+        ).msg
         want_status_code = StatusCodes.QUERYSTRING_ERROR[0]
 
         assert want_status_code == got["statusCode"]
