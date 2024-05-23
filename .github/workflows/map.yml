@@ -22,7 +22,7 @@ jobs:
       aws-account-id: 600920596656
       aws-region: eu-central-1
       climate-scenario: baseline
-      risk-folder: flood
+      risk-folder: flood/baseline
       image-name: apinine_map_flood
       lambda-name: apinine_map_flood
 
@@ -33,7 +33,7 @@ jobs:
       aws-account-id: 600920596656
       aws-region: eu-central-1
       climate-scenario: rcp26
-      risk-folder: flood
+      risk-folder: flood/rcp
       image-name: apinine_map_flood_rcp26
       lambda-name: apinine_map_flood_rcp26
 
@@ -44,7 +44,7 @@ jobs:
       aws-account-id: 600920596656
       aws-region: eu-central-1
       climate-scenario: rcp45
-      risk-folder: flood
+      risk-folder: flood/rcp
       image-name: apinine_map_flood_rcp45
       lambda-name: apinine_map_flood_rcp45
 
@@ -55,7 +55,7 @@ jobs:
       aws-account-id: 600920596656
       aws-region: eu-central-1
       climate-scenario: rcp85
-      risk-folder: flood
+      risk-folder: flood/rcp
       image-name: apinine_map_flood_rcp85
       lambda-name: apinine_map_flood_rcp85
 
@@ -66,7 +66,7 @@ jobs:
       aws-account-id: 600920596656
       aws-region: eu-central-1
       climate-scenario: baseline
-      risk-folder: drought
+      risk-folder: drought/baseline
       image-name: apinine_map_drought
       lambda-name: apinine_map_drought
 
@@ -77,6 +77,6 @@ jobs:
       aws-account-id: 600920596656
       aws-region: eu-central-1
       climate-scenario: baseline
-      risk-folder: wildfire
+      risk-folder: wildfire/baseline
       image-name: apinine_map_wildfire
       lambda-name: apinine_map_wildfire

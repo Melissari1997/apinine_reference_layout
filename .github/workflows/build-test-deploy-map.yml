@@ -1,4 +1,4 @@
-name: build-push-flood-rcps
+name: build-push-maps
 
 on:
   workflow_call:
