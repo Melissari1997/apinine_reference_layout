@@ -45,6 +45,38 @@ class TestHandlerFlood:
         assert response["statusCode"] == want_status_code
         assert response["body"] == want_err_message
 
+    def test_handler_oob_coordinates(
+        self, flood_baseline_geotiff_json, lambda_powertools_ctx
+    ):
+        response = flood_baseline_handler(
+            event={
+                "queryStringParameters": {
+                    "lat": "-12.0571910705544",
+                    "lon": "-77.07344188385699",
+                    "layer": "aal",
+                }
+            },
+            context=lambda_powertools_ctx,
+        )
+
+        want_status_code, want_err_message = StatusCodes.QUERYSTRING_ERROR
+        assert response["statusCode"] == want_status_code
+        assert response["body"] == want_err_message
+
+    # FIXME: placeholder test per ricordarsi di modificare questo comportamento
+    # def test_handler_corsica_fails(self, flood_baseline_geotiff_json, lambda_powertools_ctx):
+    #     # qui restituisce una unica geometria con valore -2
+    #     response = flood_baseline_handler(
+    #         event={
+    #             "queryStringParameters": {
+    #                 "lat": "41.93342657607176",
+    #                 "lon": "8.74371347695966",
+    #                 "layer": "aal",
+    #             }
+    #         },
+    #         context=lambda_powertools_ctx,
+    #     )
+
 
 @pytest.mark.integration
 class TestHandlerWildfire:

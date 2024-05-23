@@ -2,6 +2,7 @@ import pytest
 from cache import LambdaCache
 
 
+@pytest.mark.unit
 class TestLambdaCache:
     def test_cache_miss(self):
         cache = LambdaCache(max_size=10)
