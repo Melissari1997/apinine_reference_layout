@@ -53,7 +53,7 @@ docker_risks:
 	docker build --target test -f drought/baseline/Dockerfile .
 	docker build --target test -f wildfire/baseline/Dockerfile .
 	docker build --target test -f user/Dockerfile .
-	docker build --target test -f map/Dockerfile .
+	docker build --target test -f map/flood/baseline/Dockerfile --build-arg GITHUB_TOKEN=$$GITHUB_TOKEN .
 
 .ONESHELL:
 test_cognito:

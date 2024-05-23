@@ -10,9 +10,7 @@ ENV GEOTIFF_JSON=${GEOTIFF_JSON}
 COPY common/ ${LAMBDA_TASK_ROOT}/common/
 
 RUN yum install git -y && \
-    pip install ${LAMBDA_TASK_ROOT}/common/geocoder/ && \
-    pip install ${LAMBDA_TASK_ROOT}/common/readgeodata/ && \
-    pip install ${LAMBDA_TASK_ROOT}/common/land_use/
+    pip install ${LAMBDA_TASK_ROOT}/common/geocoder/
 
 COPY map/ ${LAMBDA_TASK_ROOT}/
 WORKDIR ${LAMBDA_TASK_ROOT}/
