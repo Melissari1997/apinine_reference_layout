@@ -16,7 +16,7 @@ COPY map/ ${LAMBDA_TASK_ROOT}/
 WORKDIR ${LAMBDA_TASK_ROOT}/
 
 FROM base as test
-RUN pip install -r requirements-dev.txt && pytest tests
+RUN pip install -r requirements-dev.txt && pytest -m unit tests
 
 FROM base as production
 RUN pip install -r requirements.txt
