@@ -1,7 +1,7 @@
 import os
 
 from aws_lambda_powertools import Logger, Tracer
-from common.env_parser import RCPEnvParser
+from common.parse_env import RCPEnvParser
 from common.response import handle_response
 from flood.layer_range import flood_layer_range
 from handler import handler as flood_handler

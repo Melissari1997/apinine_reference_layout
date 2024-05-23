@@ -1,7 +1,7 @@
 from aws_lambda_powertools import Logger
 from pydantic import BaseModel, ValidationError
 
-from .env_parser import EnvParser
+from .parse_env import EnvParser
 
 logger = Logger()
 

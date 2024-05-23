@@ -1,7 +1,7 @@
 import os
 
 from aws_lambda_powertools import Logger, Tracer
-from common.env_parser import BaselineEnvParser
+from common.parse_env import BaselineEnvParser
 from common.response import handle_response
 from drought.layer_range import drought_layer_range
 from handler import handler as drought_handler

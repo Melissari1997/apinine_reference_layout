@@ -3,8 +3,8 @@ from typing import Dict, Tuple
 from aws_lambda_powertools import Logger, Tracer
 from bream.image import raster2 as brast
 from cache import cache  # noqa: F401
-from common.env_parser import EnvParser
 from common.event_parser import parse_aws_event
+from common.parse_env import EnvParser
 from main import main
 from map_converter import GeoJSONConverter
 from map_reader import BreamMapReader

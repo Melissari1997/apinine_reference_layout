@@ -1,9 +1,9 @@
 import os
 
 from aws_lambda_powertools import Logger, Tracer
-from common.env_parser import BaselineEnvParser
 from common.event_parser import parse_aws_event
 from common.input_schema import RiskInputSchema
+from common.parse_env import BaselineEnvParser
 from common.response import handle_response
 from geocoder.gmaps_geocoder import GMapsGeocoder
 from main import main
