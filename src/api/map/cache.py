@@ -1,5 +1,5 @@
 import abc
-from typing import Iterable, Tuple
+from typing import Any, Hashable
 
 # We cache the last CACHE_MAX_SIZE locations
 CACHE_MAX_SIZE = 100
@@ -7,16 +7,15 @@ CACHE_MAX_SIZE = 100
 
 class Cache(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def __init__(self, max_size: int = 100):
-        pass
+    def __init__(self, max_size: int = 100): ...
 
     @abc.abstractmethod
-    def get(self, key: tuple[str, float, float]):  # noqa: ANN201
-        pass
+    def get(self, key: Hashable):  # noqa: ANN201
+        ...
 
     @abc.abstractmethod
-    def set(self, key: tuple[str, float, float], value: Iterable):  # noqa: ANN201
-        pass
+    def set(self, key: Hashable, value: Any):  # noqa: ANN201
+        ...
 
 
 class LambdaCache:
@@ -24,10 +23,40 @@ class LambdaCache:
         self.cache = {}
         self.max_size = max_size
 
-    def get(self, key: tuple[str, float, float]) -> Tuple[Iterable, dict] | None:
+    def get(self, key: Hashable) -> Any:
+        """Get cached value associated with input key
+
+        Parameters
+        ----------
+        key : Hashable
+            Hashable key used to retrieve the mapped value
+
+        Raises
+        ------
+        KeyError
+            if the key is not found in the cache
+
+        Returns
+        -------
+        value
+            Mapped value associated to key
+        """
         return self.cache[key]
 
-    def set(self, key: tuple[str, float, float], value: Tuple[Iterable, dict]) -> None:
+    def set(self, key: Hashable, value: Any) -> None:
+        """Cache (key,value) couple
+
+        Parameters
+        ----------
+        key : Hashable
+            Hashable key used to retrieve the mapped value
+        value : Any
+            Value to be cached
+
+        Returns
+        -------
+        None
+        """
         if len(self.cache) >= self.max_size:
             # If cache is full, remove the oldest item
             self.remove_oldest()

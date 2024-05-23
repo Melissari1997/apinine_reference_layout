@@ -1,6 +1,7 @@
 from typing import Dict, Tuple
 
 from aws_lambda_powertools import Logger, Tracer
+from bream.image import raster2 as brast
 from cache import cache  # noqa: F401
 from common.env_parser import EnvParser
 from common.event_parser import parse_aws_event
@@ -11,6 +12,8 @@ from schema import MapBaselineInputSchema, MapRCPInputSchema
 
 logger = Logger()
 tracer = Tracer()
+
+EDGE_LENGTH_M = 600
 
 
 def handler(
@@ -28,10 +31,17 @@ def handler(
     global cache
     map_reader = BreamMapReader(cache=cache)
     map_converter = GeoJSONConverter()
+
+    box_3035 = brast.MakeBox.from_point_and_size(
+        coords=(validated_event.lon, validated_event.lat),
+        coords_crs=4326,
+        output_crs=3035,
+        width=EDGE_LENGTH_M,
+        height=EDGE_LENGTH_M,
+    )
     response = main(
         filename=filename,
-        lat=validated_event.lat,
-        lon=validated_event.lon,
+        box_3035=box_3035,
         layer=validated_event.layer,
         map_reader=map_reader,
         map_converter=map_converter,

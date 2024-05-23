@@ -8,8 +8,7 @@ from cache import Cache
 
 class MapReader(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def read(self) -> Iterable:
-        pass
+    def read(self) -> Iterable: ...
 
 
 class BreamMapReader(MapReader):
@@ -25,19 +24,34 @@ class BreamMapReader(MapReader):
     def read(
         self,
         filename: str,
-        lat: float,
-        lon: float,
         box_3035: Box,
     ) -> Tuple[Iterable, dict]:
+        """Read file in
 
+        _extended_summary_
+
+        Parameters
+        ----------
+        filename : str
+            _description_
+        box_3035 : Box
+            _description_
+
+        Returns
+        -------
+        Tuple[Iterable, dict]
+            _description_
+        """
+        # An entry is cached if the filename is the same, and the location boxes are the same
+        key = (filename, tuple(box_3035.total_bounds))
         # Search the cache
         try:
-            raster, profile = self.cache.get((filename, lat, lon))
+            raster, profile = self.cache.get(key)
         except KeyError:
             # TODO: Investigate why it takes up to 16 seconds to read_portion from wildfire lookup
             raster, profile = brast.read_portion(
                 path=filename, location_boxes=box_3035
             )[0]
-            self.cache.set((filename, lat, lon), (raster, profile))
+            self.cache.set(key=key, value=(raster, profile))
 
         return raster, profile

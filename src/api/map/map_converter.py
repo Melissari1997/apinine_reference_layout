@@ -10,8 +10,7 @@ from shapely.geometry import shape
 
 class MapConverter(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def convert():  # noqa: ANN201
-        pass
+    def convert(): ...  # noqa: ANN201
 
 
 class GeoJSONConverter(MapConverter):
@@ -23,6 +22,28 @@ class GeoJSONConverter(MapConverter):
         target_crs: int,
         metadata: dict = None,
     ) -> Iterable:
+        """Convert input data to GeoJSON forma using provided profile, box and target crs.
+
+        Parameters
+        ----------
+        data : Iterable
+            GeoJSON data
+        profile : dict
+            profile containing geodata information
+        box_3035_to_clip : Box
+            Box used to restrict the geometry to a certain area
+        target_crs : int
+            target CRS
+        metadata : dict, optional
+            Additional metadata, by default None
+            They will be included in a custom "metadata" key inside the GeoJSON.
+            We expect this to be a dictionary in the form {"min_value": MIN_LAYER_VALUE, "max_value": MAX_LAYER_VALUE}
+
+        Returns
+        -------
+        Iterable
+            _description_
+        """
         if metadata is None:
             metadata = {}
 
@@ -37,5 +58,4 @@ class GeoJSONConverter(MapConverter):
             .clip(box_3035_to_clip)
             .to_crs(target_crs)
         )
-        # TODO: avoid this .loads and assign this to the response body
         return {**json.loads(gdf.to_json()), "metadata": metadata}
