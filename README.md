@@ -30,17 +30,29 @@ The script will generate an API Gateway Key, hash it and store it on DynamoDB. A
 which API the key is allowed to invoke and in which Organization it belongs to. All these pieces of information are persisted on DynamoDB (the table is created in the *infra* folder).
 
 ## src/api
-Each folder in **src/api** represents a specific risk assessemnt endpoint (wildifire, flood) with exception of the folder *common* which is a module containing shared utilities functions.
-Within each directory, one can find:
+Each folder in **src/api** represents a specific risk assessment endpoint (drought, flood, wildfire) with the following exceptions: 
+- **common**: folder containing shared utilities functions
+- **get_token**: implements /token endpoint redirecting to Cognito OAuth2 endpoints
+- **refresh_token**: implements /refresh endpoint redirecting to Cognito OAuth2 endpoints
+- **user**: implements /user endpoint, returning logged user's data
+- **map**: contains the code for map endpoints,
+divided by risk, each of which has a specific folder.
+
+### /src/api/*risk*
+Within each risk directory (e.g. */src/api/flood*), and each risk map directory (e.g. */src/api/map/flood*), one can find:
 
 - ***.py** files: application code
-- **test** folder: contains pytest tests
+- **tests** folder: contains pytest tests
 - **pytest.ini**: contains pytest configuration
-- **Dockerfile**: used to build the Docker image to be used in Lambda functions
-- **build-env-variables**: file in the form ENV=VALUE. Stores the value of env variables needed at build time, namely geotiff paths
-- **/*climate_scenario***: A directory for each climate scenario currently developed for that risk.
+- **requirements.txt**: contains python requirements
+- **/*climate_scenario***: a subdirectory for each climate scenario currently developed for that risk. For example, *flood* has the *baseline* and *rcp* subfolders.
 
-*Makefile* and *Dockerfile* are not present in the *common* folder.
+### /src/api/*risk*/*climate-scenario*
+Within each climate scenario directory (e.g. */src/api/flood/baseline*), and each climate scenario map directory (e.g. */src/api/map/flood/baseline*), one can find:
+
+- **Dockerfile**: used to build the Docker image to be used in Lambda functions
+- **build-env-variables.json**: a json containing information to be injected into the docker image, like path of the .tiff files, and, in case of RCP scenarios, the reference year of that .tiff
+
 
 Every Dockerfile uses the parent context (src) instead of the current folder (src/wildfire) to solve import
 issues between folders.
@@ -49,9 +61,6 @@ The Makefile inside each directory moves to the src parent folder before buildin
 
 *pytest.ini* is necessary because it updates the PYTHONPATH for pytests, adding *src* (..).
 
-Each climate scenario directory contains:
-- **build-env-variables.json**: a json containing information to be injected into the docker image, like path of the .tiff files, and, in case of RCP scenarios, the reference year of that .tiff.
-
 ## .vscode
 The only important configuration is *terminal.integrated.env.linux* that injects custom environment variable in VSC shell.
 We set it to update the PYTHONPATH, so that the code inside every risk folder can import common folder.
@@ -59,7 +68,10 @@ We set it to update the PYTHONPATH, so that the code inside every risk folder ca
 In order to use the integrated test VSCode utility, it's necessary to set the *python.testing.pytestArgs* value to the directory whose tests have to be run (e.g. "src/api/flood")
 
 ## .github/actions
-Contains the single folder *build-push-layout* that automates the docker building, tagging and pushing of images to ECR.
+Contains the folders of composite actions to be called by workflows. They are:
+- **build-push-layout**: automates the docker building, tagging and pushing of images to ECR
+- **build-push-layout-map**: automates the docker building, tagging and pushing of images of map endpoints to ECR (to be removed in a future refactoring)
+- **terraform-plan**: automates the terraform flow to validate and plan current changes in a certain directory. It also creates a comment on the PR with the computed plan
 
 ## .github/workflows
 Each application folder trigger a build only when the code inside that specific folder **or in common**  is updated.
