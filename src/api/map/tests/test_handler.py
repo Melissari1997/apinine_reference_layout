@@ -4,6 +4,7 @@ import pytest
 from common.status_codes import StatusCodes
 from drought.baseline.handler import handler as drought_baseline_handler
 from flood.baseline.handler import handler as flood_baseline_handler
+from flood.rcp.handler import handler as flood_rcp_handler
 from wildfire.baseline.handler import handler as wildfire_baseline_handler
 
 
@@ -16,6 +17,25 @@ class TestHandlerFlood:
                     "lat": "44.379260542097036",
                     "lon": "9.069138608016194",
                     "layer": "aal",
+                }
+            },
+            context=lambda_powertools_ctx,
+        )
+
+        assert response["statusCode"] == 200
+        body = json.loads(response["body"])
+        assert body["type"] == "FeatureCollection"
+        assert "metadata" in body
+        assert "features" in body
+
+    def test_handler_rcp(self, flood_rcp_geotiff_json, lambda_powertools_ctx):
+        response = flood_rcp_handler(
+            event={
+                "queryStringParameters": {
+                    "lat": "44.379260542097036",
+                    "lon": "9.069138608016194",
+                    "layer": "aal",
+                    "year": "2030",
                 }
             },
             context=lambda_powertools_ctx,

@@ -32,6 +32,15 @@ def flood_baseline_geotiff_json():
 
 
 @pytest.fixture(scope="function")
+def flood_rcp_geotiff_json():
+    json_path = flood_map_path / "rcp" / "build-env-variables.json"
+    geotiff_json = open(json_path).read()
+    os.environ["GEOTIFF_JSON"] = geotiff_json
+    yield geotiff_json
+    del os.environ["GEOTIFF_JSON"]
+
+
+@pytest.fixture(scope="function")
 def wildfire_baseline_geotiff_json():
     json_path = wildfire_map_path / "baseline" / "build-env-variables.json"
     geotiff_json = open(json_path).read()
