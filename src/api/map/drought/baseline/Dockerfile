@@ -10,16 +10,14 @@ ENV GEOTIFF_JSON=${GEOTIFF_JSON}
 COPY common/ ${LAMBDA_TASK_ROOT}/common/
 
 RUN yum install git -y && \
-    pip install ${LAMBDA_TASK_ROOT}/common/geocoder/ && \
-    pip install ${LAMBDA_TASK_ROOT}/common/readgeodata/ && \
-    pip install ${LAMBDA_TASK_ROOT}/common/land_use/
+    pip install ${LAMBDA_TASK_ROOT}/common/geocoder/
 
 COPY map/ ${LAMBDA_TASK_ROOT}/
 WORKDIR ${LAMBDA_TASK_ROOT}/
 
 FROM base as test
-RUN pip install -r requirements-dev.txt && pytest tests
+RUN pip install -r requirements-dev.txt && pytest -m unit tests
 
 FROM base as production
 RUN pip install -r requirements.txt
-CMD [ "drought.handler.handler" ]
+CMD [ "drought.baseline.handler.handler" ]

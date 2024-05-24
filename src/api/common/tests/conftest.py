@@ -52,3 +52,14 @@ def geotiff_rcp():
 @pytest.fixture()
 def geotiff_json_rcp(geotiff_rcp):
     yield json.dumps(geotiff_rcp)
+
+
+@pytest.fixture(scope="function")
+def event_address():
+    yield {"queryStringParameters": {"address": "via verruca 1 trento"}}
+
+
+@pytest.fixture(scope="function")
+def event_address_rcp(event_address):
+    event_address["queryStringParameters"]["year"] = "2040"
+    yield event_address

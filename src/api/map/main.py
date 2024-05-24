@@ -2,29 +2,53 @@ from typing import Dict, Tuple
 
 import rasterio
 from aws_lambda_powertools import Logger, Tracer
-from bream.image import raster2 as brast
-from errors import BandNotFoundError
+from bream.core import Box
+from common.errors import BandNotFoundError
 from map_converter import MapConverter
 from map_reader import MapReader
 
 logger = Logger()
 tracer = Tracer()
 
-EDGE_LENGTH_M = 600
-TARGET_RES_M = 30
 TARGET_CRS = 4326
 
 
 @tracer.capture_method
 def main(
     filename: str,
-    lat: float,
-    lon: float,
+    box_3035: Box,
     layer: str,
     map_reader: MapReader,
     map_converter: MapConverter,
     layer_to_range: Dict[str, Tuple[float, float]],
 ) -> str:
+    """Read a geotiff layer in a box and return corresponding data in geojson format
+
+    Parameters
+    ----------
+    filename : str
+        Path of the tiff file to read
+    box_3035 : Box
+        Box specifying the requested area
+    layer : str
+        Layer of data to select from the tiff
+    map_reader : MapReader
+        Object with a .read method used to read data from filename and box
+    map_converter : MapConverter
+        Object with a .convert method used to convert data to wanted format
+    layer_to_range : Dict[str, Tuple[float, float]]
+        Dictionary specifying min and max values for current risk's layers
+
+    Returns
+    -------
+    str
+        GeoJSON containing requested data
+
+    Raises
+    ------
+    BandNotFoundError
+        If the layer does not exist in the tiff
+    """
     # Select specified band
     with rasterio.open(filename) as ds:
         try:
@@ -32,17 +56,8 @@ def main(
         except ValueError:
             raise BandNotFoundError() from None
 
-    box_3035 = brast.MakeBox.from_point_and_size(
-        coords=(lon, lat),
-        coords_crs=4326,
-        output_crs=3035,
-        width=EDGE_LENGTH_M,
-        height=EDGE_LENGTH_M,
-    )
     # Read data
-    raster, profile = map_reader.read(
-        filename=filename, lat=lat, lon=lon, box_3035=box_3035
-    )
+    raster, profile = map_reader.read(filename=filename, box_3035=box_3035)
 
     # Select only the requested layer
     layer_data = raster[:, :, layer_index]

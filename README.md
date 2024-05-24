@@ -2,12 +2,29 @@
 
 In this repository, we propose a folder structure for our API service.
 The code organized in multiple levels.
+
+# Motivations
+The following structure may look overly complicated, but the idea behind it is simple. 
+
+We want to serve our API using AWS Lambda. Each Lambda has to do **one and one thing only**.
+
+The entrypoint of the Lambda function is the *handler*. For each and every API endpoint, we want a separate handler that knows **which climate scenario** he is dealing with, **which input** to expect and **how to parse environment** variables to retrieve the tiff he has to read.
+
+This leads to a nested structure that separates each case that involves a different combination of these components.
+
+# Structure
 The top level folders are the following:
 
 - **src**: contains the application code with the necessary requirements and configurations (Makefile, Dockerfile)
 - **infra**: contains the IaC code (terraform)
 - **.vscode**: contains the VSC editor configurations
-- **.github/wokrflows**: contains the definitions of the github workflows (pipelines)
+- **.github/workflows**: contains the definitions of the github workflows (pipelines)
+
+Additionally, it contains:
+- **.gitignore**
+- **.pre-commit-config.yaml**: see [pre-commit](#pre-commit)
+- **openapi.yml.tpl**: openapi api template. It is used by terraform to inject the necessary variables and to create the AWS API Gateway deployment.
+- **redocly.yaml**: configuration for redocly, the *"Generate beautiful API documentation from OpenAPI"* tool 
 
 ## src
 The **src** folder contains:
@@ -16,28 +33,44 @@ The **src** folder contains:
 - **generate_store_key** folder: script used for generating API keys. It stores the key both in API Gateway and inside a DynamoDB table. In the future it could be extended to implement key updates, addition or subtraction of specific authorization policies, and more
 - **Makefile**: automates common actions (build, tests)
 
+## src/api
+Each folder in **src/api** represents a specific risk assessment endpoint (drought, flood, wildfire) with the following exceptions: 
+- **common**: folder containing shared utilities functions
+- **get_token**: implements /token endpoint redirecting to Cognito OAuth2 endpoints
+- **refresh_token**: implements /refresh endpoint redirecting to Cognito OAuth2 endpoints
+- **user**: implements /user endpoint, returning logged user's data
+- **map**: contains the code for map endpoints,
+divided by risk, each of which has a specific folder.
+
+### /src/api/*risk*
+Within each risk directory (e.g. */src/api/flood*), and each risk map directory (e.g. */src/api/map/flood*), one can find:
+
+- ***.py** files: application code
+- **tests** folder: contains pytest tests
+- **pytest.ini**: contains pytest configuration
+- **requirements.txt**: contains python requirements
+- **/*climate_scenario***: a subdirectory for each climate scenario currently developed for that risk. For example, *flood* has the *baseline* and *rcp* subfolders.
+
+### /src/api/*risk*/*climate-scenario*
+Within each climate scenario directory (e.g. */src/api/flood/baseline*), and each climate scenario map directory (e.g. */src/api/map/flood/baseline*), one can find:
+
+- **handler.py**: entrypoint of the lambda function
+- **Dockerfile**: used to build the Docker image to be used in Lambda functions
+- **build-env-variables.json**: a json containing information to be injected into the docker image, like path of the .tiff files, and, in case of RCP scenarios, the reference year of that .tiff
+
+
+Every Dockerfile uses the parent context (src) instead of the current folder (src/wildfire) to solve import
+issues between folders.
+
+The Makefile inside each directory moves to the src parent folder before building the container.
+
+*pytest.ini* is necessary because it updates the PYTHONPATH for pytests, adding *src* (..).
 
 ## Generate Key
 
 It is possible to generate a key from the script in *src/generate_store_key*.
 The script will generate an API Gateway Key, hash it and store it on DynamoDB. Additionally it is possible to specify
 which API the key is allowed to invoke and in which Organization it belongs to. All these pieces of information are persisted on DynamoDB (the table is created in the *infra* folder).
-
-## src/api
-Each folder in **src/api** represents a specific risk assessemnt endpoint (wildifire, flood) with exception of the folder *common* which is a module containing shared utilities functions.
-Within each directory, one can find:
-
-- ***.py** files: application code
-- **test** folder: contains pytest tests
-- **Dockerfile**: used to build the Docker image to be used in Lambda functions
-- **build-env-variables**: file in the form ENV=VALUE. Stores the value of env variables needed at build time, namely geotiff paths
-
-*Makefile* and *Dockerfile* are not present in the *common* folder.
-
-Every Dockerfile uses the parent context (src) instead of the current folder (src/wildfire) to solve import
-issues between folders. The other option was to copy the common folder inside the current directory, build the container image and then delete the copied folder. This solution could lead to unclean situation that lead to unexpected behaviours and committing multiple copies of *common*.
-The Makefile inside each directory moves to the src parent folder before building the container.
-*pytest.ini* is necessary because it updates the PYTHONPATH for pytests, adding *src* (..).
 
 ## .vscode
 The only important configuration is *terminal.integrated.env.linux* that injects custom environment variable in VSC shell.
@@ -46,12 +79,15 @@ We set it to update the PYTHONPATH, so that the code inside every risk folder ca
 In order to use the integrated test VSCode utility, it's necessary to set the *python.testing.pytestArgs* value to the directory whose tests have to be run (e.g. "src/api/flood")
 
 ## .github/actions
-Contains the single folder *build-push-layout* that automates the docker building, tagging and pushing of images to ECR.
+Contains the folders of composite actions to be called by workflows. They are:
+- **build-push-layout**: automates the docker building, tagging and pushing of images to ECR
+- **build-push-layout-map**: automates the docker building, tagging and pushing of images of map endpoints to ECR (to be removed in a future refactoring)
+- **terraform-plan**: automates the terraform flow to validate and plan current changes in a certain directory. It also creates a comment on the PR with the computed plan
 
 ## .github/workflows
 Each application folder trigger a build only when the code inside that specific folder **or in common**  is updated.
 
-Each workflow leverage the reusable workflow *build-test-deploy.yml* that extracts the GEOTIFF_PATH from the *build-env-variables* file before calling the *build-push-layout* action. This way each workflow just has to specify a list of variables, like the name of Docker image and Lambda function to be updated.
+Each workflow leverage the reusable workflow *build-test-deploy.yml* that extracts the GEOTIFF_JSON from the *build-env-variables.json* file before calling the *build-push-layout* action. This way each workflow just has to specify a list of variables, like the name of Docker image and Lambda function to be updated.
 
 # Testing
 

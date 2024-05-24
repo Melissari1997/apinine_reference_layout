@@ -29,6 +29,12 @@ jobs:
           role-to-assume: arn:aws:iam::${{ env.aws-account-id }}:role/${{ env.aws-role-name }}
           role-session-name: ${{ env.aws-role-name }}-session
 
+      - name: Get github token
+        uses: aws-actions/aws-secretsmanager-get-secrets@v2
+        with:
+          secret-ids: |
+            GITHUB_TOKEN, github_readonly
+
       - name: Run tests
         run: |
           cd src

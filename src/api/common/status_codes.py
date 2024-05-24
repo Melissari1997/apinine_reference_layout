@@ -6,7 +6,7 @@ class StatusCodes:
     # Returned when client provides an invalid input year
     QUERYSTRING_ERROR_RCP = (
         400,
-        "Either 'address' or both 'lat' and 'lon' parameters must be supplied. 'lon' must be between -22 and 45, 'lat' must be between 27 and 72. Year must be one of {}",
+        "Either 'address' or both 'lat' and 'lon' parameters must be supplied. 'lon' must be between -22 and 45, 'lat' must be between 27 and 72. Year must be a positive integer",
     )
     # Returned when GMaps api fails to geocode provided address
     UNKNOWN_ADDRESS = (
@@ -23,4 +23,5 @@ class StatusCodes:
         400,
         "The provided address is out of bounds",
     )
+    LAYER_NOT_FOUND = (400, "The provided layer does not exist")
     INTERNAL_SERVER_ERROR = (500, "Internal Server Error")
