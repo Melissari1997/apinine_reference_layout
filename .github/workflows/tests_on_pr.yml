@@ -29,10 +29,16 @@ jobs:
           role-to-assume: arn:aws:iam::${{ env.aws-account-id }}:role/${{ env.aws-role-name }}
           role-session-name: ${{ env.aws-role-name }}-session
 
+      - name: Get github token
+        uses: aws-actions/aws-secretsmanager-get-secrets@v2
+        with:
+          secret-ids: |
+            GITHUB_TOKEN, github_readonly
+
       - name: Run tests
         run: |
           cd src
-          GITHUB_TOKEN=$(aws secretsmanager get-secret-value --secret-id github_readonly --output text --query SecretString)
+          echo env
           make testall
 
       - name: Run dockerized risks tests
