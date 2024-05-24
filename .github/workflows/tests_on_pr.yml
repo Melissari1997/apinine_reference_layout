@@ -38,7 +38,6 @@ jobs:
       - name: Run tests
         run: |
           cd src
-          echo env
           make testall
 
       - name: Run dockerized risks tests
