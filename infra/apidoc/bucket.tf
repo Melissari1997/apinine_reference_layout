@@ -3,7 +3,9 @@ resource "aws_s3_bucket" "apidoc" {
 }
 
 data "aws_iam_policy_document" "allow_cloudfront" {
+  policy_id = "PolicyForCloudFrontPrivateContent"
   statement {
+    sid    = "AllowCloudFrontServicePrincipal"
     effect = "Allow"
     principals {
       type        = "Service"
@@ -11,6 +13,12 @@ data "aws_iam_policy_document" "allow_cloudfront" {
     }
     actions   = ["s3:GetObject"]
     resources = ["${aws_s3_bucket.apidoc.arn}/*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      values   = [aws_cloudfront_distribution.apidoc.arn]
+    }
   }
 }
 
@@ -29,15 +37,7 @@ resource "aws_s3_object" "index" {
   etag = filemd5("./index.html")
 }
 
-/*
-resource "aws_s3_bucket_website_configuration" "apidoc" {
-  bucket = aws_s3_bucket.apidoc.id
-
-  index_document {
-    suffix = "index.html"
-  }
-}
-*/
+// FIXME: remove log bucket
 
 resource "aws_s3_bucket" "apidoc_log_bucket" {
   bucket = "documentation-eoliann-solutions-log-bucket"
@@ -56,12 +56,3 @@ resource "aws_s3_bucket_acl" "apidoc_log_bucket" {
   bucket = aws_s3_bucket.apidoc_log_bucket.id
   acl    = "log-delivery-write"
 }
-
-/*
-resource "aws_s3_bucket_logging" "apidoc" {
-  bucket = aws_s3_bucket.apidoc.id
-
-  target_bucket = aws_s3_bucket.apidoc_log_bucket.id
-  target_prefix = "log/"
-}
-*/
