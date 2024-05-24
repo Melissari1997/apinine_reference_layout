@@ -20,6 +20,6 @@ def handler(event: dict, context: dict = None) -> dict:
         event=event,
         context=context,
         layer_to_range=flood_layer_range,
-        envparser=envparser,
+        env_parser=envparser,
         model=MapRCPInputSchema,
     )
