@@ -49,10 +49,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/drought"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
   /ui/drought/v1:
     options:
       summary: CORS support
@@ -124,10 +128,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/drought"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
 
   /ui/drought/map/v1:
     options:
@@ -201,10 +209,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/drought"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
 
   #####################################
   #   Flood
@@ -234,10 +246,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/flood"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
 
   /ui/flood/v1:
     options:
@@ -310,10 +326,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/flood"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
 
   /ui/flood/map/v1:
     options:
@@ -387,10 +407,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/drought"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
 
   /flood/rcp85/v1:
     get:
@@ -417,10 +441,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/flood"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
+
   /ui/flood/rcp85/v1:
     options:
       summary: CORS support
@@ -493,10 +522,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/flood"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
 
   /ui/flood/rcp85/map/v1:
     options:
@@ -571,10 +604,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/drought"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
 
   /flood/rcp45/v1:
     get:
@@ -601,10 +638,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/flood"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
   /ui/flood/rcp45/v1:
     options:
       summary: CORS support
@@ -677,10 +718,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/flood"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
 
   /ui/flood/rcp45/map/v1:
     options:
@@ -755,10 +800,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/drought"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
 
   /flood/rcp26/v1:
     get:
@@ -785,10 +834,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/flood"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
   /ui/flood/rcp26/v1:
     options:
       summary: CORS support
@@ -861,10 +914,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/flood"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
 
   /ui/flood/rcp26/map/v1:
     options:
@@ -939,10 +996,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/drought"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
 
   #################################
   #   Wildfire   
@@ -972,10 +1033,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/wildfire"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
   /ui/wildfire/v1:
     options:
       summary: CORS support
@@ -1047,10 +1112,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/wildfire"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
 
   /ui/wildfire/map/v1:
     options:
@@ -1124,10 +1193,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/drought"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
         "401":
           $ref: "#/components/responses/401Unauthorized"
         "403":
           $ref: "#/components/responses/403Forbidden"
+        "404":
+          $ref: "#/components/responses/404NotFound"
 
   /ui/login:
     get:
@@ -1395,7 +1468,7 @@ components:
 
     lon:
       type: number
-      description: Latitude
+      description: Longitude
       minimum: -22
       maximum: 45
       example: 12.49536
@@ -1475,7 +1548,7 @@ components:
         - lat
         - lon
         - land_use
-        - floodRiskAssessment
+        - flood_risk_assessment
         - average_annual_loss
         - risk_index
       properties:
@@ -1489,7 +1562,7 @@ components:
           type: string
           description: Use of land in the area identified
           example: Agriculture
-        floodRiskAssessment:
+        flood_risk_assessment:
           $ref: "#/components/schemas/floodRiskAssessment"
         average_annual_loss:
           type: object
@@ -1522,7 +1595,7 @@ components:
         - address
         - lat
         - lon
-        - droughtRiskAssessment
+        - drought_risk_assessment
         - risk_index
         - average_annual_loss
         - hazard_index
@@ -1533,7 +1606,7 @@ components:
           $ref: "#/components/schemas/lat"
         lon:
           $ref: "#/components/schemas/lon"
-        droughtRiskAssessment:
+        drought_risk_assessment:
           $ref: "#/components/schemas/droughtRiskAssessment"
         average_annual_loss:
           type: object
@@ -1612,13 +1685,13 @@ components:
       additionalProperties:
         $ref: "#/components/schemas/wildfireRiskSingleRp"
       example:
-        rp_20:
+        return_period_2y:
           intensity: 30.33
           vulnerability: "Not implemented"
-        rp_100:
+        return_period_10y:
           intensity: 40.96
           vulnerability: "Not implemented"
-        rp_200:
+        return_period_30y:
           intensity: 45.19
           vulnerability: "Not implemented"
 
@@ -1628,7 +1701,7 @@ components:
         - address
         - lat
         - lon
-        - wildfireRiskAssessment
+        - wildfire_risk_assessment
         - risk_index
         - average_annual_loss
         - hazard_index
@@ -1639,7 +1712,7 @@ components:
           $ref: "#/components/schemas/lat"
         lon:
           $ref: "#/components/schemas/lon"
-        wildfireRiskAssessment:
+        wildfire_risk_assessment:
           $ref: "#/components/schemas/wildfireRiskAssessment"
         average_annual_loss:
           type: object
@@ -1781,6 +1854,17 @@ components:
   # Reusable responses
   #-------------------------------
   responses:
+    400BadRequest:
+      description: "Bad Request"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Error in query parameters provided by client
+                example: "Either 'address' or both 'lat' and 'lon' parameters must be supplied"
     401Unauthorized:
       description: "Unauthorized"
       content:
@@ -1808,8 +1892,18 @@ components:
                 enum: [Forbidden]
             example:
               message: Forbidden
-
-  # security schemese
+    404NotFound:
+      description: "Not Found"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Data not available for the selected point
+                example: Data not available for the selected point
+  # security schemes
   securitySchemes:
     apinineApiKey:
       name: "x-api-key"
