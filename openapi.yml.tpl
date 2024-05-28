@@ -1638,15 +1638,18 @@ components:
       additionalProperties:
         $ref: "#/components/schemas/droughtRiskSingleRp"
       example:
-        rp_20:
-          duration_months: 18.3
-          severity: 16
-        rp_100:
-          duration_months: 27.6
-          severity: 24.5
-        rp_200:
-          duration_months: 31.6
-          severity: 28.2
+        return_period_20y:
+          intensity:
+            duration_months: 18.3
+            severity: 16
+        return_period_100y:
+          intensity:
+            duration_months: 27.6
+            severity: 24.5
+        return_period_200y:
+          intensity:
+            duration_months: 31.6
+            severity: 28.2
 
     droughtRiskSingleRp:
       type: object
@@ -1654,13 +1657,33 @@ components:
         - duration_months
         - severity
       properties:
-        duration_months:
+        intensity:
+          type: object
+          required:
+            - duration_months
+            - severity
+          properties:
+            duration_months:
+              type: number
+              minimum: 0
+              description: Drought duration, in months
+              example: 6
+            severity:
+              type: number
+              minimum: 0
+              description: Drought severity
+              example: 24.5
+        vulnerability:
           type: number
-        severity:
-          type: number
+          minimum: 0
+          maximum: 1
+          description: drought vulnerability
+          example: 0.296
       example:
-        duration_months: 18.3
-        severity: 24.5
+        intensity:
+          duration_months: 3
+          severity: 12.5
+        vulnerability: 0.296
 
     # WILDFIRE resources
 
@@ -1671,13 +1694,25 @@ components:
         - vulnerability
       properties:
         intensity:
-          type: number
+          type: object
+          required:
+            - fwi
+          properties:
+            fwi:
+              type: number
+              minimum: 0
+              description: Fire Weather Index
+              example: 6
         vulnerability:
-          type: string
-          enum: ["Not implemented"]
+          type: number
+          minimum: 0
+          maximum: 1
+          description: wildfire vulnerability
+          example: 0.296
       example:
-        intensity: 30.33
-        severity: "Not implemented"
+        intensity:
+          fwi: 12.5
+        vulnerability: 0.374
 
     wildfireRiskAssessment:
       type: object
@@ -1686,14 +1721,17 @@ components:
         $ref: "#/components/schemas/wildfireRiskSingleRp"
       example:
         return_period_2y:
-          intensity: 30.33
-          vulnerability: "Not implemented"
+          intensity: 
+            fwi: 30.33
+          vulnerability: 0.35
         return_period_10y:
-          intensity: 40.96
-          vulnerability: "Not implemented"
+          intensity: 
+            fwi: 40.96
+          vulnerability: 0.55
         return_period_30y:
-          intensity: 45.19
-          vulnerability: "Not implemented"
+          intensity: 
+            fwi: 45.19
+          vulnerability: 0.78
 
     wildfire:
       type: object
