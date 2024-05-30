@@ -1,6 +1,6 @@
 [
     {
         "climate_scenario": "baseline",
-        "path": "s3://mlflow-monitoring/98/14e74db763c74bebaf35d997343f381f/artifacts/inference/wildfire_intensity_rp_2_10_30.tif"
+        "path": "s3://mlflow-monitoring/126/3d25854b64ed45de9845e1f48eee3ac0/artifacts/model/inference/wildfire_baseline_IT_postprocessed.tif"
     }
 ]

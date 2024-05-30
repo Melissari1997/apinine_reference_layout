@@ -39,6 +39,18 @@ resource "aws_cognito_user_pool" "apinine_pool" {
     require_uppercase                = true
     temporary_password_validity_days = 7
   }
+
+  lifecycle {
+    # We want to ignore changes relative to cognito email messages templates
+
+    # Here we target first element of 'admin_create_user_config' which apparently is a list.
+    # Otherwise, we would receive the following error:
+
+    # │ Block type "admin_create_user_config" is represented by a list of objects, so it must be indexed using a numeric key, like
+    # │ .admin_create_user_config[0].
+
+    ignore_changes = [admin_create_user_config[0].invite_message_template]
+  }
 }
 
 resource "aws_cognito_user_pool_domain" "apinine_march" {

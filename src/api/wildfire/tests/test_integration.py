@@ -33,10 +33,16 @@ class TestWildfireIntegration:
             "address",
             "lat",
             "lon",
+            "land_use",
             "wildfire_risk_assessment",
             "risk_index",
             "average_annual_loss",
             "hazard_index",
         }
 
-        assert set(json.loads(got["body"])) == keys_want
+        body = json.loads(got["body"])
+
+        assert set(body) == keys_want
+        assert isinstance(
+            body["wildfire_risk_assessment"]["return_period_2y"]["vulnerability"], float
+        )

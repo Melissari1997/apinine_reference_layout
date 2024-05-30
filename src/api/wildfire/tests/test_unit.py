@@ -18,7 +18,7 @@ class MockGeocoder(Geocoder):
             raise FailedGeocodeError(f"Failed geocoding {address}")
 
 
-class MockGeoDataReaderFlood(GeoDataReader):
+class MockGeoDataReaderWildfire(GeoDataReader):
     def sample_data_points(
         self,
         filename: str,
@@ -30,6 +30,13 @@ class MockGeoDataReaderFlood(GeoDataReader):
             WildfireKeys.FWI_2: [0.0],
             WildfireKeys.FWI_10: [0.01],
             WildfireKeys.FWI_30: [0.3],
+            WildfireKeys.VULN_2: [0.2],
+            WildfireKeys.VULN_10: [0.3],
+            WildfireKeys.VULN_30: [0.4],
+            WildfireKeys.AAL: [0.2],
+            WildfireKeys.LAND_USE: [112],
+            WildfireKeys.RISK_INDEX: [1],
+            "metadata": {WildfireKeys.RESIDENTIAL_AAL: 0.4},
         }
 
 
@@ -39,7 +46,7 @@ class TestWildfireUnit:
         self, geotiff_path_s3, event_address, lambda_powertools_ctx, monkeypatch
     ):
         gmaps = MockGeocoder()
-        rioreader = MockGeoDataReaderFlood()
+        rioreader = MockGeoDataReaderWildfire()
         monkeypatch.setattr(handler_module, "gmapsgeocoder", gmaps)
         monkeypatch.setattr(handler_module, "riogeoreader", rioreader)
 
@@ -52,7 +59,7 @@ class TestWildfireUnit:
         self, geotiff_path_s3, event_lat_lon, lambda_powertools_ctx, monkeypatch
     ):
         gmaps = MockGeocoder()
-        rioreader = MockGeoDataReaderFlood()
+        rioreader = MockGeoDataReaderWildfire()
         monkeypatch.setattr(handler_module, "gmapsgeocoder", gmaps)
         monkeypatch.setattr(handler_module, "riogeoreader", rioreader)
 
@@ -65,7 +72,7 @@ class TestWildfireUnit:
         self, geotiff_path_s3, event_invalid_address, lambda_powertools_ctx, monkeypatch
     ):
         gmaps = MockGeocoder()
-        rioreader = MockGeoDataReaderFlood()
+        rioreader = MockGeoDataReaderWildfire()
         monkeypatch.setattr(handler_module, "gmapsgeocoder", gmaps)
         monkeypatch.setattr(handler_module, "riogeoreader", rioreader)
 
@@ -86,7 +93,7 @@ class TestWildfireUnit:
         monkeypatch,
     ):
         gmaps = MockGeocoder()
-        rioreader = MockGeoDataReaderFlood()
+        rioreader = MockGeoDataReaderWildfire()
         monkeypatch.setattr(handler_module, "gmapsgeocoder", gmaps)
         monkeypatch.setattr(handler_module, "riogeoreader", rioreader)
 

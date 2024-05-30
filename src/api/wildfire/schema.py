@@ -1,7 +1,12 @@
 from typing import Annotated
 
-from common.schema import NOT_IMPLEMENTED_PLACEHOLDER, Intensity, PositiveRoundedFloat
-from pydantic import BaseModel, Field
+from common.schema import (
+    NOT_IMPLEMENTED_PLACEHOLDER,
+    Intensity,
+    PositiveRoundedFloat,
+    Probability,
+)
+from pydantic import BaseModel, Field, conint
 
 
 class WildfireIntensity(Intensity):
@@ -10,7 +15,7 @@ class WildfireIntensity(Intensity):
 
 class ReturnPeriod(BaseModel):
     intensity: WildfireIntensity
-    vulnerability: type(NOT_IMPLEMENTED_PLACEHOLDER)
+    vulnerability: Probability
 
 
 class WildfireRiskAssessment(BaseModel):
@@ -20,8 +25,8 @@ class WildfireRiskAssessment(BaseModel):
 
 
 class AverageAnnualLoss(BaseModel):
-    value: type(NOT_IMPLEMENTED_PLACEHOLDER)
-    national_average: type(NOT_IMPLEMENTED_PLACEHOLDER)
+    value: Probability
+    national_average: Probability
     regional_average: type(NOT_IMPLEMENTED_PLACEHOLDER)
 
 
@@ -29,7 +34,8 @@ class OutputSchema(BaseModel):
     address: str | None
     lat: Annotated[float, Field(ge=-90, le=90)]
     lon: Annotated[float, Field(ge=-180, le=180)]
+    land_use: str
     wildfire_risk_assessment: WildfireRiskAssessment
-    risk_index: type(NOT_IMPLEMENTED_PLACEHOLDER)
+    risk_index: conint(ge=0, le=5)
     average_annual_loss: AverageAnnualLoss
     hazard_index: type(NOT_IMPLEMENTED_PLACEHOLDER)

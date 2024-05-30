@@ -106,7 +106,7 @@ class TestHandlerWildfire:
                 "queryStringParameters": {
                     "lat": "44.379260542097036",
                     "lon": "9.069138608016194",
-                    "layer": "wildfire rp 10 layer, band 2",
+                    "layer": "intensity_rp10",
                 }
             },
             context=lambda_powertools_ctx,

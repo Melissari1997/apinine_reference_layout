@@ -7,7 +7,8 @@ ENV GEOTIFF_JSON=${GEOTIFF_JSON}
 COPY common/ ${LAMBDA_TASK_ROOT}/common/
 
 RUN pip install ${LAMBDA_TASK_ROOT}/common/geocoder/ && \
-    pip install ${LAMBDA_TASK_ROOT}/common/readgeodata/
+    pip install ${LAMBDA_TASK_ROOT}/common/readgeodata/ && \
+    pip install ${LAMBDA_TASK_ROOT}/common/land_use/
 
 COPY wildfire/ ${LAMBDA_TASK_ROOT}/
 WORKDIR ${LAMBDA_TASK_ROOT}/
