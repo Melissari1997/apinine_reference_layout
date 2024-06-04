@@ -1,11 +1,25 @@
 import json
 
+import geopandas as gpd
 import pytest
 from common.status_codes import StatusCodes
 from drought.baseline.handler import handler as drought_baseline_handler
 from flood.baseline.handler import handler as flood_baseline_handler
 from flood.rcp.handler import handler as flood_rcp_handler
 from wildfire.baseline.handler import handler as wildfire_baseline_handler
+
+
+def assert_response_is_valid(response):
+    body = json.loads(response["body"])
+    assert body["type"] == "FeatureCollection"
+    assert "metadata" in body
+    assert "features" in body
+    assert "min_value" in body["metadata"]
+    assert "max_value" in body["metadata"]
+    assert "box_geometry" in body["metadata"]
+    assert isinstance(body["metadata"]["box_geometry"], str)
+    gdf = gpd.read_file(body["metadata"]["box_geometry"], driver="GeoJSON")
+    assert isinstance(gdf, gpd.GeoDataFrame)
 
 
 @pytest.mark.integration
@@ -23,10 +37,7 @@ class TestHandlerFlood:
         )
 
         assert response["statusCode"] == 200
-        body = json.loads(response["body"])
-        assert body["type"] == "FeatureCollection"
-        assert "metadata" in body
-        assert "features" in body
+        assert_response_is_valid(response=response)
 
     def test_handler_rcp(self, flood_rcp_geotiff_json, lambda_powertools_ctx):
         response = flood_rcp_handler(
@@ -42,10 +53,7 @@ class TestHandlerFlood:
         )
 
         assert response["statusCode"] == 200
-        body = json.loads(response["body"])
-        assert body["type"] == "FeatureCollection"
-        assert "metadata" in body
-        assert "features" in body
+        assert_response_is_valid(response=response)
 
     def test_handler_wrong_layer(
         self, flood_baseline_geotiff_json, lambda_powertools_ctx
@@ -113,10 +121,7 @@ class TestHandlerWildfire:
         )
 
         assert response["statusCode"] == 200
-        body = json.loads(response["body"])
-        assert body["type"] == "FeatureCollection"
-        assert "metadata" in body
-        assert "features" in body
+        assert_response_is_valid(response=response)
 
 
 @pytest.mark.integration
@@ -134,7 +139,4 @@ class TestHandlerDrought:
         )
 
         assert response["statusCode"] == 200
-        body = json.loads(response["body"])
-        assert body["type"] == "FeatureCollection"
-        assert "metadata" in body
-        assert "features" in body
+        assert_response_is_valid(response=response)

@@ -71,5 +71,6 @@ def main(
         metadata={
             "min_value": layer_to_range[layer][0],
             "max_value": layer_to_range[layer][1],
+            "box_geometry": box_3035.to_crs(TARGET_CRS).to_json(),
         },
     )

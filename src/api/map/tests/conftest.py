@@ -61,7 +61,7 @@ def drought_baseline_geotiff_json():
 @pytest.fixture(scope="function")
 def box_3035_verruca():
     box_size = 50
-    brast.MakeBox.from_point_and_size(
+    yield brast.MakeBox.from_point_and_size(
         coords=(11.1135156, 46.0701698),
         coords_crs=4326,
         output_crs=3035,
@@ -73,7 +73,7 @@ def box_3035_verruca():
 @pytest.fixture(scope="function")
 def box_3035_lima():
     box_size = 50
-    brast.MakeBox.from_point_and_size(
+    yield brast.MakeBox.from_point_and_size(
         coords=(-77.07344188385699, -12.0571910705544),
         coords_crs=4326,
         output_crs=3035,
