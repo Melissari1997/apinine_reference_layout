@@ -10,7 +10,7 @@ def geotiff_json_baseline():
         [
             {
                 "climate_scenario": "baseline",
-                "path": "s3://mlflow-monitoring/126/3d25854b64ed45de9845e1f48eee3ac0/artifacts/model/inference/wildfire_baseline_IT_postprocessed.tif",
+                "path": "s3://mlflow-monitoring/126/73ca69924bdc4f8b92caec2e14722b14/artifacts/model/inference/wildfire_baseline_IT.tif",
             }
         ]
     )
