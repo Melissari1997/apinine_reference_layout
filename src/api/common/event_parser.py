@@ -2,7 +2,10 @@ import json
 
 from aws_lambda_powertools import Logger
 from pydantic import BaseModel, ValidationError
-
+import json
+import urllib.parse
+import boto3
+import csv
 from .parse_env import EnvParser
 
 logger = Logger()
@@ -78,3 +81,47 @@ def parse_aws_event_body(
 #     filename = env_parser.get_filename(**validated_params.model_dump())
 
 #     return filename, validated_params
+
+
+def get_file_metadata(s3_client, bucket, key):
+    try:
+        # Get the tags for the object
+        response = s3_client.get_object_tagging(Bucket=bucket, Key=key)
+
+        # Extract the tag set from the response
+        tags = {tag["Key"]: tag["Value"] for tag in response["TagSet"]}
+        return tags
+    except Exception as e:
+        print(e)
+        print("Error getting metadata for object {key} in bucket {bucket}")
+        raise e
+
+
+def get_file_body(s3_client, bucket, key):
+    try:
+        content_response = s3_client.get_object(Bucket=bucket, Key=key)
+        return content_response["Body"].read().decode("utf-8")
+    except Exception as e:
+        print(e)
+        print("Error getting content from object {key} in bucket {bucket}")
+        raise e
+
+
+def get_bucket_and_key(event: dict):
+    bucket = event["Records"][0]["s3"]["bucket"]["name"]
+    key = urllib.parse.unquote(
+        event["Records"][0]["s3"]["object"]["key"], encoding="utf-8"
+    )
+
+    return bucket, key
+
+
+def parse_s3_file_upload_event(event: dict) -> BaseModel:
+    # Get the object from the event
+    # https://docs.aws.amazon.com/lambda/latest/dg/with-s3.html
+    bucket, key = get_bucket_and_key(event)
+    s3_client = boto3.client("s3")
+    metadata = get_file_metadata(s3_client, bucket, key)
+    content = get_file_body(s3_client, bucket, key)
+
+    return content, metadata

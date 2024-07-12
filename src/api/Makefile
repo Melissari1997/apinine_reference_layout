@@ -1,4 +1,4 @@
-.PHONY: drought flood wildfire tests
+.PHONY: batch drought flood wildfire tests
 
 .SHELLFLAGS = -ec
 
