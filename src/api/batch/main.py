@@ -83,11 +83,14 @@ def main(
     points: List[Tuple[str, str]] = []  # [(lat, lon), (lat, lon)]
     for lat, lon, address in coordinates:
         if lat is not None and lon is not None:
-            points.append((lat, lon))
+            # NOTE: we're going from (lat, lon) to (lon, lat) because sample_data_points needs data in (lon, lat) format
+            points.append((lon, lat))
         else:
             calculated_lat, calculated_lon = geocoder.geocode(address)
-            points.append((calculated_lat, calculated_lon))
+            # NOTE: we're going from (lat, lon) to (lon, lat) because sample_data_points needs data in (lon, lat) format
+            points.append((calculated_lon, calculated_lat))
 
+    # TODO handle different crs
     values = geodatareader.sample_data_points(
         filename=filename,
         coordinates=points,

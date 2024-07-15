@@ -12,8 +12,9 @@
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
     "python.testing.pytestArgs": [
-        "src/api/batch"
+        "tests"
     ],
+    "python.testing.cwd": "${workspaceFolder}/src/api/batch",
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
 }
