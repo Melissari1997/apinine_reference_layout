@@ -108,10 +108,8 @@ def get_file_body(s3_client, bucket, key):
 
 
 def get_bucket_and_key(event: dict):
-    bucket = event["Records"][0]["s3"]["bucket"]["name"]
-    key = urllib.parse.unquote(
-        event["Records"][0]["s3"]["object"]["key"], encoding="utf-8"
-    )
+    bucket = event["detail"]["bucket"]["name"]
+    key = urllib.parse.unquote(event["detail"]["object"]["key"], encoding="utf-8")
 
     return bucket, key
 

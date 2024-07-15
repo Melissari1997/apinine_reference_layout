@@ -1,21 +1,16 @@
 from io import StringIO
-import os
 
 from aws_lambda_powertools import Logger, Tracer
 from common.event_parser import (
     get_bucket_and_key,
-    parse_aws_event,
     parse_s3_file_upload_event,
 )
-from common.input_schema import RiskInputSchema
-from common.parse_env import BaselineEnvParser
-from common.response import handle_response
 from geocoder.gmaps_geocoder import GMapsGeocoder
 from main import main
 from readgeodata.rasterioreader import RasterIOReader
-from schema import OutputSchema
 import csv
 import boto3
+import io
 
 logger = Logger()
 tracer = Tracer()
@@ -68,23 +63,25 @@ def get_s3_parent_folder(s3_path):
     return folder_path
 
 
-@handle_response(validate_schema=OutputSchema)
 @logger.inject_lambda_context
 @tracer.capture_lambda_handler
 def handler(event: dict, context: dict = None) -> dict:
     file_content, file_metadata = parse_s3_file_upload_event(event=event)
-    csv_reader = csv.reader(StringIO(file_content))
+    csvfile = io.StringIO(file_content)
+
+    reader = csv.reader(csvfile, delimiter=";")
+
+    next(reader)
     csv_data = []
-    for row in csv_reader:
+    for row in reader:
         if len(row) == 3:
-            csv_data.append((row[0], row[1], row[2]))
+            csv_data.append((float(row[0]), float(row[1]), row[2]))
             # (lat, lon, address)
         else:
             print(f"Number of columns != 3: {len(row)}")
-
     response = main(
         filename=file_metadata["filename"],
-        tiff_metadata=file_metadata["tags"],
+        tiff_metadata=file_metadata.get("tags", []),
         coordinates=csv_data,
         geocoder=gmapsgeocoder,
         geodatareader=riogeoreader,

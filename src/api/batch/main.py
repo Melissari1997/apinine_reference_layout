@@ -90,6 +90,8 @@ def main(
             # NOTE: we're going from (lat, lon) to (lon, lat) because sample_data_points needs data in (lon, lat) format
             points.append((calculated_lon, calculated_lat))
 
+    print(f"Sample points: {points}")
+
     # TODO handle different crs
     values = geodatareader.sample_data_points(
         filename=filename,
