@@ -8,7 +8,7 @@ env:
   aws-role-name: github_actions_role
   aws-account-id: 600920596656
   aws-region: eu-central-1
-  domain_name: eoliann.api
+  domain_name: eoliann.api.solutions
 
 permissions:
   id-token: write

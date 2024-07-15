@@ -17,7 +17,7 @@ env:
   backend_bucket: terraform-be-bucket
   backend_key: apidoc/terraform.tfstate
   lock_table: terraform-be-locktable
-  domain_name: eoliann.api
+  domain_name: eoliann.api.solutions
 
 permissions:
   id-token: write
