@@ -11,11 +11,20 @@ from readgeodata.rasterioreader import RasterIOReader
 import csv
 import boto3
 import io
+import numpy as np
 
 logger = Logger()
 tracer = Tracer()
 gmapsgeocoder = GMapsGeocoder()
 riogeoreader = RasterIOReader()
+
+
+def convert_ndarrays_to_lists(data_dict: dict) -> dict:
+    """Convert ndarray values in the dictionary to lists."""
+    for key in data_dict:
+        if isinstance(data_dict[key], np.ndarray):
+            data_dict[key] = data_dict[key].tolist()
+    return data_dict
 
 
 def dict_to_csv(data_dict: dict) -> str:
@@ -86,11 +95,15 @@ def handler(event: dict, context: dict = None) -> dict:
         geocoder=gmapsgeocoder,
         geodatareader=riogeoreader,
     )
+    response.pop("metadata")
+    logger.info(f"Result: {response}")
 
-    csv_data = dict_to_csv(response)
+    converted_response = convert_ndarrays_to_lists(response)
+
+    logger.info(f"Writing: \n {converted_response}")
+    csv_data = dict_to_csv(converted_response)
     bucket, key = get_bucket_and_key(event)
     file_folder = get_s3_parent_folder(key)
     write_dict_to_s3_as_csv(csv_data, bucket, f"{file_folder}/output.csv")
 
-    logger.info(f"Returning response: {response}")
     return response
