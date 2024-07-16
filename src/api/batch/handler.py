@@ -1,4 +1,5 @@
 from io import StringIO
+from typing import List, Tuple
 
 from aws_lambda_powertools import Logger, Tracer
 from common.event_parser import (
@@ -94,6 +95,22 @@ def write_dict_to_s3_as_csv(csv_data, bucket_name: str, file_key: str):
         print(f"Error uploading CSV file to S3: {e}")
 
 
+def split_coordinates(coordinates: List[Tuple[str, str, str]]):
+    points_array = np.array(coordinates)
+
+    # Split the array into two separate arrays
+    latitudes = points_array[:, 0]
+    longitudes = points_array[:, 1]
+    addresses = points_array[:, 2]
+
+    # Convert numpy arrays back to lists
+    latitudes_list = latitudes.tolist()
+    longitudes_list = longitudes.tolist()
+    addresses_list = addresses.tolist()
+
+    return latitudes_list, longitudes_list, addresses_list
+
+
 def get_s3_parent_folder(s3_path):
     # Find the index of the last '/'
     last_slash_index = s3_path.rfind("/")
@@ -121,6 +138,12 @@ def handler(event: dict, context: dict = None) -> dict:
     logger.info(f"Result: {response}")
 
     converted_response = convert_ndarrays_to_lists(response)
+
+    latitudes, longitudes, addresses = split_coordinates(csv_data)
+
+    converted_response["latitude"] = latitudes
+    converted_response["longitude"] = longitudes
+    converted_response["addresses"] = addresses
 
     logger.info(f"Writing: \n {converted_response}")
     csv_data = dict_to_csv(converted_response)
