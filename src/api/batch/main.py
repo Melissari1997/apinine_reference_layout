@@ -80,8 +80,8 @@ def main(
     # https://github.com/googlemaps/google-maps-services-python/blob/master/googlemaps/geocoding.py.
     # There isn't a method for batch geocoding
 
-    points: List[Tuple[str, str]] = []  # [(lon, lat), (lon, lat)]
-    for lon, lat, address in coordinates:
+    points: List[Tuple[str, str]] = []  # [(lat, lat), (lat, lon)]
+    for lat, lon, address in coordinates:
         if lat is not None and lon is not None:
             points.append((lon, lat))
         else:

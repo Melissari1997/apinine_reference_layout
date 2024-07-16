@@ -27,18 +27,50 @@ def convert_ndarrays_to_lists(data_dict: dict) -> dict:
     return data_dict
 
 
+def read_file(file_content):
+
+    csv_data = []
+    try:
+        # Convert file content to a file-like object
+        file_like = io.StringIO(file_content)
+        reader = csv.DictReader(file_like, delimiter="|", quoting=csv.QUOTE_NONNUMERIC)
+
+        for row in reader:
+            try:
+                # Extract the selected columns
+                lat = float(row["lat"])
+                lon = float(row["lon"])
+                address = row["address"]
+                csv_data.append((lat, lon, address))
+            except KeyError as e:
+                print(f"Missing column in the CSV: {e}")
+            except ValueError as e:
+                print(f"Invalid data format in the CSV: {e}")
+            except Exception as e:
+                print(f"Unexpected error: {e}")
+    except Exception as e:
+        print(f"Error reading file: {e}")
+
+    return csv_data
+
+
 def dict_to_csv(data_dict: dict) -> str:
     # Create a CSV string from the dictionary
     csv_buffer = StringIO()
-    csv_writer = csv.writer(csv_buffer, quoting=csv.QUOTE_NONNUMERIC)
 
-    # Write header
-    header = list(data_dict.keys())
-    csv_writer.writerow(header)
+    # Get the field names (keys of the dictionary)
+    fieldnames = list(data_dict.keys())
 
-    # Write rows
+    # Create a DictWriter object, with the field names
+    csv_writer = csv.DictWriter(csv_buffer, fieldnames=fieldnames)
+
+    # Write the header
+    csv_writer.writeheader()
+
+    # Write the rows
     for row in zip(*data_dict.values()):
-        csv_writer.writerow(row)
+        row_dict = dict(zip(fieldnames, row))
+        csv_writer.writerow(row_dict)
 
     # Get CSV data as string
     csv_data = csv_buffer.getvalue()
@@ -76,18 +108,7 @@ def get_s3_parent_folder(s3_path):
 @tracer.capture_lambda_handler
 def handler(event: dict, context: dict = None) -> dict:
     file_content, file_metadata = parse_s3_file_upload_event(event=event)
-    csvfile = io.StringIO(file_content)
-
-    reader = csv.reader(csvfile, delimiter="|", quoting=csv.QUOTE_NONNUMERIC)
-
-    next(reader)
-    csv_data = []
-    for row in reader:
-        if len(row) == 3:
-            csv_data.append((float(row[0]), float(row[1]), row[2]))
-            # (lon, lat, address)
-        else:
-            print(f"Number of columns != 3: {len(row)}")
+    csv_data = read_file(file_content)
     response = main(
         filename=file_metadata["filename"],
         tiff_metadata=file_metadata.get("tags", []),
@@ -95,6 +116,7 @@ def handler(event: dict, context: dict = None) -> dict:
         geocoder=gmapsgeocoder,
         geodatareader=riogeoreader,
     )
+
     response.pop("metadata")
     logger.info(f"Result: {response}")
 
@@ -106,4 +128,5 @@ def handler(event: dict, context: dict = None) -> dict:
     file_folder = get_s3_parent_folder(key)
     write_dict_to_s3_as_csv(csv_data, bucket, f"{file_folder}/output.csv")
 
+    logger.info(f"Returning response: {response}")
     return response
