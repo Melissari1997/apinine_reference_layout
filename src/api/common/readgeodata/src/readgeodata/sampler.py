@@ -1,27 +1,54 @@
 from typing import List, Tuple
 from aws_lambda_powertools import Logger, Tracer
-from common.schema import NOT_IMPLEMENTED_PLACEHOLDER
 from geocoder.geocoder import Geocoder
 from geocoder.gmaps_geocoder import GMapsGeocoder
-from land_use.util_CLC_conversion import CLC_MAPPING
 from readgeodata.interfaces import GeoDataReader
 from readgeodata.rasterioreader import RasterIOReader
+from typing import Dict
+import numpy as np
+
 
 logger = Logger()
-tracer = Tracer()
 gmapsgeocoder = GMapsGeocoder()
 riogeoreader = RasterIOReader()
 
 
-@tracer.capture_method
-def main(
+def convert_ndarrays_to_lists(data_dict: Dict) -> Dict:
+    """Convert ndarray values in the dictionary to lists."""
+    for key in data_dict:
+        if isinstance(data_dict[key], np.ndarray):
+            data_dict[key] = data_dict[key].tolist()
+    return data_dict
+
+
+def split_coordinates(
+    coordinates: List[Tuple[float, float, str]]
+) -> Tuple[List[float], List[float], List[str]]:
+    """
+    Split list of coordinates into separate lists for latitudes, longitudes, and addresses.
+
+    Args:
+        coordinates (List[Tuple[float, float, str]]): List of tuples containing latitude, longitude, and address.
+
+    Returns:
+        Tuple[List[float], List[float], List[str]]: Separate lists for latitudes, longitudes, and addresses.
+    """
+    points_array = np.array(coordinates)
+    latitudes = points_array[:, 0].tolist()
+    longitudes = points_array[:, 1].tolist()
+    addresses = points_array[:, 2].tolist()
+    return latitudes, longitudes, addresses
+
+
+def sample(
     filename: str,
     tiff_metadata: List[str],
     coordinates: List[Tuple[str, str, str]],
     geocoder: Geocoder,
     geodatareader: GeoDataReader,
 ) -> dict:
-    """Compute the flood risk assessment for a location.
+    """
+    Sample data from a file
 
     The data is retrieved from a file (usually a .tif file) by the
     geodatareader,which samples the file in the specified set of
@@ -36,7 +63,7 @@ def main(
         Path of the file to read data from.
 
     tiff_metadata: List[str]
-        List of metadata associated with the file
+        Metadatas to fetch from file, by default None.
 
     coordinates : List[Tuple[str, str, str]]
         List of coordinates to be processed. Every coordinate is defined by: (lon, lat, address).
@@ -70,6 +97,12 @@ def main(
         filename=filename,
         coordinates=points,
         metadata=tiff_metadata,
+    )
+
+    converted_values = convert_ndarrays_to_lists(values)
+    latitudes, longitudes, addresses = split_coordinates(coordinates)
+    converted_values.update(
+        {"latitude": latitudes, "longitude": longitudes, "addresses": addresses}
     )
 
     return values

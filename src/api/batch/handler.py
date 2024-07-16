@@ -2,12 +2,12 @@ from io import StringIO
 from typing import List, Tuple, Dict
 
 from aws_lambda_powertools import Logger, Tracer
+from readgeodata.sampler import sample
 from common.event_parser import (
     get_bucket_and_key,
     parse_s3_file_upload_event,
 )
 from geocoder.gmaps_geocoder import GMapsGeocoder
-from main import main
 from readgeodata.rasterioreader import RasterIOReader
 import csv
 import boto3
@@ -19,14 +19,6 @@ logger = Logger()
 tracer = Tracer()
 gmapsgeocoder = GMapsGeocoder()
 riogeoreader = RasterIOReader()
-
-
-def convert_ndarrays_to_lists(data_dict: Dict) -> Dict:
-    """Convert ndarray values in the dictionary to lists."""
-    for key in data_dict:
-        if isinstance(data_dict[key], np.ndarray):
-            data_dict[key] = data_dict[key].tolist()
-    return data_dict
 
 
 def read_file(file_content: str) -> List[Tuple[float, float, str]]:
@@ -105,25 +97,6 @@ def write_dict_to_s3_as_csv(csv_data: str, bucket_name: str, file_key: str):
         logger.error(f"Error uploading CSV file to S3: {e}")
 
 
-def split_coordinates(
-    coordinates: List[Tuple[float, float, str]]
-) -> Tuple[List[float], List[float], List[str]]:
-    """
-    Split list of coordinates into separate lists for latitudes, longitudes, and addresses.
-
-    Args:
-        coordinates (List[Tuple[float, float, str]]): List of tuples containing latitude, longitude, and address.
-
-    Returns:
-        Tuple[List[float], List[float], List[str]]: Separate lists for latitudes, longitudes, and addresses.
-    """
-    points_array = np.array(coordinates)
-    latitudes = points_array[:, 0].tolist()
-    longitudes = points_array[:, 1].tolist()
-    addresses = points_array[:, 2].tolist()
-    return latitudes, longitudes, addresses
-
-
 def get_s3_parent_folder(s3_path: str) -> str:
     """
     Get the parent folder path from an S3 object key.
@@ -154,25 +127,17 @@ def handler(event: Dict, context: Dict = None) -> Dict:
     file_content, file_metadata = parse_s3_file_upload_event(event=event)
     csv_data = read_file(file_content)
 
-    response = main(
+    response = sample(
         filename=file_metadata["filename"],
         tiff_metadata=file_metadata.get("tags", []),
         coordinates=csv_data,
         geocoder=gmapsgeocoder,
         geodatareader=riogeoreader,
     )
-
     response.pop("metadata", None)
-    logger.info(f"Result: {response}")
 
-    converted_response = convert_ndarrays_to_lists(response)
-    latitudes, longitudes, addresses = split_coordinates(csv_data)
-    converted_response.update(
-        {"latitude": latitudes, "longitude": longitudes, "addresses": addresses}
-    )
-
-    logger.info(f"Writing: \n {converted_response}")
-    csv_data_str = dict_to_csv(converted_response)
+    logger.info(f"Writing: \n {response}")
+    csv_data_str = dict_to_csv(response)
     bucket, key = get_bucket_and_key(event)
     file_folder = get_s3_parent_folder(key)
     write_dict_to_s3_as_csv(csv_data_str, bucket, f"{file_folder}/output.csv")
