@@ -13,31 +13,6 @@ gmapsgeocoder = GMapsGeocoder()
 riogeoreader = RasterIOReader()
 
 
-class FloodKeys:
-    """Name of the fields to read from the geotiff.
-    These are all band names except 'NATIONAL_AAL'
-    which is a metadata field.
-    """
-
-    LAND_USE = "land_use"
-    WH_20 = "water_intensity_rp20"
-    WH_100 = "water_intensity_rp100"
-    WH_200 = "water_intensity_rp200"
-    VULN_20 = "vulnerability_rp20"
-    VULN_100 = "vulnerability_rp100"
-    VULN_200 = "vulnerability_rp200"
-    AAL = "aal"
-    RISK_INDEX = "risk_index"
-
-    NATIONAL_AAL = "STATISTICS_MEAN"
-    AGRICULTURE_AAL = "Average_Agriculture_AAL"
-    COMMERCIAL_AAL = "Average_Commercial_AAL"
-    INDUSTRIAL_AAL = "Average_Industrial_AAL"
-    INFRASTRUCTURE_AAL = "Average_Infrastructure_AAL"
-    RESIDENTIAL_AAL = "Average_Residential_AAL"
-    NONE_AAL = "Average_None_AAL"
-
-
 @tracer.capture_method
 def main(
     filename: str,
