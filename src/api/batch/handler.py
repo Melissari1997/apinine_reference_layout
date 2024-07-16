@@ -78,14 +78,14 @@ def handler(event: dict, context: dict = None) -> dict:
     file_content, file_metadata = parse_s3_file_upload_event(event=event)
     csvfile = io.StringIO(file_content)
 
-    reader = csv.reader(csvfile, delimiter=";")
+    reader = csv.reader(csvfile, delimiter="|")
 
     next(reader)
     csv_data = []
     for row in reader:
         if len(row) == 3:
             csv_data.append((float(row[0]), float(row[1]), row[2]))
-            # (lat, lon, address)
+            # (lon, lat, address)
         else:
             print(f"Number of columns != 3: {len(row)}")
     response = main(
