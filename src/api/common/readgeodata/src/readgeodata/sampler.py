@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from aws_lambda_powertools import Logger, Tracer
+from aws_lambda_powertools import Logger
 from geocoder.geocoder import Geocoder
 from geocoder.gmaps_geocoder import GMapsGeocoder
 from readgeodata.interfaces import GeoDataReader
@@ -14,7 +14,15 @@ riogeoreader = RasterIOReader()
 
 
 def convert_ndarrays_to_lists(data_dict: Dict) -> Dict:
-    """Convert ndarray values in the dictionary to lists."""
+    """
+    Convert ndarray values in the dictionary to lists.
+
+    Args:
+        data_dict (Dict): Input dictionary possibly containing ndarray values.
+
+    Returns:
+        Dict: Dictionary with ndarray values converted to lists.
+    """
     for key in data_dict:
         if isinstance(data_dict[key], np.ndarray):
             data_dict[key] = data_dict[key].tolist()
@@ -48,41 +56,24 @@ def sample(
     geodatareader: GeoDataReader,
 ) -> dict:
     """
-    Sample data from a file
+    Sample data from a file based on given coordinates or addresses.
 
-    The data is retrieved from a file (usually a .tif file) by the
-    geodatareader,which samples the file in the specified set of
-    coordinates (lat, lon).
+    Retrieves data from a specified file using a geodatareader,
+    sampling the file at coordinates (lat, lon). If addresses are provided,
+    it first retrieves corresponding coordinates using the geocoder object.
 
-    If an address is provided instead, retrieve the corresponding
-    coordinates first using the geocoder object.
+    Args:
+        filename (str): Path of the file to read data from.
+        tiff_metadata (List[str]): Metadata to fetch from the file.
+        coordinates (List[Tuple[str, str, str]]): List of coordinates or addresses to process.
+            Each tuple is (lon, lat, address).
+        geocoder (Geocoder): Object for geocoding addresses to coordinates.
+        geodatareader (GeoDataReader): Object for reading geo data from file.
 
-    Parameters
-    ----------
-    filename : str
-        Path of the file to read data from.
-
-    tiff_metadata: List[str]
-        Metadatas to fetch from file, by default None.
-
-    coordinates : List[Tuple[str, str, str]]
-        List of coordinates to be processed. Every coordinate is defined by: (lon, lat, address).
-
-    geocoder : Geocoder
-        Object use for the geocoding. If address is supplied, it must not be None.
-    geodatareader : GeoDataReader
-        Object use for reading the data.
-
-    Returns
-    -------
-    dict
-        Dictionary containing info about the location and the flood risk assessment.
+    Returns:
+        dict: Dictionary containing sampled data and location information.
     """
-
-    # https://github.com/googlemaps/google-maps-services-python/blob/master/googlemaps/geocoding.py.
-    # There isn't a method for batch geocoding
-
-    points: List[Tuple[str, str]] = []  # [(lat, lat), (lat, lon)]
+    points: List[Tuple[str, str]] = []  # [(lon, lat), (lon, lon)]
     for lat, lon, address in coordinates:
         if lat is not None and lon is not None:
             points.append((lon, lat))
@@ -92,7 +83,6 @@ def sample(
 
     print(f"Sample points: {points}")
 
-    # TODO handle different crs
     values = geodatareader.sample_data_points(
         filename=filename,
         coordinates=points,
@@ -105,4 +95,4 @@ def sample(
         {"latitude": latitudes, "longitude": longitudes, "addresses": addresses}
     )
 
-    return values
+    return converted_values

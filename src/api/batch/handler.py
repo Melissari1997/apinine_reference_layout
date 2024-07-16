@@ -12,7 +12,6 @@ from readgeodata.rasterioreader import RasterIOReader
 import csv
 import boto3
 import io
-import numpy as np
 
 # Initialize Logger, Tracer, Geocoder, and GeoReader
 logger = Logger()
