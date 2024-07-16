@@ -30,7 +30,7 @@ def convert_ndarrays_to_lists(data_dict: dict) -> dict:
 def dict_to_csv(data_dict: dict) -> str:
     # Create a CSV string from the dictionary
     csv_buffer = StringIO()
-    csv_writer = csv.writer(csv_buffer)
+    csv_writer = csv.writer(csv_buffer, quoting=csv.QUOTE_NONNUMERIC)
 
     # Write header
     header = list(data_dict.keys())
@@ -78,7 +78,7 @@ def handler(event: dict, context: dict = None) -> dict:
     file_content, file_metadata = parse_s3_file_upload_event(event=event)
     csvfile = io.StringIO(file_content)
 
-    reader = csv.reader(csvfile, delimiter="|")
+    reader = csv.reader(csvfile, delimiter="|", quoting=csv.QUOTE_NONNUMERIC)
 
     next(reader)
     csv_data = []
