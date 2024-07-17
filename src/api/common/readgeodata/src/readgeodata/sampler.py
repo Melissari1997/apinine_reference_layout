@@ -73,12 +73,20 @@ def sample(
     Returns:
         dict: Dictionary containing sampled data and location information.
     """
-    points: List[Tuple[str, str]] = []  # [(lon, lat), (lon, lon)]
+    points: List[Tuple[str, str]] = []  # [(lat, lon), (lat, lon)]
+    calculated_address = None
+    calculated_lat = None
+    calculated_lon = None
+    # Iterate through the list of coordinates
     for lat, lon, address in coordinates:
         if lat is not None and lon is not None:
+            # If both latitude and longitude are provided, add them directly to the points list
             points.append((lon, lat))
         else:
-            calculated_lat, calculated_lon = geocoder.geocode(address)
+            # If latitude and longitude are not provided, use the geocoder to obtain coordinates from the address
+            calculated_coords, calculated_address = geocoder.geocode(address)
+            calculated_lon, calculated_lat = calculated_coords
+            # Add the calculated coordinates to the points list
             points.append((calculated_lon, calculated_lat))
 
     print(f"Sample points: {points}")
@@ -92,7 +100,14 @@ def sample(
     converted_values = convert_ndarrays_to_lists(values)
     latitudes, longitudes, addresses = split_coordinates(coordinates)
     converted_values.update(
-        {"latitude": latitudes, "longitude": longitudes, "addresses": addresses}
+        {
+            "latitude": latitudes,
+            "longitude": longitudes,
+            "addresses": addresses,
+            "recognized_latitude": calculated_lat or latitudes,
+            "recognized_longitude": calculated_lon or longitudes,
+            "recognized_address": calculated_address or addresses,
+        }
     )
 
     return converted_values
