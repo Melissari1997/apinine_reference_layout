@@ -1,0 +1,6 @@
+[
+    {
+        "climate_scenario": "baseline",
+        "path": "s3://mlflow-monitoring/125/297ec7fc3cd34179b78cb40cac3dc4e1/artifacts/inference/baseline_IT.tif"
+    }
+]

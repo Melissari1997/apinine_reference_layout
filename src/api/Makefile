@@ -34,6 +34,7 @@ tests:
 	pip install -r wildfire/requirements-dev.txt; pytest wildfire
 	pip install -r user/requirements-dev.txt; pytest user
 	pip install -r map/requirements-dev.txt; pytest map
+	pip install -r batch_request/requirements-dev.txt; pytest batch_request
 
 .ONESHELL:
 tests_unit:
@@ -46,6 +47,7 @@ tests_unit:
 	pip install -r wildfire/requirements-dev.txt; pytest wildfire -m unit
 	pip install -r user/requirements-dev.txt; pytest user -m unit
 	pip install -r map/requirements-dev.txt; pytest map -m unit
+	pip install -r batch_request/requirements-dev.txt; pytest batch_request -m unit
 
 docker_risks:
 	docker build --target test -f flood/baseline/Dockerfile .
@@ -54,6 +56,7 @@ docker_risks:
 	docker build --target test -f wildfire/baseline/Dockerfile .
 	docker build --target test -f user/Dockerfile .
 	docker build --target test -f map/flood/baseline/Dockerfile --build-arg GITHUB_TOKEN=$$GITHUB_TOKEN .
+	docker build --target test -f batch_request/flood/baseline/Dockerfile .
 
 .ONESHELL:
 test_cognito:
