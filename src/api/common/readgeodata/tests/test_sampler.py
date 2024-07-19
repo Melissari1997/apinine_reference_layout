@@ -41,9 +41,26 @@ class TestSampleFlood:
         coordinates = [(12.286326, 41.725469, None), (12.285276, 41.726315, None)]
         got = sample(
             filename="src/api/common/readgeodata/tests/fixtures/ostia_near_sea_fixture_1b.tiff",
-            tiff_metadata=[],
             coordinates=coordinates,
-            geocoder=mockgeocoder,
+            geodatareader=riogeoreader,
+        )
+
+        # Checking only format and types, not the values
+        assert isinstance(got, dict)
+
+    def test_flood_with_address(self, monkeypatch):
+        riogeoreader = RasterIOReader()
+        geocoder = GMapsGeocoder()
+        valid_address1 = "Not existing"
+        valid_address2 = "Lungomare Paolo Toscanelli, 63, 00122 Lido di Ostia RM"
+
+        monkeypatch.setenv("GMAPS_SECRET_NAME", "apinine/gmaps_apikey")
+        monkeypatch.setenv("GMAPS_SECRET_REGION", "eu-central-1")
+
+        coordinates = [(None, None, valid_address1), (None, None, valid_address2)]
+        got = sample(
+            filename="src/api/common/readgeodata/tests/fixtures/ostia_near_sea_fixture_1b.tiff",
+            coordinates=coordinates,
             geodatareader=riogeoreader,
         )
 
@@ -64,6 +81,7 @@ class TestSampleFlood:
                     "recognized_latitude": [41.51808, 42.33055],
                     "recognized_longitude": [11.81210, 11.24322],
                     "recognized_address": [None, None],
+                    "message": [None, None],
                 },
             ),
             (
@@ -77,6 +95,7 @@ class TestSampleFlood:
                     "recognized_latitude": [41.725469, 41.726315],
                     "recognized_longitude": [12.286326, 12.285276],
                     "recognized_address": [None, None],
+                    "message": [None, None],
                 },
             ),  # first in water, second on land
         ],
@@ -86,7 +105,6 @@ class TestSampleFlood:
         riogeoreader = RasterIOReader()
         got = sample(
             filename="src/api/common/readgeodata/tests/fixtures/ostia_near_sea_fixture_1b.tiff",
-            tiff_metadata=[],
             coordinates=coordinates,
             geocoder=gmapsgeocoder,
             geodatareader=riogeoreader,
@@ -110,6 +128,7 @@ class TestSampleFlood:
                     "recognized_longitude": [11.81210, 11.24322],
                     "recognized_address": [None, None],
                     "metadata": {"STATISTICS_MEAN": "0.0034"},
+                    "message": [None, None],
                 },
             ),
             (
@@ -125,6 +144,7 @@ class TestSampleFlood:
                     "recognized_longitude": [12.286326, 12.285276],
                     "recognized_address": [None, None],
                     "metadata": {"STATISTICS_MEAN": "0.0034"},
+                    "message": [None, None],
                 },
             ),  # first in water, second on land
         ],
@@ -134,7 +154,7 @@ class TestSampleFlood:
         riogeoreader = RasterIOReader()
         got = sample(
             filename="src/api/common/readgeodata/tests/fixtures/ostia_near_sea_fixture_3bands_metadata.tiff",
-            tiff_metadata=["STATISTICS_MEAN"],
+            tiff_tags=["STATISTICS_MEAN"],
             coordinates=coordinates,
             geocoder=gmapsgeocoder,
             geodatareader=riogeoreader,
@@ -158,6 +178,7 @@ class TestSampleFlood:
                     "recognized_longitude": [11.81210, 11.24322],
                     "recognized_address": [None, None],
                     "metadata": {},
+                    "message": [None, None],
                 },
             ),
             (
@@ -173,6 +194,7 @@ class TestSampleFlood:
                     "recognized_longitude": [12.286326, 12.285276],
                     "recognized_address": [None, None],
                     "metadata": {},
+                    "message": [None, None],
                 },
             ),  # first in water, second on land
         ],
@@ -182,7 +204,6 @@ class TestSampleFlood:
         riogeoreader = RasterIOReader()
         got = sample(
             filename="src/api/common/readgeodata/tests/fixtures/ostia_near_sea_fixture_3bands_metadata.tiff",
-            tiff_metadata=[],
             coordinates=coordinates,
             geocoder=gmapsgeocoder,
             geodatareader=riogeoreader,

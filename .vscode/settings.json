@@ -12,7 +12,7 @@
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
     "python.testing.pytestArgs": [
-        "src/api/common/readgeodata/tests"
+        "src/api/batch/tests"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,

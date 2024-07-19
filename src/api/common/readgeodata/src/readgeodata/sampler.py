@@ -1,6 +1,11 @@
 from typing import List, Tuple
 from aws_lambda_powertools import Logger
-from geocoder.geocoder import Geocoder
+from geocoder.geocoder import (
+    FailedGeocodeError,
+    Geocoder,
+    MultipleMatchesForAddressError,
+    OutOfBoundsError,
+)
 from geocoder.gmaps_geocoder import GMapsGeocoder
 from readgeodata.interfaces import GeoDataReader
 from readgeodata.rasterioreader import RasterIOReader
@@ -11,6 +16,13 @@ import numpy as np
 logger = Logger()
 gmapsgeocoder = GMapsGeocoder()
 riogeoreader = RasterIOReader()
+
+
+def extend_lists_in_dict(input_dict, M, fill_value=None, exclude_keys=["metadata"]):
+    return {
+        k: (v + [fill_value] * (M - len(v)) if k not in exclude_keys else v)
+        for k, v in input_dict.items()
+    }
 
 
 def convert_ndarrays_to_lists(data_dict: Dict) -> Dict:
@@ -50,10 +62,9 @@ def split_coordinates(
 
 def sample(
     filename: str,
-    tiff_metadata: List[str],
     coordinates: List[Tuple[str, str, str]],
-    geocoder: Geocoder,
     geodatareader: GeoDataReader,
+    tiff_tags: List[str] = None,
 ) -> dict:
     """
     Sample data from a file based on given coordinates or addresses.
@@ -64,7 +75,7 @@ def sample(
 
     Args:
         filename (str): Path of the file to read data from.
-        tiff_metadata (List[str]): Metadata to fetch from the file.
+        tiff_tags (List[str]): Metadata to fetch from the file.
         coordinates (List[Tuple[str, str, str]]): List of coordinates or addresses to process.
             Each tuple is (lon, lat, address).
         geocoder (Geocoder): Object for geocoding addresses to coordinates.
@@ -73,41 +84,17 @@ def sample(
     Returns:
         dict: Dictionary containing sampled data and location information.
     """
-    points: List[Tuple[str, str]] = []  # [(lat, lon), (lat, lon)]
-    calculated_address = None
-    calculated_lat = None
-    calculated_lon = None
-    # Iterate through the list of coordinates
-    for lat, lon, address in coordinates:
-        if lat is not None and lon is not None:
-            # If both latitude and longitude are provided, add them directly to the points list
-            points.append((lon, lat))
-        else:
-            # If latitude and longitude are not provided, use the geocoder to obtain coordinates from the address
-            calculated_coords, calculated_address = geocoder.geocode(address)
-            calculated_lon, calculated_lat = calculated_coords
-            # Add the calculated coordinates to the points list
-            points.append((calculated_lon, calculated_lat))
+    if tiff_tags is None:
+        tiff_tags = []
 
-    print(f"Sample points: {points}")
+    print(f"Processing coords: {coordinates}")
 
     values = geodatareader.sample_data_points(
         filename=filename,
-        coordinates=points,
-        metadata=tiff_metadata,
+        coordinates=[(lon, lat) for lat, lon, _ in coordinates],
+        metadata=tiff_tags,
     )
 
     converted_values = convert_ndarrays_to_lists(values)
-    latitudes, longitudes, addresses = split_coordinates(coordinates)
-    converted_values.update(
-        {
-            "latitude": latitudes,
-            "longitude": longitudes,
-            "addresses": addresses,
-            "recognized_latitude": calculated_lat or latitudes,
-            "recognized_longitude": calculated_lon or longitudes,
-            "recognized_address": calculated_address or addresses,
-        }
-    )
 
     return converted_values
