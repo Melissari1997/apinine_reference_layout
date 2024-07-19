@@ -2,7 +2,7 @@ from io import StringIO
 from typing import Any, List, NamedTuple, Tuple, Dict
 
 from aws_lambda_powertools import Logger, Tracer
-from land_use.util_CLC_conversion import CLC_MAPPING
+from land_use.util_CLC_conversion import CLC_MAPPING, DamageCurveEnum
 from readgeodata.sampler import sample
 from geocoder.geocoder import (
     FailedGeocodeError,
@@ -267,7 +267,10 @@ def get_national_average_aal_col(
     Returns:
         List[float]: National AAL column rows.
     """
-    land_use_rows_names = [CLC_MAPPING[land_use_id] for land_use_id in land_use_rows]
+    land_use_rows_names = [
+        CLC_MAPPING.get(int(land_use_id), DamageCurveEnum.OTHERS)
+        for land_use_id in land_use_rows
+    ]
 
     return [
         metadata[f"Average_{land_use_name}_AAL"]

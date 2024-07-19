@@ -13,21 +13,21 @@ def test_parse_s3_file_upload_event_and_process(
     event_new_file_uploaded, lambda_powertools_ctx, monkeypatch
 ):
     # Set up the mock S3 environment
-    conn = boto3.client("s3", region_name="us-east-1")
+    conn = boto3.client("s3")
     monkeypatch.setenv("GMAPS_SECRET_NAME", "apinine/gmaps_apikey")
     monkeypatch.setenv("GMAPS_SECRET_REGION", "eu-central-1")
 
     # Create a bucket and put a file in it
     bucket = "test-bucket-setup"
     key = "mock_file.csv"
-    conn.create_bucket(Bucket=bucket)
-    local_file_path = "/home/paolo/apinine_reference_layout/src/api/batch/tests/fixtures/mock_input_with_just_coords.csv"
+    conn.create_bucket(
+        Bucket=bucket, CreateBucketConfiguration={"LocationConstraint": "eu-central-1"}
+    )
+    local_file_path = "src/api/batch/tests/fixtures/mock_input_with_just_coords.csv"
     with open(local_file_path, "r") as f:
         local_file_content = f.read()
     conn.put_object(Bucket=bucket, Key=key, Body=local_file_content)
-    tags = {
-        "filename": "/home/paolo/apinine_reference_layout/src/api/batch/tests/fixtures/baseline_IT.tif"
-    }
+    tags = {"filename": "src/api/batch/tests/fixtures/small_portion_of_anzio.tif"}
     conn.put_object_tagging(
         Bucket=bucket,
         Key=key,
@@ -37,7 +37,6 @@ def test_parse_s3_file_upload_event_and_process(
     response = handler_module.handler(
         event=event_new_file_uploaded, context=lambda_powertools_ctx
     )
-    print(response)
 
     # Checking only format and types, not the values
     assert isinstance(response, dict)
